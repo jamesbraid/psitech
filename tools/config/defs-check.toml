@@ -1,0 +1,21 @@
+[project]
+license = "BSD-3-Clause"
+name = "psitech"
+
+[gen]
+rust_crate = "psitech-defs"
+
+[gen.qemu]
+board = "RAD4"
+
+[gen.qemu.units.rad4]
+name = "BOARD"
+
+[checks]
+address_bits = 24
+max_reg_offset = 0xffffff
+
+[allowlists]
+leak = "tools/config/leak-allow.txt"
+source_names = "tools/config/source-names-allow.txt"
+copy = "tools/config/copy-check-allow.txt"

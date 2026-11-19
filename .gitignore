@@ -1,0 +1,24 @@
+# Disk images and archives
+*.img
+*.zip
+*.raw
+*.iso
+*.chd
+*.tar.zst
+*.tar.gz
+
+# Disassembly and dump outputs
+*_disasm.txt
+*_dwarfdump.txt
+
+# Temporary and cache files
+*.m2c
+__pycache__/
+*.tmp
+
+# Proprietary PsiTech and IRIX files (see references/irix-files.md): root/ is a directory or a link to a shared copy
+/root
+/root/
+
+/.cache/
+.re-leak-terms

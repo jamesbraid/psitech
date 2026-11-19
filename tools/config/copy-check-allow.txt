@@ -1,0 +1,1 @@
+# Names present when the copy check was introduced, kept under this repository's dirty-room rules. The hook flags only names added after this list.

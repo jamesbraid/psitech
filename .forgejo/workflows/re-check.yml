@@ -1,0 +1,34 @@
+# Copy to .forgejo/workflows/re-check.yml in a workspace that has a
+# devices/ directory (or, until it migrates, a defs/ directory or a defs.toml).
+# Fetches only the retools submodule: some workspaces carry vendor-source
+# submodules that must never be cloned, so never use --recursive.
+# The job needs python3 and gcc for the checks and builds, and rustc for the Rust
+# crate in generated/rust; Debian's rustc (1.63) is enough, cargo is not used.
+name: re-check
+on:
+  push:
+  pull_request:
+
+jobs:
+  decode-headers:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/library/node:22-bookworm-slim
+    steps:
+      - name: Install tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates python3 gcc libc6-dev rustc
+      - name: Check out the repository
+        uses: https://code.forgejo.org/actions/checkout@v4
+        with:
+          submodules: false
+      - name: Fetch retools only
+        # The job token reads only this repository; the secret is a read-only
+        # token for the private retools. The header is scoped to this one command.
+        env:
+          RETOOLS_READ_TOKEN: ${{ secrets.RETOOLS_READ_TOKEN }}
+        run: |
+          git -c "http.${{ github.server_url }}/.extraheader=Authorization: token $RETOOLS_READ_TOKEN" submodule update --init --depth 1 retools
+      - name: Check decode headers
+        run: retools/tools/defs/ci-check
