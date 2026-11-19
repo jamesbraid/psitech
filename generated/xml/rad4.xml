@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<!-- generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source -->
+<!-- SPDX-License-Identifier: BSD-3-Clause -->
+<!-- defs-gen 2 -->
+<!-- input sha256 610c8d4ccc0b111742935107dabbda7f5141463a0b9e88789b53045ae90f2724 -->
+<genxml unit="rad4" prefix="RAD4" title="RAD4 graphics head registers" from="PLX PCI 9060 Data Sheet, version 1.2">
+  <doc>Registers of the PsiTech RAD4 PCI graphics board (PCI 12d1:0104) as the vendor's IRIX 6.5 driver and X server use them: a PLX PCI 9060-compatible bus interface, board-local framebuffer, timing and control registers, and the RAMDAC's indexed registers. Grades here are the three the definition format allows. established covers what a public datasheet or the shipped binaries state outright, including driver expectations, and each doc says which. inferred covers inferences and model approximations. The finer ratings are in devices/rad4/README.md.</doc>
+  <space name="bar0" unit="byte"/>
+  <space name="rom" unit="byte"/>
+  <space name="bar2" unit="byte"/>
+  <space name="rgb561" unit="byte"/>
+  <struct name="ROM_REMAP" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x14" access="rw" space="bar0" reset="unknown">
+    <doc>Expansion ROM remap register. Software expectation: the driver writes it once at attach, with the top byte 0xe1. Nothing reads it back.</doc>
+  </struct>
+  <struct name="BUS_REGION_DESCRIPTOR" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x18" access="rw" space="bar0" reset="unknown">
+    <doc>Local bus region descriptor. Software expectation: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus.</doc>
+  </struct>
+  <struct name="MAILBOX" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x40" access="rw" space="bar0" reset="unknown">
+    <doc>Mailbox. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run. What a real card holds here after power-on is unknown.</doc>
+  </struct>
+  <struct name="INTCSR" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x68" access="rw" space="bar0" reset="0x10100">
+    <doc>Interrupt control and status, with the bits the driver uses. The driver ORs 0x50900 into it at attach whether or not pixel DMA is enabled.</doc>
+    <field name="dma0_int_active" start="21" size="1" type="uint" grade="established"/>
+    <field name="dma0_int_enable" start="18" size="1" type="uint" grade="established"/>
+    <field name="local_int_output_enable" start="16" size="1" type="uint" grade="established"/>
+    <field name="local_int_input_active" start="15" size="1" type="uint" grade="established"/>
+    <field name="pci_local_int_enable" start="11" size="1" type="uint" grade="established"/>
+    <field name="pci_int_enable" start="8" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="EEPROM_CTL" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x6c" access="rw" space="bar0" reset="unknown">
+    <doc>Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. The driver also replaces the low nibble with 0xc at attach, a use the datasheet reading here does not explain.</doc>
+    <field name="data_from_eeprom" start="27" size="1" type="uint" grade="established"/>
+    <field name="data_to_eeprom" start="26" size="1" type="uint" grade="established"/>
+    <field name="chip_select" start="25" size="1" type="uint" grade="established"/>
+    <field name="clock" start="24" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="RGB561_INDEX_LO" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27" register="yes" offset="0x900000" access="rw" space="bar2" reset="unknown">
+    <doc>RAMDAC index, low byte, in the low eight bits of a 32-bit store. The identification with the RGB561 index-low port is inferred from the driver's use of it.</doc>
+    <field name="value" start="0" size="8" type="uint" grade="inferred"/>
+  </struct>
+  <struct name="RGB561_INDEX_HI" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27" register="yes" offset="0x910000" access="rw" space="bar2" reset="unknown">
+    <doc>RAMDAC index, high byte.</doc>
+    <field name="value" start="0" size="8" type="uint" grade="inferred"/>
+  </struct>
+  <struct name="RGB561_DATA" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27" register="yes" offset="0x920000" access="rw" space="bar2" reset="unknown">
+    <doc>RAMDAC single-cycle data port. The index advances after each access.</doc>
+    <field name="value" start="0" size="8" type="uint" grade="inferred"/>
+  </struct>
+  <struct name="RGB561_DATA_MULTI" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 4" register="yes" offset="0x930000" access="rw" space="bar2" reset="unknown">
+    <doc>RAMDAC multi-cycle data port for tables whose entries are wider than a byte: two cycles per window attribute or gamma entry, three per colour or cursor table entry. The index advances once per complete entry.</doc>
+    <field name="value" start="0" size="8" type="uint" grade="inferred"/>
+  </struct>
+  <struct name="TIMING_H0" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver" register="yes" offset="0xa00000" access="rw" count="1024" stride="4" space="bar2" reset="unknown">
+    <doc>Horizontal timing bank 0. Software expectation: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 1024 words is the room between banks, and the bit meanings are unknown.</doc>
+  </struct>
+  <struct name="TIMING_H1" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver" register="yes" offset="0xa01000" access="rw" count="1024" stride="4" space="bar2" reset="unknown">
+    <doc>Horizontal timing bank 1. Same use and limits as bank 0.</doc>
+  </struct>
+  <struct name="TIMING_H3" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver" register="yes" offset="0xa03000" access="rw" count="1024" stride="4" space="bar2" reset="unknown">
+    <doc>Horizontal timing bank 3. Same use and limits as bank 0. The loader holds a pointer to a bank between 1 and 3 and never writes it.</doc>
+  </struct>
+  <struct name="TIMING_V" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver" register="yes" offset="0xb00000" access="rw" count="2048" stride="4" space="bar2" reset="unknown">
+    <doc>Vertical timing bank. Software expectation: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit meanings are unknown.</doc>
+  </struct>
+  <struct name="PLANE_MASK" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver and standalone X server" register="yes" offset="0xd00000" access="rw" space="bar2" reset="unknown">
+    <doc>Pixel write mask. Software expectation: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown.</doc>
+  </struct>
+  <struct name="BOARD_CONTROL" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver" register="yes" offset="0xf00000" access="rw" space="bar2" reset="unknown">
+    <doc>Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. The physical effects are unknown.</doc>
+    <field name="mode_gate_frame_status" start="5" size="1" type="uint" grade="inferred"/>
+    <field name="frame_request" start="1" size="1" type="uint" grade="inferred"/>
+  </struct>
+  <struct name="RGB561_SYNC_CTL" size="1" grade="established" from="IBM RGB561 Architecture, preliminary revision 1.1, p. 27" register="yes" offset="0x20" access="rw" space="rgb561" reset="unknown">
+    <doc>Sync control. The mode routine writes 1, or 0x23 when the EEPROM selector field equals 2.</doc>
+  </struct>
+  <struct name="RGB561_PLL_VCO" size="1" grade="established" from="IBM RGB561 Architecture, preliminary revision 1.1, pp. 27, 36" register="yes" offset="0x21" access="rw" space="rgb561" reset="unknown">
+    <doc>PLL VCO divider. M is bits 5 to 0 plus 65. Bits 7 to 6 hold the range code; that position is inferred, since it reproduces the clock field of all 13 driver modes to the hertz.</doc>
+    <field name="range_code" start="6" size="2" type="uint" grade="inferred"/>
+    <field name="m_minus_65" start="0" size="6" type="uint" grade="established"/>
+  </struct>
+  <struct name="RGB561_PLL_REF" size="1" grade="established" from="IBM RGB561 Architecture, preliminary revision 1.1, pp. 27, 36" register="yes" offset="0x22" access="rw" space="rgb561" reset="unknown">
+    <doc>PLL reference divider N, bits 4 to 0.</doc>
+    <field name="n" start="0" size="5" type="uint" grade="established"/>
+  </struct>
+  <struct name="RGB561_CURSOR_CTL" size="1" grade="established" from="IBM RGB561 Architecture, preliminary revision 1.1, pp. 3, 37" register="yes" offset="0x30" access="rw" space="rgb561" reset="unknown">
+    <doc>Cursor control. Bit 0 enables the 64 by 64 two-bit cursor.</doc>
+    <field name="enable" start="0" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="RGB561_CURSOR_HOT_X" size="1" grade="established" from="IBM RGB561 Architecture, preliminary revision 1.1, pp. 3, 38" register="yes" offset="0x34" access="rw" space="rgb561" reset="unknown">
+    <doc>Cursor hot spot, horizontal, six bits.</doc>
+    <field name="x" start="0" size="6" type="uint" grade="established"/>
+  </struct>
+  <struct name="RGB561_CURSOR_HOT_Y" size="1" grade="established" from="IBM RGB561 Architecture, preliminary revision 1.1, pp. 3, 38" register="yes" offset="0x35" access="rw" space="rgb561" reset="unknown">
+    <doc>Cursor hot spot, vertical, six bits.</doc>
+    <field name="y" start="0" size="6" type="uint" grade="established"/>
+  </struct>
+  <struct name="DMAMODE0" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x100" access="rw" space="rom" reset="unknown">
+    <doc>DMA channel 0 mode. Software expectation: the driver reaches the DMA registers through the expansion ROM resource, writes 0x7c3 here (32-bit local bus, chaining, done interrupt enabled) and clears the done-interrupt bit when a transfer times out.</doc>
+    <field name="done_int_enable" start="10" size="1" type="uint" grade="established"/>
+    <field name="chaining" start="9" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="DMADPR0" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x110" access="rw" space="rom" reset="unknown">
+    <doc>DMA channel 0 descriptor pointer. Loaded from each descriptor's next-pointer word. The driver starts it at the top of the board's 8 MiB local memory.</doc>
+  </struct>
+  <struct name="DMACSR0" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x128" access="rw" space="rom" reset="0x1010">
+    <doc>DMA command and status, channel 0 in bits 7 to 0. The driver starts a transfer by writing 3 (enable and start) and aborts one with 4 after a timeout, then polls Done.</doc>
+    <field name="user" start="5" size="3" type="uint" grade="established"/>
+    <field name="done" start="4" size="1" type="uint" grade="established"/>
+    <field name="clear_int" start="3" size="1" type="uint" grade="established"/>
+    <field name="abort" start="2" size="1" type="uint" grade="established"/>
+    <field name="start" start="1" size="1" type="uint" grade="established"/>
+    <field name="enable" start="0" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="DMA_DESC_NEXT" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2, Table 51">
+    <doc>Fourth word of a 16-byte chain descriptor (PCI address, local address, byte count, next pointer). It is loaded into the descriptor pointer register, and its low bits describe the descriptor's own transfer.</doc>
+    <field name="next" start="4" size="28" type="uint" grade="established"/>
+    <field name="local_to_pci" start="3" size="1" type="uint" grade="established"/>
+    <field name="int_on_complete" start="2" size="1" type="uint" grade="established"/>
+    <field name="end_of_chain" start="1" size="1" type="uint" grade="established"/>
+  </struct>
+  <constant name="DMA_COUNT_BITS" value="0x17" grade="established"/>
+  <constant name="DMA_DESC_BYTES" value="0x10" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2, section 3.6.2"/>
+  <constant name="EEPROM_RECORD_ADDR" value="0x58" grade="established" from="PsiTech RAD4 release 1.3k driver"/>
+  <constant name="EEPROM_RECORD_LEN" value="0x28" grade="established" from="PsiTech RAD4 release 1.3k driver"/>
+  <constant name="FB_SIZE" value="0x800000" grade="established" from="PsiTech RAD4 release 1.3k driver (the mapping it requests)"/>
+  <constant name="MODE_COUNT" value="0xd" grade="established" from="PsiTech RAD4 release 1.3k driver (mode table)"/>
+  <constant name="REFERENCE_CLOCK_HZ" value="0x1f78a40" grade="inferred" from="IBM RGB561 Architecture, preliminary revision 1.1, p. 36; PsiTech RAD4 release 1.3k driver"/>
+</genxml>

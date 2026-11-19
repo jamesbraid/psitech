@@ -1,0 +1,6 @@
+// generated from devices/ and formats/ by defs-gen - do not edit, change the source
+// SPDX-License-Identifier: BSD-3-Clause
+// defs-gen 2
+// input sha256 610c8d4ccc0b111742935107dabbda7f5141463a0b9e88789b53045ae90f2724
+#![no_std]
+pub mod rad4;

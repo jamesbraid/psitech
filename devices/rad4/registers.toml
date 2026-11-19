@@ -1,0 +1,348 @@
+unit = "rad4"
+prefix = "RAD4"
+title = "RAD4 graphics head registers"
+doc = "Registers of the PsiTech RAD4 PCI graphics board (PCI 12d1:0104) as the vendor's IRIX 6.5 driver and X server use them: a PLX PCI 9060-compatible bus interface, board-local framebuffer, timing and control registers, and the RAMDAC's indexed registers. Grades here are the three the definition format allows. established covers what a public datasheet or the shipped binaries state outright, including driver expectations, and each doc says which. inferred covers inferences and model approximations. The finer ratings are in devices/rad4/README.md."
+from = "PLX PCI 9060 Data Sheet, version 1.2"
+public_from = ["PLX PCI 9060 Data Sheet", "IBM RGB561 Architecture", "PsiTech RAD4 release 1.3k"]
+name_source = "ours"
+
+[spaces.bar0]
+unit = "byte"
+
+[spaces.rom]
+unit = "byte"
+
+[spaces.bar2]
+unit = "byte"
+
+[spaces.rgb561]
+unit = "byte"
+
+# BAR0: PLX bus interface runtime registers
+
+[registers.rom_remap]
+space = "bar0"
+offset = 0x14
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "Expansion ROM remap register. Software expectation: the driver writes it once at attach, with the top byte 0xe1. Nothing reads it back."
+
+[registers.bus_region_descriptor]
+space = "bar0"
+offset = 0x18
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "Local bus region descriptor. Software expectation: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus."
+
+[registers.mailbox]
+space = "bar0"
+offset = 0x40
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "Mailbox. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run. What a real card holds here after power-on is unknown."
+
+[registers.intcsr]
+space = "bar0"
+offset = 0x68
+access = "rw"
+width = 32
+reset = 0x00010100
+reset_grade = "established"
+reset_from = "PLX PCI 9060 Data Sheet, version 1.2, Table 45 (bits 8 and 16 reset set)"
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "Interrupt control and status, with the bits the driver uses. The driver ORs 0x50900 into it at attach whether or not pixel DMA is enabled."
+
+[registers.intcsr.fields]
+pci_int_enable = { bits = [8, 8], grade = "established" }
+pci_local_int_enable = { bits = [11, 11], grade = "established" }
+local_int_input_active = { bits = [15, 15], grade = "established" }
+local_int_output_enable = { bits = [16, 16], grade = "established" }
+dma0_int_enable = { bits = [18, 18], grade = "established" }
+dma0_int_active = { bits = [21, 21], grade = "established" }
+
+[registers.eeprom_ctl]
+space = "bar0"
+offset = 0x6c
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. The driver also replaces the low nibble with 0xc at attach, a use the datasheet reading here does not explain."
+
+[registers.eeprom_ctl.fields]
+clock = { bits = [24, 24], grade = "established" }
+chip_select = { bits = [25, 25], grade = "established" }
+data_to_eeprom = { bits = [26, 26], grade = "established" }
+data_from_eeprom = { bits = [27, 27], grade = "established" }
+
+# Expansion ROM route: DMA channel 0 registers
+
+[registers.dmamode0]
+space = "rom"
+offset = 0x100
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "DMA channel 0 mode. Software expectation: the driver reaches the DMA registers through the expansion ROM resource, writes 0x7c3 here (32-bit local bus, chaining, done interrupt enabled) and clears the done-interrupt bit when a transfer times out."
+
+[registers.dmamode0.fields]
+chaining = { bits = [9, 9], grade = "established" }
+done_int_enable = { bits = [10, 10], grade = "established" }
+
+[registers.dmadpr0]
+space = "rom"
+offset = 0x110
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "DMA channel 0 descriptor pointer. Loaded from each descriptor's next-pointer word. The driver starts it at the top of the board's 8 MiB local memory."
+
+[registers.dmacsr0]
+space = "rom"
+offset = 0x128
+access = "rw"
+width = 32
+reset = 0x00001010
+reset_grade = "established"
+reset_from = "PLX PCI 9060 Data Sheet, version 1.2, Table 57 (both channels' Done set)"
+grade = "established"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "DMA command and status, channel 0 in bits 7 to 0. The driver starts a transfer by writing 3 (enable and start) and aborts one with 4 after a timeout, then polls Done."
+
+[registers.dmacsr0.fields]
+enable = { bits = [0, 0], grade = "established" }
+start = { bits = [1, 1], grade = "established" }
+abort = { bits = [2, 2], grade = "established" }
+clear_int = { bits = [3, 3], grade = "established" }
+done = { bits = [4, 4], grade = "established" }
+user = { bits = [7, 5], grade = "established" }
+
+# DMA descriptor next-pointer word (a word, not a register)
+
+[words.DMA_DESC_NEXT]
+width = 32
+grade = "established"
+from = "PLX PCI 9060 Data Sheet, version 1.2, Table 51"
+name_source = "public"
+name_cite = "PLX PCI 9060 Data Sheet, version 1.2"
+doc = "Fourth word of a 16-byte chain descriptor (PCI address, local address, byte count, next pointer). It is loaded into the descriptor pointer register, and its low bits describe the descriptor's own transfer."
+
+[words.DMA_DESC_NEXT.fields]
+end_of_chain = { bits = [1, 1], grade = "established" }
+int_on_complete = { bits = [2, 2], grade = "established" }
+local_to_pci = { bits = [3, 3], grade = "established" }
+next = { bits = [31, 4], grade = "established" }
+
+# BAR2: board-local registers
+
+[registers.rgb561_index_lo]
+space = "bar2"
+offset = 0x900000
+access = "rw"
+width = 32
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27"
+doc = "RAMDAC index, low byte, in the low eight bits of a 32-bit store. The identification with the RGB561 index-low port is inferred from the driver's use of it."
+
+[registers.rgb561_index_lo.fields]
+value = { bits = [7, 0], grade = "inferred" }
+
+[registers.rgb561_index_hi]
+space = "bar2"
+offset = 0x910000
+access = "rw"
+width = 32
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27"
+doc = "RAMDAC index, high byte."
+
+[registers.rgb561_index_hi.fields]
+value = { bits = [7, 0], grade = "inferred" }
+
+[registers.rgb561_data]
+space = "bar2"
+offset = 0x920000
+access = "rw"
+width = 32
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27"
+doc = "RAMDAC single-cycle data port. The index advances after each access."
+
+[registers.rgb561_data.fields]
+value = { bits = [7, 0], grade = "inferred" }
+
+[registers.rgb561_data_multi]
+space = "bar2"
+offset = 0x930000
+access = "rw"
+width = 32
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 4"
+doc = "RAMDAC multi-cycle data port for tables whose entries are wider than a byte: two cycles per window attribute or gamma entry, three per colour or cursor table entry. The index advances once per complete entry."
+
+[registers.rgb561_data_multi.fields]
+value = { bits = [7, 0], grade = "inferred" }
+
+[registers.timing_h0]
+space = "bar2"
+offset = 0xa00000
+access = "rw"
+width = 32
+count = 1024
+stride = 4
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver"
+doc = "Horizontal timing bank 0. Software expectation: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 1024 words is the room between banks, and the bit meanings are unknown."
+
+[registers.timing_h1]
+space = "bar2"
+offset = 0xa01000
+access = "rw"
+width = 32
+count = 1024
+stride = 4
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver"
+doc = "Horizontal timing bank 1. Same use and limits as bank 0."
+
+[registers.timing_h3]
+space = "bar2"
+offset = 0xa03000
+access = "rw"
+width = 32
+count = 1024
+stride = 4
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver"
+doc = "Horizontal timing bank 3. Same use and limits as bank 0. The loader holds a pointer to a bank between 1 and 3 and never writes it."
+
+[registers.timing_v]
+space = "bar2"
+offset = 0xb00000
+access = "rw"
+width = 32
+count = 2048
+stride = 4
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver"
+doc = "Vertical timing bank. Software expectation: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit meanings are unknown."
+
+[registers.plane_mask]
+space = "bar2"
+offset = 0xd00000
+access = "rw"
+width = 32
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver and standalone X server"
+doc = "Pixel write mask. Software expectation: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown."
+
+[registers.board_control]
+space = "bar2"
+offset = 0xf00000
+access = "rw"
+width = 32
+grade = "inferred"
+from = "PsiTech RAD4 release 1.3k driver"
+doc = "Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. The physical effects are unknown."
+
+[registers.board_control.fields]
+frame_request = { bits = [1, 1], grade = "inferred" }
+mode_gate_frame_status = { bits = [5, 5], grade = "inferred" }
+
+# RAMDAC indexed registers (IBM RGB561, public specification)
+
+[registers.rgb561_sync_ctl]
+space = "rgb561"
+offset = 0x20
+access = "rw"
+width = 8
+grade = "established"
+from = "IBM RGB561 Architecture, preliminary revision 1.1, p. 27"
+doc = "Sync control. The mode routine writes 1, or 0x23 when the EEPROM selector field equals 2."
+
+[registers.rgb561_pll_vco]
+space = "rgb561"
+offset = 0x21
+access = "rw"
+width = 8
+grade = "established"
+from = "IBM RGB561 Architecture, preliminary revision 1.1, pp. 27, 36"
+doc = "PLL VCO divider. M is bits 5 to 0 plus 65. Bits 7 to 6 hold the range code; that position is inferred, since it reproduces the clock field of all 13 driver modes to the hertz."
+
+[registers.rgb561_pll_vco.fields]
+m_minus_65 = { bits = [5, 0], grade = "established" }
+range_code = { bits = [7, 6], grade = "inferred" }
+
+[registers.rgb561_pll_ref]
+space = "rgb561"
+offset = 0x22
+access = "rw"
+width = 8
+grade = "established"
+from = "IBM RGB561 Architecture, preliminary revision 1.1, pp. 27, 36"
+doc = "PLL reference divider N, bits 4 to 0."
+
+[registers.rgb561_pll_ref.fields]
+n = { bits = [4, 0], grade = "established" }
+
+[registers.rgb561_cursor_ctl]
+space = "rgb561"
+offset = 0x30
+access = "rw"
+width = 8
+grade = "established"
+from = "IBM RGB561 Architecture, preliminary revision 1.1, pp. 3, 37"
+doc = "Cursor control. Bit 0 enables the 64 by 64 two-bit cursor."
+
+[registers.rgb561_cursor_ctl.fields]
+enable = { bits = [0, 0], grade = "established" }
+
+[registers.rgb561_cursor_hot_x]
+space = "rgb561"
+offset = 0x34
+access = "rw"
+width = 8
+grade = "established"
+from = "IBM RGB561 Architecture, preliminary revision 1.1, pp. 3, 38"
+doc = "Cursor hot spot, horizontal, six bits."
+
+[registers.rgb561_cursor_hot_x.fields]
+x = { bits = [5, 0], grade = "established" }
+
+[registers.rgb561_cursor_hot_y]
+space = "rgb561"
+offset = 0x35
+access = "rw"
+width = 8
+grade = "established"
+from = "IBM RGB561 Architecture, preliminary revision 1.1, pp. 3, 38"
+doc = "Cursor hot spot, vertical, six bits."
+
+[registers.rgb561_cursor_hot_y.fields]
+y = { bits = [5, 0], grade = "established" }
+
+[constants]
+FB_SIZE = { value = 0x800000, grade = "established", from = "PsiTech RAD4 release 1.3k driver (the mapping it requests)", doc = "Framebuffer mapping the driver requests, 8 MiB. The physical memory population is not established." }
+MODE_COUNT = { value = 13, grade = "established", from = "PsiTech RAD4 release 1.3k driver (mode table)", doc = "Display modes the driver carries." }
+EEPROM_RECORD_ADDR = { value = 0x58, grade = "established", from = "PsiTech RAD4 release 1.3k driver", doc = "Byte address of the 40-byte configuration record the driver reads at attach." }
+EEPROM_RECORD_LEN = { value = 40, grade = "established", from = "PsiTech RAD4 release 1.3k driver", doc = "Length of that record." }
+DMA_DESC_BYTES = { value = 16, grade = "established", from = "PLX PCI 9060 Data Sheet, version 1.2, section 3.6.2", doc = "Size of a chain descriptor." }
+DMA_COUNT_BITS = { value = 23, grade = "established", from = "PLX PCI 9054 Data Book, version 1.0, Table 11-79", doc = "Width of the descriptor byte count." }
+REFERENCE_CLOCK_HZ = { value = 33000000, grade = "inferred", from = "IBM RGB561 Architecture, preliminary revision 1.1, p. 36; PsiTech RAD4 release 1.3k driver", doc = "Board reference clock. The RAMDAC PLL formula with this value reproduces the pixel clock field of every one of the driver's 13 mode records to the hertz." }
