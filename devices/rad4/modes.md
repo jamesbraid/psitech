@@ -32,7 +32,25 @@ The driver holds 13 mode records of 40 bytes, big-endian, in its data; the count
 | 11 | 1920 x 1080 | 75 | 7680 | 0xe6, 0x11 | 199,941,176 | 591, 1125 |
 | 12 | 1024 x 1024 | 60 | 4096 | 0xa6, 0x14 | 84,975,000 | 332, 1064 |
 
-The table is established (read from the binary). Every mode is four bytes per pixel with a row stride of four times its width; that is the driver's software stride, and the board's scanout pitch is inferred to match. The largest image, mode 11, takes 8,294,400 bytes and fits the 8 MiB framebuffer.
+The eight timing counts of each record, in four-pixel words for the horizontal set and lines for the vertical set, and the refresh rate the clock field gives (`clock / (4 * htotal * vtotal)`, inferred because it uses the 33 MHz reference):
+
+| Mode | H total, blank, p2, p3 | V total, blank, p2, p3 | Rate from the clock (Hz) |
+|--:|---|---|--:|
+| 0 | 422, 102, 12, 40 | 1065, 41, 1, 3 | 60.08 |
+| 1 | 424, 104, 8, 48 | 1063, 39, 3, 3 | 72.56 |
+| 2 | 500, 100, 5, 46 | 1237, 37, 0, 3 | 60.02 |
+| 3 | 500, 100, 5, 46 | 1237, 37, 0, 3 | 72.03 |
+| 4 | 781, 269, 6, 46 | 1061, 61, 0, 3 | 60.32 |
+| 5 | 368, 68, 26, 47 | 1656, 56, 3, 3 | 76.30 |
+| 6 | 468, 68, 26, 47 | 1256, 56, 3, 3 | 79.11 |
+| 7 | 212, 52, 7, 17 | 523, 43, 9, 3 | 72.08 |
+| 8 | 256, 56, 6, 24 | 625, 25, 2, 2 | 56.25 |
+| 9 | 332, 76, 12, 28 | 799, 31, 1, 4 | 60.54 |
+| 10 | 332, 76, 6, 40 | 806, 38, 3, 6 | 70.07 |
+| 11 | 591, 111, 8, 43 | 1125, 45, 3, 3 | 75.18 |
+| 12 | 332, 76, 6, 14 | 1064, 40, 4, 3 | 60.14 |
+
+The record bytes are: horizontal total at 16 to 17, blank at 18 to 19, parameters 2 and 3 at 20 to 23, the vertical set at 24 to 31, the clock at 32 to 35, the two PLL bytes at 36 and 37 and zero padding at 38 to 39. The loaders write at most 1656 vertical words (mode 5) and 781 horizontal words per bank (mode 4), which is the room the timing banks must have. Each timing count set is table data; every timing-memory word is computed by the two loaders, and so are the sync value and the board-control bracket (which the loader takes from a saved control word, not a constant). The table is established (read from the binary). Every mode is four bytes per pixel with a row stride of four times its width; that is the driver's software stride, and the board's scanout pitch is inferred to match. The largest image, mode 11, takes 8,294,400 bytes and fits the 8 MiB framebuffer.
 
 ## Mode programming sequence
 
@@ -61,7 +79,7 @@ Mode 9 asks for 64.2 MHz with range code 2, which the specification gives for 65
 
 ## How software learns and changes the mode
 
-The geometry requests return the current geometry and label (request 113) or any record's (request 135). The mode-change request (114) rejects a word whose index field (bits 0 to 6) is 13 or more, runs the mode routine at once, records the new geometry, reruns the RAMDAC general initialisation, clears the framebuffer at the new size and writes the EEPROM record. The X server reads the geometry once at startup through request 113, maps four times width times height bytes and never issues request 114, so a mode change takes effect at the next X server start, without a reboot (established, from the driver and server binaries).
+The geometry requests return the current geometry and label (request 113) or any record's (request 135). The mode-change request (114) rejects a word whose index field (bits 0 to 6) is 13 or more, runs the mode routine at once, records the new geometry, reruns the RAMDAC general initialisation, clears the framebuffer at the new size and writes the EEPROM record. A mode index of 13 or more makes request 114 fail with error 6. Request 135 given a negative index returns the current mode and its index, which is what lists the modes in `rad4setres`. On the separate buffered (type 3) device request 113 returns a multiplied width instead; that case was not analysed. The X server reads the geometry once at startup through request 113, fills the screen with request 119, maps four times width times height bytes rounded up to 16 KiB and never issues request 114 or 135, so a mode change takes effect at the next X server start, without a reboot (established, from the driver and server binaries).
 
 ## Configuration EEPROM and startup
 
@@ -69,6 +87,6 @@ At attach the driver reads 40 bytes from byte address 0x58 of a serial EEPROM th
 
 The commands are the 93C46's in 64 by 16 organisation: READ, WRITE, EWEN and EWDS, each a start bit, two opcode bits and six address bits. The opcode match is established from the driver; that the part is a 93C46 is inferred.
 
-When the mode-change request supplies a word that differs from the first word of the record, the driver stores it and writes all 40 bytes back to byte 0x58: the writer sends EWEN, then for each word a start bit, the write command with the word address and 16 data bits (odd buffer byte first, on data bit 26), drops chip select, raises it again and polls the data output with 1 ms delays and no timeout until it reads one, then sends EWDS (established, from the binary). So the new mode holds at the next attach. After `rad4setres 9` (word `0x2009`), word 0x2c reads zero and word 0x2d reads `0x0920`.
+When the mode-change request supplies a word that differs from the first word of the record, the driver stores it and writes all 40 bytes back to byte 0x58: the writer sends EWEN, then for each word a start bit, the write command with the word address and 16 data bits (odd buffer byte first, on data bit 26), drops chip select, raises it again and polls the data output with 1 ms delays and no timeout until it reads one, then sends EWDS (established, from the binary). So the new mode holds at the next attach (established for the driver's writes; not observed on a real card). A period installation page records a factory default resolution of index 1 (1280 x 1024 at 72 Hz), which suggests real EEPROMs often held index 1 rather than 0 (inferred; the page may describe another release). After `rad4setres 9` (word `0x2009`), word 0x2c reads zero and word 0x2d reads `0x0920`.
 
 The package also carries a ROM programming image whose initialiser performs board setup and writes a nonzero marker to the mailbox. The driver treats a nonzero mailbox as completed firmware initialisation and skips its own mode and RAMDAC setup; a zero mailbox selects driver-side setup. That is two software paths, not a reset state: the image is not a board dump, and what a real card holds in the mailbox after power-on is unknown. Whether an Origin 200 startup ever runs the supplied initialiser, and the relationship between its controller argument and BAR0, are unknown.

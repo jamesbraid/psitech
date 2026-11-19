@@ -12,7 +12,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | Board registers (BAR2): RAMDAC ports, timing banks, mask, board control | defined in TOML; physical effects and bit meanings of timing words unknown | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
 | RAMDAC indexed registers | the sync, PLL and cursor registers the software uses are defined; window attribute, gamma, colour and cursor tables and the initialisation registers are described in prose only, because the definition format has no way to express tables with a per-entry index step | [devices/rad4/README.md](devices/rad4/README.md#ramdac-registers-the-software-uses) |
 | Display modes and EEPROM | 13 modes established; clock arithmetic reproduces all 13; option fields unknown electrically | [devices/rad4/modes.md](devices/rad4/modes.md) |
-| X server and driver requests | request table and no-DMA path read; buffered and multi-device paths not audited | [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md) |
+| X server and driver requests | request table, no-DMA path, overlay drawing paths and the greyed-label quirk read; buffered and multi-device paths not audited | [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md) |
 | Binary inventory (functions, MMIO, ioctls) | not started: no inventory configuration or `root/` yet | |
 | Driver function-by-function readings | not started | |
 | Open questions | 11 recorded | [questions/open-questions.md](questions/open-questions.md) |
@@ -27,4 +27,4 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 
 ## Missing evidence
 
-The release package is the only RAD4 software evidence held. A configuration-space dump, a board photograph or a parts list of any PsiTech card would settle the identity rows; nothing in the shipped software can.
+Software evidence: the release package and the emulator runs of it are all that is held. The 13 timing-count sets, the mode-change request details and the overlay drawing paths of the X server are in. A configuration-space dump, a board photograph or a parts list of any PsiTech card would settle the identity rows; nothing in the shipped software can.
