@@ -2,6 +2,14 @@
 
 # software
 
+## rad1
+
+| Page | Title | Summary |
+|---|---|---|
+| [kernel-driver.md](rad1/kernel-driver.md) | The stock RAD1 kernel driver | What SGI's IRIX 6.5.30 kernel driver for the RAD1 does, from `rad1drv.o`, `rad1_init.o`, `rad1_tpinit.o`... |
+| [package.md](rad1/package.md) | The software that drives a RAD1 | What runs on, and in front of, a RAD1: the parts that ship with IRIX, the parts that came from PsiTech and are not... |
+| [textport.md](rad1/textport.md) | RAD1 textport and early console | How the RAD1 is found and drawn on as the system console, in the IO6 PROM 6.156 and in the IRIX 6.5.30 kernel. |
+
 ## rad4
 
 | Page | Title | Summary |
