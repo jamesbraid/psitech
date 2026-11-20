@@ -1,7 +1,7 @@
 /* generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 610c8d4ccc0b111742935107dabbda7f5141463a0b9e88789b53045ae90f2724 */
+/* input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1 */
 /* RAD4 graphics head registers */
 #ifndef RAD4_GEN_H
 #define RAD4_GEN_H
@@ -22,7 +22,7 @@
 #define RAD4_BUS_REGION_DESCRIPTOR_OFFSET            0x18u /* established */
 
 /*
- * Mailbox. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run. What a real card holds here after power-on is unknown.
+ * Mailbox 0. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run, and writes zero to it at the end of every attach. What a real card holds here after power-on is unknown.
  */
 /* mailbox: rw32, space bar0, reset unknown; PLX PCI 9060 Data Sheet, version 1.2 */
 #define RAD4_MAILBOX_OFFSET                          0x40u /* established */
@@ -52,7 +52,7 @@
 #define RAD4_INTCSR_PCI_INT_ENABLE_INPLACE           (RAD4_INTCSR_PCI_INT_ENABLE_MASK << RAD4_INTCSR_PCI_INT_ENABLE_SHIFT)
 
 /*
- * Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. The driver also replaces the low nibble with 0xc at attach, a use the datasheet reading here does not explain.
+ * Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. Bits 3 to 0 are the PCI read command the DMA engines use (public datasheet): the driver replaces them at attach with its DMA read command setting, 0xc by default, and the only values it accepts are 0x6, 0xc and 0xe; request 126 changes them later.
  */
 /* eeprom_ctl: rw32, space bar0, reset unknown; PLX PCI 9060 Data Sheet, version 1.2 */
 #define RAD4_EEPROM_CTL_OFFSET                       0x6cu /* established */
@@ -68,6 +68,17 @@
 #define RAD4_EEPROM_CTL_CLOCK_SHIFT                  24 /* established */
 #define RAD4_EEPROM_CTL_CLOCK_MASK                   0x1u
 #define RAD4_EEPROM_CTL_CLOCK_INPLACE                (RAD4_EEPROM_CTL_CLOCK_MASK << RAD4_EEPROM_CTL_CLOCK_SHIFT)
+#define RAD4_EEPROM_CTL_DMA_READ_COMMAND_SHIFT       0 /* established */
+#define RAD4_EEPROM_CTL_DMA_READ_COMMAND_MASK        0xfu
+#define RAD4_EEPROM_CTL_DMA_READ_COMMAND_INPLACE     (RAD4_EEPROM_CTL_DMA_READ_COMMAND_MASK << RAD4_EEPROM_CTL_DMA_READ_COMMAND_SHIFT)
+
+/*
+ * Parallel flash, 64 KiB in 128-byte sectors. Software expectation: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at the address with its two low bits inverted, programs a sector with the usual three-byte unlock sequence (0xaa, 0x55, 0xa0; addresses in the kernel driver page), writes 128 bytes and polls the last one. The part is not identified; an AT29C512-compatible page-write flash fits the geometry (inferred).
+ */
+/* flash: rw8, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver (flash sector requests) */
+#define RAD4_FLASH_OFFSET                            0x800000u /* inferred */
+#define RAD4_FLASH_COUNT                             65536
+#define RAD4_FLASH_STRIDE                            1
 
 /*
  * RAMDAC index, low byte, in the low eight bits of a 32-bit store. The identification with the RGB561 index-low port is inferred from the driver's use of it.
@@ -144,10 +155,97 @@
 #define RAD4_PLANE_MASK_OFFSET                       0xd00000u /* inferred */
 
 /*
- * Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. The physical effects are unknown.
+ * Channel A mode register: the first write after a command-register mode-pointer reset goes to mode register 1, the next to mode register 2. The driver writes 0x07 twice at initialisation, and 0x47 then 0x07 after finding a mouse. Low eight bits of the store.
+ */
+/* km_mr: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_MR_OFFSET                            0xe00000u /* inferred */
+
+/*
+ * Channel A: reads give the status register (bit 0 receiver ready, bit 2 transmitter ready, the two the driver tests); writes set the clock select, which the driver sets to 0xff.
+ */
+/* km_sr_csr_a: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_SR_CSR_A_OFFSET                      0xe10000u /* inferred */
+
+/*
+ * Channel A command register, written only. Values used: 0x1a, 0x20, 0x30, 0x40, 0x50 (resets, with 0x1a disabling receiver and transmitter), 0x05 (enable both), 0x01 and 0x20 around a transmit.
+ */
+/* km_cr_a: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_CR_A_OFFSET                          0xe20000u /* inferred */
+
+/*
+ * Channel A receive and transmit data, low eight bits.
+ */
+/* km_data_a: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_DATA_A_OFFSET                        0xe30000u /* inferred */
+
+/*
+ * Auxiliary control register, written zero at initialisation.
+ */
+/* km_acr: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_ACR_OFFSET                           0xe40000u /* inferred */
+
+/*
+ * Reads give interrupt status, writes set the interrupt mask. The driver uses bit 1 (channel A receiver ready) and bit 5 (channel B receiver ready), and ANDs the saved mask with the status in its handler. The saved mask is also what drives board control bit 7.
+ */
+/* km_isr_imr: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_ISR_IMR_OFFSET                       0xe50000u /* inferred */
+#define RAD4_KM_ISR_IMR_RX_READY_B_SHIFT             5 /* inferred */
+#define RAD4_KM_ISR_IMR_RX_READY_B_MASK              0x1u
+#define RAD4_KM_ISR_IMR_RX_READY_B_INPLACE           (RAD4_KM_ISR_IMR_RX_READY_B_MASK << RAD4_KM_ISR_IMR_RX_READY_B_SHIFT)
+#define RAD4_KM_ISR_IMR_RX_READY_A_SHIFT             1 /* inferred */
+#define RAD4_KM_ISR_IMR_RX_READY_A_MASK              0x1u
+#define RAD4_KM_ISR_IMR_RX_READY_A_INPLACE           (RAD4_KM_ISR_IMR_RX_READY_A_MASK << RAD4_KM_ISR_IMR_RX_READY_A_SHIFT)
+
+/*
+ * Channel B mode register, used as register km_mr is for channel A.
+ */
+/* km_mr_b: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_MR_B_OFFSET                          0xe80000u /* inferred */
+
+/*
+ * Channel B status on read and clock select on write, as for channel A.
+ */
+/* km_sr_csr_b: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_SR_CSR_B_OFFSET                      0xe90000u /* inferred */
+
+/*
+ * Channel B command register, written only.
+ */
+/* km_cr_b: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_CR_B_OFFSET                          0xea0000u /* inferred */
+
+/*
+ * Channel B receive and transmit data, low eight bits.
+ */
+/* km_data_b: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_DATA_B_OFFSET                        0xeb0000u /* inferred */
+
+/*
+ * Output port configuration, written zero at initialisation, which makes the output port bits plain outputs.
+ */
+/* km_opcr: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_OPCR_OFFSET                          0xed0000u /* inferred */
+
+/*
+ * Set output port bits. The driver uses bits 2 and 6 around a channel A transmit and bits 3 and 7 around a channel B transmit. Their wiring (inferred: open-collector drives of the PS/2 clock and data lines) is not documented.
+ */
+/* km_opr_set: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_OPR_SET_OFFSET                       0xee0000u /* inferred */
+
+/*
+ * Reset output port bits, same bits as km_opr_set. Written 0xff at initialisation.
+ */
+/* km_opr_reset: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004 */
+#define RAD4_KM_OPR_RESET_OFFSET                     0xef0000u /* inferred */
+
+/*
+ * Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. Bit 7 is set whenever the keyboard and mouse controller has any interrupt enabled and cleared when none is. The status in bit 5 is read only by the interrupt handler, through a stored pointer, and bit 1 is cleared there when it is set. The physical effects are unknown.
  */
 /* board_control: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_BOARD_CONTROL_OFFSET                    0xf00000u /* inferred */
+#define RAD4_BOARD_CONTROL_KM_INTERRUPT_GATE_SHIFT   7 /* inferred */
+#define RAD4_BOARD_CONTROL_KM_INTERRUPT_GATE_MASK    0x1u
+#define RAD4_BOARD_CONTROL_KM_INTERRUPT_GATE_INPLACE (RAD4_BOARD_CONTROL_KM_INTERRUPT_GATE_MASK << RAD4_BOARD_CONTROL_KM_INTERRUPT_GATE_SHIFT)
 #define RAD4_BOARD_CONTROL_MODE_GATE_FRAME_STATUS_SHIFT 5 /* inferred */
 #define RAD4_BOARD_CONTROL_MODE_GATE_FRAME_STATUS_MASK 0x1u
 #define RAD4_BOARD_CONTROL_MODE_GATE_FRAME_STATUS_INPLACE (RAD4_BOARD_CONTROL_MODE_GATE_FRAME_STATUS_MASK << RAD4_BOARD_CONTROL_MODE_GATE_FRAME_STATUS_SHIFT)

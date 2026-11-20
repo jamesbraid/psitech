@@ -2,7 +2,7 @@
 <!-- generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source -->
 <!-- SPDX-License-Identifier: BSD-3-Clause -->
 <!-- defs-gen 2 -->
-<!-- input sha256 610c8d4ccc0b111742935107dabbda7f5141463a0b9e88789b53045ae90f2724 -->
+<!-- input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1 -->
 <genxml unit="rad4" prefix="RAD4" title="RAD4 graphics head registers" from="PLX PCI 9060 Data Sheet, version 1.2">
   <doc>Registers of the PsiTech RAD4 PCI graphics board (PCI 12d1:0104) as the vendor's IRIX 6.5 driver and X server use them: a PLX PCI 9060-compatible bus interface, board-local framebuffer, timing and control registers, and the RAMDAC's indexed registers. Grades here are the three the definition format allows. established covers what a public datasheet or the shipped binaries state outright, including driver expectations, and each doc says which. inferred covers inferences and model approximations. The finer ratings are in devices/rad4/README.md.</doc>
   <space name="bar0" unit="byte"/>
@@ -16,7 +16,7 @@
     <doc>Local bus region descriptor. Software expectation: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus.</doc>
   </struct>
   <struct name="MAILBOX" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x40" access="rw" space="bar0" reset="unknown">
-    <doc>Mailbox. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run. What a real card holds here after power-on is unknown.</doc>
+    <doc>Mailbox 0. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run, and writes zero to it at the end of every attach. What a real card holds here after power-on is unknown.</doc>
   </struct>
   <struct name="INTCSR" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x68" access="rw" space="bar0" reset="0x10100">
     <doc>Interrupt control and status, with the bits the driver uses. The driver ORs 0x50900 into it at attach whether or not pixel DMA is enabled.</doc>
@@ -28,11 +28,15 @@
     <field name="pci_int_enable" start="8" size="1" type="uint" grade="established"/>
   </struct>
   <struct name="EEPROM_CTL" size="4" grade="established" from="PLX PCI 9060 Data Sheet, version 1.2" register="yes" offset="0x6c" access="rw" space="bar0" reset="unknown">
-    <doc>Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. The driver also replaces the low nibble with 0xc at attach, a use the datasheet reading here does not explain.</doc>
+    <doc>Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. Bits 3 to 0 are the PCI read command the DMA engines use (public datasheet): the driver replaces them at attach with its DMA read command setting, 0xc by default, and the only values it accepts are 0x6, 0xc and 0xe; request 126 changes them later.</doc>
     <field name="data_from_eeprom" start="27" size="1" type="uint" grade="established"/>
     <field name="data_to_eeprom" start="26" size="1" type="uint" grade="established"/>
     <field name="chip_select" start="25" size="1" type="uint" grade="established"/>
     <field name="clock" start="24" size="1" type="uint" grade="established"/>
+    <field name="dma_read_command" start="0" size="4" type="uint" grade="established"/>
+  </struct>
+  <struct name="FLASH" size="1" grade="inferred" from="PsiTech RAD4 release 1.3k driver (flash sector requests)" register="yes" offset="0x800000" access="rw" count="65536" stride="1" space="bar2" reset="unknown">
+    <doc>Parallel flash, 64 KiB in 128-byte sectors. Software expectation: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at the address with its two low bits inverted, programs a sector with the usual three-byte unlock sequence (0xaa, 0x55, 0xa0; addresses in the kernel driver page), writes 128 bytes and polls the last one. The part is not identified; an AT29C512-compatible page-write flash fits the geometry (inferred).</doc>
   </struct>
   <struct name="RGB561_INDEX_LO" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; IBM RGB561 Architecture, preliminary revision 1.1, pp. 1, 27" register="yes" offset="0x900000" access="rw" space="bar2" reset="unknown">
     <doc>RAMDAC index, low byte, in the low eight bits of a 32-bit store. The identification with the RGB561 index-low port is inferred from the driver's use of it.</doc>
@@ -65,8 +69,50 @@
   <struct name="PLANE_MASK" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver and standalone X server" register="yes" offset="0xd00000" access="rw" space="bar2" reset="unknown">
     <doc>Pixel write mask. Software expectation: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown.</doc>
   </struct>
+  <struct name="KM_MR" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe00000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel A mode register: the first write after a command-register mode-pointer reset goes to mode register 1, the next to mode register 2. The driver writes 0x07 twice at initialisation, and 0x47 then 0x07 after finding a mouse. Low eight bits of the store.</doc>
+  </struct>
+  <struct name="KM_SR_CSR_A" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe10000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel A: reads give the status register (bit 0 receiver ready, bit 2 transmitter ready, the two the driver tests); writes set the clock select, which the driver sets to 0xff.</doc>
+  </struct>
+  <struct name="KM_CR_A" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe20000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel A command register, written only. Values used: 0x1a, 0x20, 0x30, 0x40, 0x50 (resets, with 0x1a disabling receiver and transmitter), 0x05 (enable both), 0x01 and 0x20 around a transmit.</doc>
+  </struct>
+  <struct name="KM_DATA_A" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe30000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel A receive and transmit data, low eight bits.</doc>
+  </struct>
+  <struct name="KM_ACR" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe40000" access="rw" space="bar2" reset="unknown">
+    <doc>Auxiliary control register, written zero at initialisation.</doc>
+  </struct>
+  <struct name="KM_ISR_IMR" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe50000" access="rw" space="bar2" reset="unknown">
+    <doc>Reads give interrupt status, writes set the interrupt mask. The driver uses bit 1 (channel A receiver ready) and bit 5 (channel B receiver ready), and ANDs the saved mask with the status in its handler. The saved mask is also what drives board control bit 7.</doc>
+    <field name="rx_ready_b" start="5" size="1" type="uint" grade="inferred"/>
+    <field name="rx_ready_a" start="1" size="1" type="uint" grade="inferred"/>
+  </struct>
+  <struct name="KM_MR_B" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe80000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel B mode register, used as register km_mr is for channel A.</doc>
+  </struct>
+  <struct name="KM_SR_CSR_B" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xe90000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel B status on read and clock select on write, as for channel A.</doc>
+  </struct>
+  <struct name="KM_CR_B" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xea0000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel B command register, written only.</doc>
+  </struct>
+  <struct name="KM_DATA_B" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xeb0000" access="rw" space="bar2" reset="unknown">
+    <doc>Channel B receive and transmit data, low eight bits.</doc>
+  </struct>
+  <struct name="KM_OPCR" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xed0000" access="rw" space="bar2" reset="unknown">
+    <doc>Output port configuration, written zero at initialisation, which makes the output port bits plain outputs.</doc>
+  </struct>
+  <struct name="KM_OPR_SET" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xee0000" access="rw" space="bar2" reset="unknown">
+    <doc>Set output port bits. The driver uses bits 2 and 6 around a channel A transmit and bits 3 and 7 around a channel B transmit. Their wiring (inferred: open-collector drives of the PS/2 clock and data lines) is not documented.</doc>
+  </struct>
+  <struct name="KM_OPR_RESET" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver; Philips SCC68681 product data, 6 April 2004" register="yes" offset="0xef0000" access="rw" space="bar2" reset="unknown">
+    <doc>Reset output port bits, same bits as km_opr_set. Written 0xff at initialisation.</doc>
+  </struct>
   <struct name="BOARD_CONTROL" size="4" grade="inferred" from="PsiTech RAD4 release 1.3k driver" register="yes" offset="0xf00000" access="rw" space="bar2" reset="unknown">
-    <doc>Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. The physical effects are unknown.</doc>
+    <doc>Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. Bit 7 is set whenever the keyboard and mouse controller has any interrupt enabled and cleared when none is. The status in bit 5 is read only by the interrupt handler, through a stored pointer, and bit 1 is cleared there when it is set. The physical effects are unknown.</doc>
+    <field name="km_interrupt_gate" start="7" size="1" type="uint" grade="inferred"/>
     <field name="mode_gate_frame_status" start="5" size="1" type="uint" grade="inferred"/>
     <field name="frame_request" start="1" size="1" type="uint" grade="inferred"/>
   </struct>

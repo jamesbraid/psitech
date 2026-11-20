@@ -1,7 +1,7 @@
 // generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source
 // SPDX-License-Identifier: BSD-3-Clause
 // defs-gen 2
-// input sha256 610c8d4ccc0b111742935107dabbda7f5141463a0b9e88789b53045ae90f2724
+// input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1
 // RAD4 graphics head registers
 #![allow(dead_code)]
 
@@ -15,7 +15,7 @@ pub mod bus_region_descriptor {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x18;
 }
-/// Mailbox. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean (established)
+/// Mailbox 0. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to me (established)
 pub mod mailbox {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x40;
@@ -85,7 +85,7 @@ pub mod intcsr {
         }
     }
 }
-/// Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. The driver also replaces the low nibble with 0xc at attach, a use the datasheet r (established)
+/// Serial EEPROM control. Bits 24 to 27 drive the configuration EEPROM. Bits 3 to 0 are the PCI read command the DMA engines use (public datasheet): the  (established)
 pub mod eeprom_ctl {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x6c;
@@ -129,6 +129,23 @@ pub mod eeprom_ctl {
             (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
         }
     }
+    pub mod dma_read_command { // bits 3:0, established
+        pub const SHIFT: u32 = 0;
+        pub const MASK: u32 = 0xf;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+}
+/// Parallel flash, 64 KiB in 128-byte sectors. Software expectation: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at t (inferred)
+pub mod flash {
+    pub const WIDTH: u32 = 8;
+    pub const OFFSET: u64 = 0x800000;
+    pub const COUNT: u32 = 65536;
+    pub const STRIDE: u64 = 1;
 }
 /// RAMDAC index, low byte, in the low eight bits of a 32-bit store. The identification with the RGB561 index-low port is inferred from the driver's use o (inferred)
 pub mod rgb561_index_lo {
@@ -223,10 +240,105 @@ pub mod plane_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xd00000;
 }
+/// Channel A mode register: the first write after a command-register mode-pointer reset goes to mode register 1, the next to mode register 2. The driver  (inferred)
+pub mod km_mr {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe00000;
+}
+/// Channel A: reads give the status register (bit 0 receiver ready, bit 2 transmitter ready, the two the driver tests); writes set the clock select, whic (inferred)
+pub mod km_sr_csr_a {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe10000;
+}
+/// Channel A command register, written only. Values used: 0x1a, 0x20, 0x30, 0x40, 0x50 (resets, with 0x1a disabling receiver and transmitter), 0x05 (enab (inferred)
+pub mod km_cr_a {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe20000;
+}
+/// Channel A receive and transmit data, low eight bits. (inferred)
+pub mod km_data_a {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe30000;
+}
+/// Auxiliary control register, written zero at initialisation. (inferred)
+pub mod km_acr {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe40000;
+}
+/// Reads give interrupt status, writes set the interrupt mask. The driver uses bit 1 (channel A receiver ready) and bit 5 (channel B receiver ready), and (inferred)
+pub mod km_isr_imr {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe50000;
+    pub mod rx_ready_b { // bits 5:5, inferred
+        pub const SHIFT: u32 = 5;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod rx_ready_a { // bits 1:1, inferred
+        pub const SHIFT: u32 = 1;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+}
+/// Channel B mode register, used as register km_mr is for channel A. (inferred)
+pub mod km_mr_b {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe80000;
+}
+/// Channel B status on read and clock select on write, as for channel A. (inferred)
+pub mod km_sr_csr_b {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xe90000;
+}
+/// Channel B command register, written only. (inferred)
+pub mod km_cr_b {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xea0000;
+}
+/// Channel B receive and transmit data, low eight bits. (inferred)
+pub mod km_data_b {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xeb0000;
+}
+/// Output port configuration, written zero at initialisation, which makes the output port bits plain outputs. (inferred)
+pub mod km_opcr {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xed0000;
+}
+/// Set output port bits. The driver uses bits 2 and 6 around a channel A transmit and bits 3 and 7 around a channel B transmit. Their wiring (inferred: o (inferred)
+pub mod km_opr_set {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xee0000;
+}
+/// Reset output port bits, same bits as km_opr_set. Written 0xff at initialisation. (inferred)
+pub mod km_opr_reset {
+    pub const WIDTH: u32 = 32;
+    pub const OFFSET: u64 = 0xef0000;
+}
 /// Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an inte (inferred)
 pub mod board_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xf00000;
+    pub mod km_interrupt_gate { // bits 7:7, inferred
+        pub const SHIFT: u32 = 7;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
     pub mod mode_gate_frame_status { // bits 5:5, inferred
         pub const SHIFT: u32 = 5;
         pub const MASK: u32 = 0x1;

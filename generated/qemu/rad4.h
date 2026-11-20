@@ -1,7 +1,7 @@
 /* generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 610c8d4ccc0b111742935107dabbda7f5141463a0b9e88789b53045ae90f2724 */
+/* input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1 */
 /* RAD4 graphics head registers */
 /* Names are RAD4_BOARD_*; name source: ours. */
 #ifndef HW_SGI_GPU_RAD4_BOARD_REGS_H
@@ -28,6 +28,11 @@ FIELD(RAD4_BOARD_EEPROM_CTL, DATA_FROM_EEPROM, 27, 1) /* established */
 FIELD(RAD4_BOARD_EEPROM_CTL, DATA_TO_EEPROM, 26, 1) /* established */
 FIELD(RAD4_BOARD_EEPROM_CTL, CHIP_SELECT, 25, 1) /* established */
 FIELD(RAD4_BOARD_EEPROM_CTL, CLOCK, 24, 1) /* established */
+FIELD(RAD4_BOARD_EEPROM_CTL, DMA_READ_COMMAND, 0, 4) /* established */
+
+REG8(RAD4_BOARD_FLASH, 0x800000) /* inferred */
+#define RAD4_BOARD_FLASH_COUNT 65536
+#define RAD4_BOARD_FLASH_STRIDE 0x1
 
 REG32(RAD4_BOARD_RGB561_INDEX_LO, 0x900000) /* inferred */
 FIELD(RAD4_BOARD_RGB561_INDEX_LO, VALUE, 0, 8) /* inferred */
@@ -59,7 +64,36 @@ REG32(RAD4_BOARD_TIMING_V, 0xb00000) /* inferred */
 
 REG32(RAD4_BOARD_PLANE_MASK, 0xd00000) /* inferred */
 
+REG32(RAD4_BOARD_KM_MR, 0xe00000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_SR_CSR_A, 0xe10000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_CR_A, 0xe20000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_DATA_A, 0xe30000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_ACR, 0xe40000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_ISR_IMR, 0xe50000) /* inferred; name source: public (Philips SCC68681 product data) */
+FIELD(RAD4_BOARD_KM_ISR_IMR, RX_READY_B, 5, 1) /* inferred */
+FIELD(RAD4_BOARD_KM_ISR_IMR, RX_READY_A, 1, 1) /* inferred */
+
+REG32(RAD4_BOARD_KM_MR_B, 0xe80000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_SR_CSR_B, 0xe90000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_CR_B, 0xea0000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_DATA_B, 0xeb0000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_OPCR, 0xed0000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_OPR_SET, 0xee0000) /* inferred; name source: public (Philips SCC68681 product data) */
+
+REG32(RAD4_BOARD_KM_OPR_RESET, 0xef0000) /* inferred; name source: public (Philips SCC68681 product data) */
+
 REG32(RAD4_BOARD_BOARD_CONTROL, 0xf00000) /* inferred */
+FIELD(RAD4_BOARD_BOARD_CONTROL, KM_INTERRUPT_GATE, 7, 1) /* inferred */
 FIELD(RAD4_BOARD_BOARD_CONTROL, MODE_GATE_FRAME_STATUS, 5, 1) /* inferred */
 FIELD(RAD4_BOARD_BOARD_CONTROL, FRAME_REQUEST, 1, 1) /* inferred */
 

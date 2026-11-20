@@ -1,7 +1,7 @@
 # generated from devices/ and formats/ by defs-gen - do not edit, change the source
 # SPDX-License-Identifier: BSD-3-Clause
 # defs-gen 2
-# input sha256 ce83ab395636f49509e0938bce30f66a8482593152dae8c925262c8afff7eabb
+# input sha256 27d596a71f6155ec2a5291a122bd39665204b59a02e4d42df3df2d2deffee500
 [package]
 name = "psitech-defs"
 version = "0.1.0"
