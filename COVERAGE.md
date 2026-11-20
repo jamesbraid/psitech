@@ -16,7 +16,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | Binary inventory (functions, MMIO, ioctls) | all 40 ioctl handlers and the driver's 179 functions listed by role; no inventory configuration yet | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport read; terminal escape table and key translation not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; ROM body past its first dispatcher not | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
-| Open questions | 15 recorded | [questions/open-questions.md](questions/open-questions.md) |
+| Open questions | 22 recorded | [questions/open-questions.md](questions/open-questions.md) |
 
 ## RAD1 (Permedia 2 board)
 
