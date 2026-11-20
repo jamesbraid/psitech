@@ -1,0 +1,521 @@
+<?xml version="1.0" ?>
+<!-- generated from devices/rad1/registers.toml by defs-gen - do not edit, change the source -->
+<!-- SPDX-License-Identifier: BSD-3-Clause -->
+<!-- defs-gen 2 -->
+<!-- input sha256 6d6effab60d3ecf0befbc61265bbab43ca515e793be20c3bb700c2f97c1a0b10 -->
+<genxml unit="rad1" prefix="RAD1" title="RAD1 graphics head registers">
+  <doc>Registers of the PsiTech RAD1 PCI graphics board as the stock IRIX 6.5 kernel driver and the IO6 PROM textport use them. The board's chip is a TI TVP4020 (Permedia 2) or a 3Dlabs Permedia 2V, so every register here is a chip register: Region Zero (the 128 KiB register region) and the RAMDAC registers the chip holds behind its index ports. Names come from public X.Org and Linux drivers for those chips; the offsets are confirmed against the shipped objects. Grades here are the three the definition format allows: established covers what a public source or the shipped binaries state outright (the doc says which), inferred covers inferences and model approximations. The finer ratings are in devices/rad1/README.md.</doc>
+  <space name="rz" unit="byte"/>
+  <space name="rz_p2" unit="byte"/>
+  <space name="rz_p2v" unit="byte"/>
+  <space name="p2dac" unit="byte"/>
+  <space name="p2vdac" unit="byte"/>
+  <struct name="RD_CURSOR_CONTROL" size="1" grade="established" register="yes" offset="0x6" access="rw" space="p2dac" reset="unknown">
+    <doc>Cursor control: 64x64 size and the cursor mode. Software expectation.</doc>
+  </struct>
+  <struct name="RD_COLOR_MODE" size="1" grade="established" register="yes" offset="0x18" access="rw" space="p2dac" reset="unknown">
+    <doc>Colour mode: 8888 pixel format with GUI, RGB and true colour set at init.</doc>
+  </struct>
+  <struct name="RD_MODE_CONTROL" size="1" grade="established" register="yes" offset="0x19" access="rw" space="p2dac" reset="unknown">
+    <doc>Mode control. Written 0.</doc>
+  </struct>
+  <struct name="RD_MISC_CONTROL" size="1" grade="established" register="yes" offset="0x1e" access="rw" space="p2dac" reset="unknown">
+    <doc>Misc control: 8-bit palette, sync polarities and sync on green.</doc>
+  </struct>
+  <struct name="RD_PIXEL_CLOCK_C1" size="1" grade="established" register="yes" offset="0x26" access="rw" space="p2dac" reset="unknown">
+    <doc>Pixel clock C, feedback (M).</doc>
+  </struct>
+  <struct name="RD_PIXEL_CLOCK_C2" size="1" grade="established" register="yes" offset="0x27" access="rw" space="p2dac" reset="unknown">
+    <doc>Pixel clock C, prescale (N).</doc>
+  </struct>
+  <struct name="RD_PIXEL_CLOCK_C3" size="1" grade="established" register="yes" offset="0x28" access="rw" space="p2dac" reset="unknown">
+    <doc>Pixel clock C, postscale (P) with the enable bit (bit 3). Written 0 first to stop the PLL.</doc>
+  </struct>
+  <struct name="RD_PIXEL_CLOCK_STATUS" size="1" grade="established" register="yes" offset="0x29" access="rw" space="p2dac" reset="unknown">
+    <doc>Pixel clock status; bit 4 is the lock flag.</doc>
+  </struct>
+  <struct name="RD_MEMORY_CLOCK_1" size="1" grade="established" register="yes" offset="0x30" access="rw" space="p2dac" reset="unknown">
+    <doc>Memory clock, feedback (M).</doc>
+  </struct>
+  <struct name="RD_MEMORY_CLOCK_2" size="1" grade="established" register="yes" offset="0x31" access="rw" space="p2dac" reset="unknown">
+    <doc>Memory clock, prescale (N).</doc>
+  </struct>
+  <struct name="RD_MEMORY_CLOCK_3" size="1" grade="established" register="yes" offset="0x32" access="rw" space="p2dac" reset="unknown">
+    <doc>Memory clock, postscale (P) with the enable bit. Written 6 first to stop the PLL.</doc>
+  </struct>
+  <struct name="RD_MEMORY_CLOCK_STATUS" size="1" grade="established" register="yes" offset="0x33" access="rw" space="p2dac" reset="unknown">
+    <doc>Memory clock status; bit 4 is the lock flag.</doc>
+  </struct>
+  <struct name="RD_MISC_CONTROL_2V" size="1" grade="established" register="yes" offset="0x0" access="rw" space="p2vdac" reset="unknown">
+    <doc>Misc control: high colour resolution, direct colour and overlay set at init.</doc>
+  </struct>
+  <struct name="RD_SYNC_CONTROL_2V" size="1" grade="established" register="yes" offset="0x1" access="rw" space="p2vdac" reset="unknown">
+    <doc>Sync control: horizontal and vertical polarity at the pin. Software expectation.</doc>
+  </struct>
+  <struct name="RD_DAC_CONTROL_2V" size="1" grade="established" register="yes" offset="0x2" access="rw" space="p2vdac" reset="unknown">
+    <doc>DAC control: blank pedestal at init; the textport blank sets and clears the low-power bit.</doc>
+  </struct>
+  <struct name="RD_PIXEL_SIZE_2V" size="1" grade="established" register="yes" offset="0x3" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel size: 2 (32 bits) at init.</doc>
+  </struct>
+  <struct name="RD_COLOR_FORMAT_2V" size="1" grade="established" register="yes" offset="0x4" access="rw" space="p2vdac" reset="unknown">
+    <doc>Colour format: RGB and 8888 at init.</doc>
+  </struct>
+  <struct name="RD_CURSOR_MODE_2V" size="1" grade="established" register="yes" offset="0x5" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor mode: format (64x64), type and enable. The kernel driver turns the cursor on and off through this register.</doc>
+  </struct>
+  <struct name="RD_CURSOR_CONTROL_2V" size="1" grade="inferred" register="yes" offset="0x6" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor control. Written 0 at init.</doc>
+  </struct>
+  <struct name="RD_CURSOR_X_LOW_2V" size="1" grade="established" register="yes" offset="0x7" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor X, low byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_X_HIGH_2V" size="1" grade="established" register="yes" offset="0x8" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor X, high byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_Y_LOW_2V" size="1" grade="established" register="yes" offset="0x9" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor Y, low byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_Y_HIGH_2V" size="1" grade="established" register="yes" offset="0xa" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor Y, high byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_HOT_SPOT_X_2V" size="1" grade="established" register="yes" offset="0xb" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor hot spot X, 6 bits.</doc>
+  </struct>
+  <struct name="RD_CURSOR_HOT_SPOT_Y_2V" size="1" grade="established" register="yes" offset="0xc" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor hot spot Y, 6 bits.</doc>
+  </struct>
+  <struct name="RD_OVERLAY_KEY_2V" size="1" grade="established" register="yes" offset="0xd" access="rw" space="p2vdac" reset="unknown">
+    <doc>Overlay key. Written 0 at init.</doc>
+  </struct>
+  <struct name="RD_PAN_2V" size="1" grade="established" register="yes" offset="0xe" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pan. Written 0 at init.</doc>
+  </struct>
+  <struct name="RD_DCLK_CONTROL_2V" size="1" grade="established" register="yes" offset="0x200" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock PLL control: bit 0 enable, bit 1 locked.</doc>
+  </struct>
+  <struct name="RD_DCLK2_PRESCALE_2V" size="1" grade="inferred" register="yes" offset="0x207" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock set 2 prescale (N). The mode loader programs sets 2 and 3 alike; the clock select picks set C.</doc>
+  </struct>
+  <struct name="RD_DCLK2_FEEDBACK_SCALE_2V" size="1" grade="inferred" register="yes" offset="0x208" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock set 2 feedback (M).</doc>
+  </struct>
+  <struct name="RD_DCLK2_POSTSCALE_2V" size="1" grade="inferred" register="yes" offset="0x209" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock set 2 postscale (P).</doc>
+  </struct>
+  <struct name="RD_DCLK3_PRESCALE_2V" size="1" grade="inferred" register="yes" offset="0x20a" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock set 3 prescale (N).</doc>
+  </struct>
+  <struct name="RD_DCLK3_FEEDBACK_SCALE_2V" size="1" grade="inferred" register="yes" offset="0x20b" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock set 3 feedback (M).</doc>
+  </struct>
+  <struct name="RD_DCLK3_POSTSCALE_2V" size="1" grade="inferred" register="yes" offset="0x20c" access="rw" space="p2vdac" reset="unknown">
+    <doc>Pixel clock set 3 postscale (P).</doc>
+  </struct>
+  <struct name="RD_MCLK_CONTROL_2V" size="1" grade="established" register="yes" offset="0x20d" access="rw" space="p2vdac" reset="unknown">
+    <doc>Memory clock PLL control: bit 0 enable, bit 1 locked.</doc>
+  </struct>
+  <struct name="RD_MCLK_PRESCALE_2V" size="1" grade="established" register="yes" offset="0x20e" access="rw" space="p2vdac" reset="unknown">
+    <doc>Memory clock prescale (N): 11.</doc>
+  </struct>
+  <struct name="RD_MCLK_FEEDBACK_SCALE_2V" size="1" grade="established" register="yes" offset="0x20f" access="rw" space="p2vdac" reset="unknown">
+    <doc>Memory clock feedback (M): 128.</doc>
+  </struct>
+  <struct name="RD_MCLK_POSTSCALE_2V" size="1" grade="established" register="yes" offset="0x210" access="rw" space="p2vdac" reset="unknown">
+    <doc>Memory clock postscale (P): 1.</doc>
+  </struct>
+  <struct name="RD_CURSOR_PALETTE_2V" size="1" grade="established" register="yes" offset="0x303" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor palette: colours stored in consecutive stores.</doc>
+  </struct>
+  <struct name="RD_CURSOR_PATTERN_2V" size="1" grade="established" register="yes" offset="0x400" access="rw" space="p2vdac" reset="unknown">
+    <doc>Cursor pattern RAM: 64x64 at two bits a pixel, 1 KiB.</doc>
+  </struct>
+  <struct name="RESET_STATUS" size="4" grade="established" register="yes" offset="0x0" access="rw" space="rz" reset="unknown">
+    <doc>Soft reset. Software expectation: board start-up writes 0 and polls bit 31 until it clears, before programming anything else.</doc>
+  </struct>
+  <struct name="INT_ENABLE" size="4" grade="established" register="yes" offset="0x8" access="rw" space="rz" reset="unknown">
+    <doc>Interrupt enable. Software expectation: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0.</doc>
+    <field name="bypass_dma" start="7" size="1" type="uint" grade="established"/>
+    <field name="sync" start="1" size="1" type="uint" grade="established"/>
+    <field name="dma" start="0" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="INT_FLAGS" size="4" grade="established" register="yes" offset="0x10" access="rw" space="rz" reset="unknown">
+    <doc>Interrupt status, cleared by writing the bits back. Software expectation: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested.</doc>
+    <field name="bypass_dma" start="7" size="1" type="uint" grade="established"/>
+    <field name="sync" start="1" size="1" type="uint" grade="established"/>
+    <field name="dma" start="0" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="IN_FIFO_SPACE" size="4" grade="established" register="yes" offset="0x18" access="r" space="rz" reset="unknown">
+    <doc>Free entries in the input FIFO. Software expectation: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100.</doc>
+  </struct>
+  <struct name="OUT_FIFO_WORDS" size="4" grade="established" register="yes" offset="0x20" access="r" space="rz" reset="unknown">
+    <doc>Words waiting in the output FIFO. Software expectation: polled until nonzero after a sync or a read-back, and drained to empty after a timeout.</doc>
+  </struct>
+  <struct name="ERROR_FLAGS" size="4" grade="established" register="yes" offset="0x38" access="rw" space="rz" reset="unknown">
+    <doc>Error status. Software expectation: read before a read-back DMA and written back to clear it, and again after the transfer.</doc>
+  </struct>
+  <struct name="VCLK_CTL" size="4" grade="established" register="yes" offset="0x40" access="rw" space="rz" reset="unknown">
+    <doc>Video clock control. Software expectation: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock.</doc>
+  </struct>
+  <struct name="APERTURE_ONE" size="4" grade="established" register="yes" offset="0x50" access="rw" space="rz" reset="unknown">
+    <doc>Aperture one control. Software expectation: written 0 at init.</doc>
+  </struct>
+  <struct name="APERTURE_TWO" size="4" grade="established" register="yes" offset="0x58" access="rw" space="rz" reset="unknown">
+    <doc>Aperture two control. Software expectation: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector.</doc>
+  </struct>
+  <struct name="DMA_CONTROL" size="4" grade="established" register="yes" offset="0x60" access="rw" space="rz" reset="unknown">
+    <doc>DMA control. Software expectation: written 0x8 at init.</doc>
+  </struct>
+  <struct name="CHIP_CONFIG" size="4" grade="established" register="yes" offset="0x70" access="rw" space="rz" reset="unknown">
+    <doc>Chip configuration. Software expectation: only read, by a diagnostic dump routine.</doc>
+  </struct>
+  <struct name="OUT_DMA_ADDRESS" size="4" grade="established" register="yes" offset="0x80" access="rw" space="rz" reset="unknown">
+    <doc>Output DMA address: the host (PCI) address a read-back is written to. Software expectation: set per chunk before the count.</doc>
+  </struct>
+  <struct name="OUT_DMA_COUNT" size="4" grade="established" register="yes" offset="0x88" access="rw" space="rz" reset="unknown">
+    <doc>Output DMA count in words; writing it starts the transfer. Software expectation: at most 0xffff words per write.</doc>
+  </struct>
+  <struct name="BY_DMA_ADDRESS" size="4" grade="established" register="yes" offset="0xa0" access="rw" space="rz" reset="unknown">
+    <doc>Bypass DMA host address. Software expectation: the source of a host-to-framebuffer transfer.</doc>
+  </struct>
+  <struct name="BY_DMA_STRIDE" size="4" grade="established" register="yes" offset="0xb8" access="rw" space="rz" reset="unknown">
+    <doc>Bypass DMA source stride in bytes.</doc>
+  </struct>
+  <struct name="BY_DMA_MEM_ADDRESS" size="4" grade="established" register="yes" offset="0xc0" access="rw" space="rz" reset="unknown">
+    <doc>Bypass DMA destination in local memory, in pixels (or in pixel units of the format).</doc>
+  </struct>
+  <struct name="BY_DMA_SIZE" size="4" grade="established" register="yes" offset="0xc8" access="rw" space="rz" reset="unknown">
+    <doc>Bypass DMA size: width in bits 11 to 0, height from bit 16. Software expectation.</doc>
+  </struct>
+  <struct name="BY_DMA_BYTE_MASK" size="4" grade="established" register="yes" offset="0xd0" access="rw" space="rz" reset="unknown">
+    <doc>Bypass DMA byte mask. Software expectation: always written 0x000f000f (all lanes at both edges).</doc>
+  </struct>
+  <struct name="BY_DMA_CONTROL" size="4" grade="established" register="yes" offset="0xd8" access="rw" space="rz" reset="unknown">
+    <doc>Bypass DMA control; the write starts the transfer. Software expectation: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart.</doc>
+  </struct>
+  <struct name="MEM_CONTROL" size="4" grade="established" register="yes" offset="0x1040" access="rw" space="rz" reset="unknown">
+    <doc>Memory type. Software expectation: written 0 (SGRAM).</doc>
+  </struct>
+  <struct name="BOOT_ADDRESS" size="4" grade="established" register="yes" offset="0x1080" access="rw" space="rz" reset="unknown">
+    <doc>Memory boot address (the SGRAM mode word). Software expectation: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type.</doc>
+  </struct>
+  <struct name="MEM_CONFIG" size="4" grade="established" register="yes" offset="0x10c0" access="rw" space="rz" reset="unknown">
+    <doc>Memory timing. Software expectation: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks.</doc>
+  </struct>
+  <struct name="BYPASS_WRITE_MASK" size="4" grade="established" register="yes" offset="0x1100" access="rw" space="rz" reset="unknown">
+    <doc>Plane write mask for bypass (host and DMA) writes. Software expectation: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it.</doc>
+  </struct>
+  <struct name="OUT_FIFO" size="4" grade="established" register="yes" offset="0x2000" access="r" space="rz" reset="unknown">
+    <doc>Output FIFO read port. Software expectation: read to drain sync tags and read-back words.</doc>
+  </struct>
+  <struct name="SCREEN_BASE" size="4" grade="established" register="yes" offset="0x3000" access="rw" space="rz" reset="unknown">
+    <doc>Screen base, in 64-bit units. Software expectation: 0.</doc>
+  </struct>
+  <struct name="SCREEN_STRIDE" size="4" grade="established" register="yes" offset="0x3008" access="rw" space="rz" reset="unknown">
+    <doc>Screen stride in 64-bit units: 640 for the two 1280-wide modes and 512 for 1024 wide.</doc>
+  </struct>
+  <struct name="H_TOTAL" size="4" grade="established" register="yes" offset="0x3010" access="rw" space="rz" reset="unknown">
+    <doc>Horizontal total in 64-bit units, from the mode table's count halved.</doc>
+  </struct>
+  <struct name="HG_END" size="4" grade="established" register="yes" offset="0x3018" access="rw" space="rz" reset="unknown">
+    <doc>Horizontal gate end, 64-bit units.</doc>
+  </struct>
+  <struct name="HB_END" size="4" grade="established" register="yes" offset="0x3020" access="rw" space="rz" reset="unknown">
+    <doc>Horizontal blank end, 64-bit units.</doc>
+  </struct>
+  <struct name="HS_START" size="4" grade="established" register="yes" offset="0x3028" access="rw" space="rz" reset="unknown">
+    <doc>Horizontal sync start, 64-bit units.</doc>
+  </struct>
+  <struct name="HS_END" size="4" grade="established" register="yes" offset="0x3030" access="rw" space="rz" reset="unknown">
+    <doc>Horizontal sync end, 64-bit units.</doc>
+  </struct>
+  <struct name="V_TOTAL" size="4" grade="established" register="yes" offset="0x3038" access="rw" space="rz" reset="unknown">
+    <doc>Vertical total in lines.</doc>
+  </struct>
+  <struct name="VB_END" size="4" grade="established" register="yes" offset="0x3040" access="rw" space="rz" reset="unknown">
+    <doc>Vertical blank end in lines.</doc>
+  </struct>
+  <struct name="VS_START" size="4" grade="established" register="yes" offset="0x3048" access="rw" space="rz" reset="unknown">
+    <doc>Vertical sync start in lines.</doc>
+  </struct>
+  <struct name="VS_END" size="4" grade="established" register="yes" offset="0x3050" access="rw" space="rz" reset="unknown">
+    <doc>Vertical sync end in lines.</doc>
+  </struct>
+  <struct name="VIDEO_CONTROL" size="4" grade="established" register="yes" offset="0x3058" access="rw" space="rz" reset="unknown">
+    <doc>Video control. Software expectation: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change.</doc>
+    <field name="enable" start="0" size="1" type="uint" grade="established"/>
+  </struct>
+  <struct name="FIFO_CONTROL" size="4" grade="established" register="yes" offset="0x3078" access="rw" space="rz" reset="unknown">
+    <doc>Video FIFO control. Software expectation: written 0x0b07.</doc>
+  </struct>
+  <struct name="SCREEN_BASE_RIGHT" size="4" grade="established" register="yes" offset="0x3080" access="rw" space="rz" reset="unknown">
+    <doc>Right-eye screen base. Software expectation: written 0.</doc>
+  </struct>
+  <struct name="RD_PALETTE_WRITE_ADDRESS" size="4" grade="established" register="yes" offset="0x4000" access="rw" space="rz" reset="unknown">
+    <doc>Palette write address; also the index port of the Permedia 2 indexed registers. Software expectation: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries.</doc>
+  </struct>
+  <struct name="RD_PALETTE_DATA" size="4" grade="established" register="yes" offset="0x4008" access="rw" space="rz" reset="unknown">
+    <doc>Palette data. Software expectation: three consecutive byte stores per entry.</doc>
+  </struct>
+  <struct name="RD_PIXEL_MASK" size="4" grade="established" register="yes" offset="0x4010" access="rw" space="rz" reset="unknown">
+    <doc>Pixel read mask. Software expectation: written 0xff.</doc>
+  </struct>
+  <struct name="RD_PALETTE_READ_ADDRESS" size="4" grade="established" register="yes" offset="0x4018" access="rw" space="rz" reset="unknown">
+    <doc>Palette read address. Software expectation: written 0 before a palette load.</doc>
+  </struct>
+  <struct name="VGA_CONTROL" size="4" grade="inferred" register="yes" offset="0x63c4" access="rw" space="rz" reset="unknown">
+    <doc>SVGA control (name ours). Software expectation: written 0x40 before the mode is set, to turn the legacy VGA core off.</doc>
+  </struct>
+  <struct name="START_X_DOM" size="4" grade="established" register="yes" offset="0x8000" access="rw" space="rz" reset="unknown">
+    <doc>Start X of the dominant edge, 16.16 signed; also the X of a point.</doc>
+  </struct>
+  <struct name="D_X_DOM" size="4" grade="established" register="yes" offset="0x8008" access="rw" space="rz" reset="unknown">
+    <doc>Dominant edge X step, 16.16 signed. Written 0.</doc>
+  </struct>
+  <struct name="START_X_SUB" size="4" grade="established" register="yes" offset="0x8010" access="rw" space="rz" reset="unknown">
+    <doc>Start X of the subordinate edge, 16.16 signed; the screen clear sets it to the width.</doc>
+  </struct>
+  <struct name="D_X_SUB" size="4" grade="established" register="yes" offset="0x8018" access="rw" space="rz" reset="unknown">
+    <doc>Subordinate edge X step, 16.16 signed. Written 0.</doc>
+  </struct>
+  <struct name="START_Y" size="4" grade="established" register="yes" offset="0x8020" access="rw" space="rz" reset="unknown">
+    <doc>Start Y, 16.16 signed; also the Y of a point.</doc>
+  </struct>
+  <struct name="D_Y" size="4" grade="established" register="yes" offset="0x8028" access="rw" space="rz" reset="unknown">
+    <doc>Y step, 16.16 signed. Written 0x10000 at init.</doc>
+  </struct>
+  <struct name="COUNT" size="4" grade="established" register="yes" offset="0x8030" access="rw" space="rz" reset="unknown">
+    <doc>Scanline count of a trapezoid. The screen clear writes the mode height.</doc>
+  </struct>
+  <struct name="RENDER" size="4" grade="established" register="yes" offset="0x8038" access="rw" space="rz" reset="unknown">
+    <doc>Render command; the write starts the operation. Software expectation: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used.</doc>
+  </struct>
+  <struct name="WAIT_FOR_COMPLETION" size="4" grade="established" register="yes" offset="0x8088" access="rw" space="rz" reset="unknown">
+    <doc>Wait for completion; written 0 after a render that the driver must see finished.</doc>
+  </struct>
+  <struct name="RASTERIZER_MODE" size="4" grade="established" register="yes" offset="0x80a0" access="rw" space="rz" reset="unknown">
+    <doc>Rasterizer mode. Written 0.</doc>
+  </struct>
+  <struct name="RECTANGLE_ORIGIN" size="4" grade="established" register="yes" offset="0x80d0" access="rw" space="rz" reset="unknown">
+    <doc>Rectangle origin: X in the low 12 bits, Y from bit 16.</doc>
+  </struct>
+  <struct name="RECTANGLE_SIZE" size="4" grade="established" register="yes" offset="0x80d8" access="rw" space="rz" reset="unknown">
+    <doc>Rectangle size: width in the low bits, height from bit 16.</doc>
+  </struct>
+  <struct name="PACKED_DATA_LIMITS" size="4" grade="established" register="yes" offset="0x8150" access="rw" space="rz" reset="unknown">
+    <doc>Packed data limits; the X end is set to width minus one.</doc>
+  </struct>
+  <struct name="SCISSOR_MODE" size="4" grade="established" register="yes" offset="0x8180" access="rw" space="rz" reset="unknown">
+    <doc>Scissor mode. Written 0.</doc>
+  </struct>
+  <struct name="SCREEN_SIZE" size="4" grade="established" register="yes" offset="0x8198" access="rw" space="rz" reset="unknown">
+    <doc>Screen size: width in bits 10 to 0, height from bit 16.</doc>
+  </struct>
+  <struct name="AREA_STIPPLE_MODE" size="4" grade="established" register="yes" offset="0x81a0" access="rw" space="rz" reset="unknown">
+    <doc>Area stipple mode. Written 0.</doc>
+  </struct>
+  <struct name="WINDOW_ORIGIN" size="4" grade="established" register="yes" offset="0x81c8" access="rw" space="rz" reset="unknown">
+    <doc>Window origin. Written 0.</doc>
+  </struct>
+  <struct name="TEXTURE_ADDRESS_MODE" size="4" grade="established" register="yes" offset="0x8380" access="rw" space="rz" reset="unknown">
+    <doc>Texture address mode. Written 1 (enable) for the format-converting copy and 0 otherwise.</doc>
+  </struct>
+  <struct name="S_START" size="4" grade="established" register="yes" offset="0x8388" access="rw" space="rz" reset="unknown">
+    <doc>Texture S start.</doc>
+  </struct>
+  <struct name="D_S_DX" size="4" grade="established" register="yes" offset="0x8390" access="rw" space="rz" reset="unknown">
+    <doc>Texture S step per pixel; written 1.0 in 12.18 fixed point at init.</doc>
+  </struct>
+  <struct name="D_S_DY_DOM" size="4" grade="established" register="yes" offset="0x8398" access="rw" space="rz" reset="unknown">
+    <doc>Texture S step per scanline.</doc>
+  </struct>
+  <struct name="T_START" size="4" grade="established" register="yes" offset="0x83a0" access="rw" space="rz" reset="unknown">
+    <doc>Texture T start.</doc>
+  </struct>
+  <struct name="D_T_DX" size="4" grade="established" register="yes" offset="0x83a8" access="rw" space="rz" reset="unknown">
+    <doc>Texture T step per pixel.</doc>
+  </struct>
+  <struct name="D_T_DY_DOM" size="4" grade="established" register="yes" offset="0x83b0" access="rw" space="rz" reset="unknown">
+    <doc>Texture T step per scanline; 1.0 in the format-converting copy.</doc>
+  </struct>
+  <struct name="TEXEL_LUT_INDEX" size="4" grade="established" register="yes" offset="0x84c0" access="rw" space="rz" reset="unknown">
+    <doc>Texel look-up table index; written 0 before a table load.</doc>
+  </struct>
+  <struct name="TEXEL_LUT_DATA" size="4" grade="established" register="yes" offset="0x84c8" access="rw" space="rz" reset="unknown">
+    <doc>Texel look-up table data, one 32-bit colour per store.</doc>
+  </struct>
+  <struct name="TEXEL_LUT_ADDRESS" size="4" grade="established" register="yes" offset="0x84d0" access="rw" space="rz" reset="unknown">
+    <doc>Texel look-up table address in local memory; set to 256 words below the end of the 8 MiB memory.</doc>
+  </struct>
+  <struct name="TEXTURE_BASE_ADDRESS" size="4" grade="established" register="yes" offset="0x8580" access="rw" space="rz" reset="unknown">
+    <doc>Texture base address: where the format-converting copy reads its source, in local memory.</doc>
+  </struct>
+  <struct name="TEXTURE_MAP_FORMAT" size="4" grade="established" register="yes" offset="0x8588" access="rw" space="rz" reset="unknown">
+    <doc>Texture map format: texel size and the width partial products.</doc>
+  </struct>
+  <struct name="TEXTURE_DATA_FORMAT" size="4" grade="established" register="yes" offset="0x8590" access="rw" space="rz" reset="unknown">
+    <doc>Texture data format. Written 0 at init.</doc>
+  </struct>
+  <struct name="TEXEL0" size="4" grade="established" register="yes" offset="0x8600" access="rw" space="rz" reset="unknown">
+    <doc>Texel 0. Written 0 at init.</doc>
+  </struct>
+  <struct name="TEXTURE_READ_MODE" size="4" grade="established" register="yes" offset="0x8670" access="rw" space="rz" reset="unknown">
+    <doc>Texture read mode.</doc>
+  </struct>
+  <struct name="TEXEL_LUT_MODE" size="4" grade="established" register="yes" offset="0x8678" access="rw" space="rz" reset="unknown">
+    <doc>Texel look-up table mode; 1 enables it for 8-bit colour-index copies.</doc>
+  </struct>
+  <struct name="TEXTURE_COLOR_MODE" size="4" grade="established" register="yes" offset="0x8680" access="rw" space="rz" reset="unknown">
+    <doc>Texture colour mode.</doc>
+  </struct>
+  <struct name="FOG_MODE" size="4" grade="established" register="yes" offset="0x8690" access="rw" space="rz" reset="unknown">
+    <doc>Fog mode. Written 0.</doc>
+  </struct>
+  <struct name="R_START" size="4" grade="established" register="yes" offset="0x8780" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA red start; used only by the start-up screen fill.</doc>
+  </struct>
+  <struct name="D_R_DX" size="4" grade="established" register="yes" offset="0x8788" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA red step per pixel.</doc>
+  </struct>
+  <struct name="D_R_DY_DOM" size="4" grade="established" register="yes" offset="0x8790" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA red step per scanline.</doc>
+  </struct>
+  <struct name="G_START" size="4" grade="established" register="yes" offset="0x8798" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA green start.</doc>
+  </struct>
+  <struct name="D_G_DX" size="4" grade="established" register="yes" offset="0x87a0" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA green step per pixel.</doc>
+  </struct>
+  <struct name="D_G_DY_DOM" size="4" grade="established" register="yes" offset="0x87a8" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA green step per scanline.</doc>
+  </struct>
+  <struct name="B_START" size="4" grade="established" register="yes" offset="0x87b0" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA blue start.</doc>
+  </struct>
+  <struct name="D_B_DX" size="4" grade="established" register="yes" offset="0x87b8" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA blue step per pixel.</doc>
+  </struct>
+  <struct name="D_B_DY_DOM" size="4" grade="established" register="yes" offset="0x87c0" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA blue step per scanline.</doc>
+  </struct>
+  <struct name="A_START" size="4" grade="established" register="yes" offset="0x87c8" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA alpha start.</doc>
+  </struct>
+  <struct name="COLOR_DDA_MODE" size="4" grade="established" register="yes" offset="0x87e0" access="rw" space="rz" reset="unknown">
+    <doc>Colour DDA mode; enabled with Gouraud shading only for the start-up screen fill.</doc>
+  </struct>
+  <struct name="ALPHA_BLEND_MODE" size="4" grade="established" register="yes" offset="0x8810" access="rw" space="rz" reset="unknown">
+    <doc>Alpha blend mode. Written 0 at init and set to the format operation for a read-back.</doc>
+  </struct>
+  <struct name="DITHER_MODE" size="4" grade="established" register="yes" offset="0x8818" access="rw" space="rz" reset="unknown">
+    <doc>Dither mode. Written with the unit enable bit set at init.</doc>
+  </struct>
+  <struct name="FB_SOFTWARE_WRITE_MASK" size="4" grade="established" register="yes" offset="0x8820" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer software write mask. Written all ones at init; the rectangle fill and copy paths put the caller's mask here.</doc>
+  </struct>
+  <struct name="LOGICAL_OP_MODE" size="4" grade="established" register="yes" offset="0x8828" access="rw" space="rz" reset="unknown">
+    <doc>Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software expectation.</doc>
+  </struct>
+  <struct name="FB_WRITE_DATA" size="4" grade="established" register="yes" offset="0x8830" access="rw" space="rz" reset="unknown">
+    <doc>Constant framebuffer write data: the colour of a fill or a textport pixel.</doc>
+  </struct>
+  <struct name="LB_READ_MODE" size="4" grade="established" register="yes" offset="0x8880" access="rw" space="rz" reset="unknown">
+    <doc>Local buffer read mode. Written 0 at init.</doc>
+  </struct>
+  <struct name="LB_WINDOW_BASE" size="4" grade="established" register="yes" offset="0x88b8" access="rw" space="rz" reset="unknown">
+    <doc>Local buffer window base. Written 0.</doc>
+  </struct>
+  <struct name="LB_WRITE_MODE" size="4" grade="established" register="yes" offset="0x88c0" access="rw" space="rz" reset="unknown">
+    <doc>Local buffer write mode. Written 0.</doc>
+  </struct>
+  <struct name="LB_WRITE_FORMAT" size="4" grade="established" register="yes" offset="0x88c8" access="rw" space="rz" reset="unknown">
+    <doc>Local buffer write format. Written 0.</doc>
+  </struct>
+  <struct name="WINDOW" size="4" grade="established" register="yes" offset="0x8980" access="rw" space="rz" reset="unknown">
+    <doc>Window: the local buffer update fields. Written with the update disabled.</doc>
+  </struct>
+  <struct name="STENCIL_MODE" size="4" grade="established" register="yes" offset="0x8988" access="rw" space="rz" reset="unknown">
+    <doc>Stencil mode. Written 0.</doc>
+  </struct>
+  <struct name="DEPTH_MODE" size="4" grade="established" register="yes" offset="0x89a0" access="rw" space="rz" reset="unknown">
+    <doc>Depth mode. Written 0.</doc>
+  </struct>
+  <struct name="FB_READ_MODE" size="4" grade="established" register="yes" offset="0x8a80" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer read mode: source and destination read enables, packed data, relative offset and the screen-width partial products.</doc>
+  </struct>
+  <struct name="FB_PIXEL_OFFSET" size="4" grade="established" register="yes" offset="0x8a90" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer pixel offset. Written 0.</doc>
+  </struct>
+  <struct name="FB_WINDOW_BASE" size="4" grade="established" register="yes" offset="0x8ab0" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer window base. Written 0.</doc>
+  </struct>
+  <struct name="FB_WRITE_MODE" size="4" grade="established" register="yes" offset="0x8ab8" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer write mode: write enable, and the upload-to-host bit for a read-back.</doc>
+  </struct>
+  <struct name="FB_HARD_WRITE_MASK" size="4" grade="established" register="yes" offset="0x8ac0" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer hardware write mask. Written all ones at init and 0x00ffffff afterwards.</doc>
+  </struct>
+  <struct name="FB_BLOCK_COLOR" size="4" grade="established" register="yes" offset="0x8ac8" access="rw" space="rz" reset="unknown">
+    <doc>Block colour for a fast fill.</doc>
+  </struct>
+  <struct name="FB_READ_PIXEL" size="4" grade="established" register="yes" offset="0x8ad0" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer read pixel size. Written 2 (32 bits).</doc>
+  </struct>
+  <struct name="FILTER_MODE" size="4" grade="established" register="yes" offset="0x8c00" access="rw" space="rz" reset="unknown">
+    <doc>Filter mode: which output tags reach the host. Synchronisation data for a sync, colour data for a read-back.</doc>
+  </struct>
+  <struct name="STATISTIC_MODE" size="4" grade="established" register="yes" offset="0x8c08" access="rw" space="rz" reset="unknown">
+    <doc>Statistic mode. Written 0 at init.</doc>
+  </struct>
+  <struct name="SYNC" size="4" grade="established" register="yes" offset="0x8c40" access="rw" space="rz" reset="unknown">
+    <doc>Sync: writing a tag with bit 31 set raises the sync interrupt when the pipeline reaches it, and the tag appears in the output FIFO.</doc>
+  </struct>
+  <struct name="FB_SOURCE_BASE" size="4" grade="established" register="yes" offset="0x8d80" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer source base. Written 0 at init.</doc>
+  </struct>
+  <struct name="FB_SOURCE_DELTA" size="4" grade="established" register="yes" offset="0x8d88" access="rw" space="rz" reset="unknown">
+    <doc>Framebuffer source delta: the Y and X offset of a screen-to-screen copy's source, negated.</doc>
+  </struct>
+  <struct name="YUV_MODE" size="4" grade="established" register="yes" offset="0x8f00" access="rw" space="rz" reset="unknown">
+    <doc>YUV mode. Written 0 at init.</doc>
+  </struct>
+  <struct name="DELTA_MODE" size="4" grade="established" register="yes" offset="0x9300" access="rw" space="rz" reset="unknown">
+    <doc>Delta mode. Written 0 at init.</doc>
+  </struct>
+  <struct name="RD_CURSOR_COLOR_ADDRESS" size="4" grade="established" register="yes" offset="0x4020" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor colour address. Software expectation: written 1 before the cursor colours.</doc>
+  </struct>
+  <struct name="RD_CURSOR_COLOR_DATA" size="4" grade="established" register="yes" offset="0x4028" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor colour data: three bytes background then three bytes foreground.</doc>
+  </struct>
+  <struct name="RD_INDEXED_DATA" size="4" grade="established" register="yes" offset="0x4050" access="rw" space="rz_p2" reset="unknown">
+    <doc>Data port of the indexed registers, selected through the palette write address. Software expectation: read to poll the PLL lock bits.</doc>
+  </struct>
+  <struct name="RD_CURSOR_RAM_DATA" size="4" grade="established" register="yes" offset="0x4058" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor pattern RAM data port.</doc>
+  </struct>
+  <struct name="RD_CURSOR_X_LOW" size="4" grade="established" register="yes" offset="0x4060" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor X, low byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_X_HIGH" size="4" grade="established" register="yes" offset="0x4068" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor X, high byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_Y_LOW" size="4" grade="established" register="yes" offset="0x4070" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor Y, low byte.</doc>
+  </struct>
+  <struct name="RD_CURSOR_Y_HIGH" size="4" grade="established" register="yes" offset="0x4078" access="rw" space="rz_p2" reset="unknown">
+    <doc>Cursor Y, high byte.</doc>
+  </struct>
+  <struct name="RD_INDEX_LOW_2V" size="4" grade="established" register="yes" offset="0x4020" access="rw" space="rz_p2v" reset="unknown">
+    <doc>Index, low byte. Software expectation: written before each access to an indexed register.</doc>
+  </struct>
+  <struct name="RD_INDEX_HIGH_2V" size="4" grade="established" register="yes" offset="0x4028" access="rw" space="rz_p2v" reset="unknown">
+    <doc>Index, high byte.</doc>
+  </struct>
+  <struct name="RD_INDEXED_DATA_2V" size="4" grade="established" register="yes" offset="0x4030" access="rw" space="rz_p2v" reset="unknown">
+    <doc>Indexed data port. Software expectation: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments.</doc>
+  </struct>
+  <struct name="RD_INDEX_CONTROL_2V" size="4" grade="established" register="yes" offset="0x4038" access="rw" space="rz_p2v" reset="unknown">
+    <doc>Index control. Software expectation: written 1 at init to turn auto-increment on.</doc>
+  </struct>
+</genxml>

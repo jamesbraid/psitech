@@ -1,0 +1,1726 @@
+unit = "rad1"
+prefix = "RAD1"
+title = "RAD1 graphics head registers"
+doc = "Registers of the PsiTech RAD1 PCI graphics board as the stock IRIX 6.5 kernel driver and the IO6 PROM textport use them. The board's chip is a TI TVP4020 (Permedia 2) or a 3Dlabs Permedia 2V, so every register here is a chip register: Region Zero (the 128 KiB register region) and the RAMDAC registers the chip holds behind its index ports. Names come from public X.Org and Linux drivers for those chips; the offsets are confirmed against the shipped objects. Grades here are the three the definition format allows: established covers what a public source or the shipped binaries state outright (the doc says which), inferred covers inferences and model approximations. The finer ratings are in devices/rad1/README.md."
+from = "xf86-video-glint, src/glint_regs.h; Linux include/video/permedia2.h; stock IRIX 6.5.30 kernel driver and IO6 PROM 6.156"
+public_from = ["xf86-video-glint src/glint_regs.h", "Linux include/video/permedia2.h", "TI TVP4020 (Permedia 2) Programmer's Reference Manual"]
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+
+[spaces.rz]
+unit = "byte"
+
+[spaces.rz_p2]
+unit = "byte"
+
+[spaces.rz_p2v]
+unit = "byte"
+
+[spaces.p2dac]
+unit = "byte"
+
+[spaces.p2vdac]
+unit = "byte"
+
+# Region Zero: control and status
+
+[registers.reset_status]
+space = "rz"
+offset = 0x0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Soft reset. Software expectation: board start-up writes 0 and polls bit 31 until it clears, before programming anything else."
+
+[registers.int_enable]
+space = "rz"
+offset = 0x8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Interrupt enable. Software expectation: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0."
+
+[registers.int_enable.fields]
+dma = { bits = [0, 0], grade = "established" }
+sync = { bits = [1, 1], grade = "established" }
+bypass_dma = { bits = [7, 7], grade = "established" }
+
+[registers.int_flags]
+space = "rz"
+offset = 0x10
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Interrupt status, cleared by writing the bits back. Software expectation: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested."
+
+[registers.int_flags.fields]
+dma = { bits = [0, 0], grade = "established" }
+sync = { bits = [1, 1], grade = "established" }
+bypass_dma = { bits = [7, 7], grade = "established" }
+
+[registers.in_fifo_space]
+space = "rz"
+offset = 0x18
+access = "r"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Free entries in the input FIFO. Software expectation: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100."
+
+[registers.out_fifo_words]
+space = "rz"
+offset = 0x20
+access = "r"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Words waiting in the output FIFO. Software expectation: polled until nonzero after a sync or a read-back, and drained to empty after a timeout."
+
+[registers.error_flags]
+space = "rz"
+offset = 0x38
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Error status. Software expectation: read before a read-back DMA and written back to clear it, and again after the transfer."
+
+[registers.vclk_ctl]
+space = "rz"
+offset = 0x40
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Video clock control. Software expectation: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock."
+
+[registers.aperture_one]
+space = "rz"
+offset = 0x50
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Aperture one control. Software expectation: written 0 at init."
+
+[registers.aperture_two]
+space = "rz"
+offset = 0x58
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Aperture two control. Software expectation: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector."
+
+[registers.dma_control]
+space = "rz"
+offset = 0x60
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "DMA control. Software expectation: written 0x8 at init."
+
+[registers.chip_config]
+space = "rz"
+offset = 0x70
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Chip configuration. Software expectation: only read, by a diagnostic dump routine."
+
+[registers.out_dma_address]
+space = "rz"
+offset = 0x80
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Output DMA address: the host (PCI) address a read-back is written to. Software expectation: set per chunk before the count."
+
+[registers.out_dma_count]
+space = "rz"
+offset = 0x88
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Output DMA count in words; writing it starts the transfer. Software expectation: at most 0xffff words per write."
+
+[registers.by_dma_address]
+space = "rz"
+offset = 0xa0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Bypass DMA host address. Software expectation: the source of a host-to-framebuffer transfer."
+
+[registers.by_dma_stride]
+space = "rz"
+offset = 0xb8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Bypass DMA source stride in bytes."
+
+[registers.by_dma_mem_address]
+space = "rz"
+offset = 0xc0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Bypass DMA destination in local memory, in pixels (or in pixel units of the format)."
+
+[registers.by_dma_size]
+space = "rz"
+offset = 0xc8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Bypass DMA size: width in bits 11 to 0, height from bit 16. Software expectation."
+
+[registers.by_dma_byte_mask]
+space = "rz"
+offset = 0xd0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Bypass DMA byte mask. Software expectation: always written 0x000f000f (all lanes at both edges)."
+
+[registers.by_dma_control]
+space = "rz"
+offset = 0xd8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Bypass DMA control; the write starts the transfer. Software expectation: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart."
+
+# Region Zero: memory control
+
+[registers.mem_control]
+space = "rz"
+offset = 0x1040
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory type. Software expectation: written 0 (SGRAM)."
+
+[registers.boot_address]
+space = "rz"
+offset = 0x1080
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory boot address (the SGRAM mode word). Software expectation: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type."
+
+[registers.mem_config]
+space = "rz"
+offset = 0x10c0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory timing. Software expectation: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks."
+
+[registers.bypass_write_mask]
+space = "rz"
+offset = 0x1100
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Plane write mask for bypass (host and DMA) writes. Software expectation: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it."
+
+[registers.out_fifo]
+space = "rz"
+offset = 0x2000
+access = "r"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Output FIFO read port. Software expectation: read to drain sync tags and read-back words."
+
+# Region Zero: video timing
+
+[registers.screen_base]
+space = "rz"
+offset = 0x3000
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Screen base, in 64-bit units. Software expectation: 0."
+
+[registers.screen_stride]
+space = "rz"
+offset = 0x3008
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Screen stride in 64-bit units: 640 for the two 1280-wide modes and 512 for 1024 wide."
+
+[registers.h_total]
+space = "rz"
+offset = 0x3010
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Horizontal total in 64-bit units, from the mode table's count halved."
+
+[registers.hg_end]
+space = "rz"
+offset = 0x3018
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Horizontal gate end, 64-bit units."
+
+[registers.hb_end]
+space = "rz"
+offset = 0x3020
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Horizontal blank end, 64-bit units."
+
+[registers.hs_start]
+space = "rz"
+offset = 0x3028
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Horizontal sync start, 64-bit units."
+
+[registers.hs_end]
+space = "rz"
+offset = 0x3030
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Horizontal sync end, 64-bit units."
+
+[registers.v_total]
+space = "rz"
+offset = 0x3038
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Vertical total in lines."
+
+[registers.vb_end]
+space = "rz"
+offset = 0x3040
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Vertical blank end in lines."
+
+[registers.vs_start]
+space = "rz"
+offset = 0x3048
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Vertical sync start in lines."
+
+[registers.vs_end]
+space = "rz"
+offset = 0x3050
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Vertical sync end in lines."
+
+[registers.video_control]
+space = "rz"
+offset = 0x3058
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Video control. Software expectation: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change."
+
+[registers.video_control.fields]
+enable = { bits = [0, 0], grade = "established" }
+
+[registers.fifo_control]
+space = "rz"
+offset = 0x3078
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Video FIFO control. Software expectation: written 0x0b07."
+
+[registers.screen_base_right]
+space = "rz"
+offset = 0x3080
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Right-eye screen base. Software expectation: written 0."
+
+# Region Zero: RAMDAC ports common to both chips
+
+[registers.rd_palette_write_address]
+space = "rz"
+offset = 0x4000
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Palette write address; also the index port of the Permedia 2 indexed registers. Software expectation: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries."
+
+[registers.rd_palette_data]
+space = "rz"
+offset = 0x4008
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Palette data. Software expectation: three consecutive byte stores per entry."
+
+[registers.rd_pixel_mask]
+space = "rz"
+offset = 0x4010
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel read mask. Software expectation: written 0xff."
+
+[registers.rd_palette_read_address]
+space = "rz"
+offset = 0x4018
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Palette read address. Software expectation: written 0 before a palette load."
+
+# Region Zero: RAMDAC ports on the 104c:3d07 chip
+
+[registers.rd_cursor_color_address]
+space = "rz_p2"
+offset = 0x4020
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor colour address. Software expectation: written 1 before the cursor colours."
+
+[registers.rd_cursor_color_data]
+space = "rz_p2"
+offset = 0x4028
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor colour data: three bytes background then three bytes foreground."
+
+[registers.rd_indexed_data]
+space = "rz_p2"
+offset = 0x4050
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Data port of the indexed registers, selected through the palette write address. Software expectation: read to poll the PLL lock bits."
+
+[registers.rd_cursor_ram_data]
+space = "rz_p2"
+offset = 0x4058
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor pattern RAM data port."
+
+[registers.rd_cursor_x_low]
+space = "rz_p2"
+offset = 0x4060
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor X, low byte."
+
+[registers.rd_cursor_x_high]
+space = "rz_p2"
+offset = 0x4068
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor X, high byte."
+
+[registers.rd_cursor_y_low]
+space = "rz_p2"
+offset = 0x4070
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor Y, low byte."
+
+[registers.rd_cursor_y_high]
+space = "rz_p2"
+offset = 0x4078
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor Y, high byte."
+
+# Region Zero: RAMDAC ports on the 3d3d:0009 chip
+
+[registers.rd_index_low_2v]
+space = "rz_p2v"
+offset = 0x4020
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Index, low byte. Software expectation: written before each access to an indexed register."
+
+[registers.rd_index_high_2v]
+space = "rz_p2v"
+offset = 0x4028
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Index, high byte."
+
+[registers.rd_indexed_data_2v]
+space = "rz_p2v"
+offset = 0x4030
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Indexed data port. Software expectation: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments."
+
+[registers.rd_index_control_2v]
+space = "rz_p2v"
+offset = 0x4038
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Index control. Software expectation: written 1 at init to turn auto-increment on."
+
+# Region Zero: SVGA
+
+[registers.vga_control]
+space = "rz"
+offset = 0x63c4
+access = "rw"
+width = 32
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "SVGA control (name ours). Software expectation: written 0x40 before the mode is set, to turn the legacy VGA core off."
+
+# Region Zero: GP registers
+
+[registers.start_x_dom]
+space = "rz"
+offset = 0x8000
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Start X of the dominant edge, 16.16 signed; also the X of a point."
+
+[registers.d_x_dom]
+space = "rz"
+offset = 0x8008
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Dominant edge X step, 16.16 signed. Written 0."
+
+[registers.start_x_sub]
+space = "rz"
+offset = 0x8010
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Start X of the subordinate edge, 16.16 signed; the screen clear sets it to the width."
+
+[registers.d_x_sub]
+space = "rz"
+offset = 0x8018
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Subordinate edge X step, 16.16 signed. Written 0."
+
+[registers.start_y]
+space = "rz"
+offset = 0x8020
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Start Y, 16.16 signed; also the Y of a point."
+
+[registers.d_y]
+space = "rz"
+offset = 0x8028
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Y step, 16.16 signed. Written 0x10000 at init."
+
+[registers.count]
+space = "rz"
+offset = 0x8030
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Scanline count of a trapezoid. The screen clear writes the mode height."
+
+[registers.render]
+space = "rz"
+offset = 0x8038
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Render command; the write starts the operation. Software expectation: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used."
+
+[registers.wait_for_completion]
+space = "rz"
+offset = 0x8088
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Wait for completion; written 0 after a render that the driver must see finished."
+
+[registers.rasterizer_mode]
+space = "rz"
+offset = 0x80a0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Rasterizer mode. Written 0."
+
+[registers.rectangle_origin]
+space = "rz"
+offset = 0x80d0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Rectangle origin: X in the low 12 bits, Y from bit 16."
+
+[registers.rectangle_size]
+space = "rz"
+offset = 0x80d8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Rectangle size: width in the low bits, height from bit 16."
+
+[registers.packed_data_limits]
+space = "rz"
+offset = 0x8150
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Packed data limits; the X end is set to width minus one."
+
+[registers.scissor_mode]
+space = "rz"
+offset = 0x8180
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Scissor mode. Written 0."
+
+[registers.screen_size]
+space = "rz"
+offset = 0x8198
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Screen size: width in bits 10 to 0, height from bit 16."
+
+[registers.area_stipple_mode]
+space = "rz"
+offset = 0x81a0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Area stipple mode. Written 0."
+
+[registers.window_origin]
+space = "rz"
+offset = 0x81c8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Window origin. Written 0."
+
+[registers.texture_address_mode]
+space = "rz"
+offset = 0x8380
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture address mode. Written 1 (enable) for the format-converting copy and 0 otherwise."
+
+[registers.s_start]
+space = "rz"
+offset = 0x8388
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture S start."
+
+[registers.d_s_dx]
+space = "rz"
+offset = 0x8390
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture S step per pixel; written 1.0 in 12.18 fixed point at init."
+
+[registers.d_s_dy_dom]
+space = "rz"
+offset = 0x8398
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture S step per scanline."
+
+[registers.t_start]
+space = "rz"
+offset = 0x83a0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture T start."
+
+[registers.d_t_dx]
+space = "rz"
+offset = 0x83a8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture T step per pixel."
+
+[registers.d_t_dy_dom]
+space = "rz"
+offset = 0x83b0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture T step per scanline; 1.0 in the format-converting copy."
+
+[registers.texel_lut_index]
+space = "rz"
+offset = 0x84c0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texel look-up table index; written 0 before a table load."
+
+[registers.texel_lut_data]
+space = "rz"
+offset = 0x84c8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texel look-up table data, one 32-bit colour per store."
+
+[registers.texel_lut_address]
+space = "rz"
+offset = 0x84d0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texel look-up table address in local memory; set to 256 words below the end of the 8 MiB memory."
+
+[registers.texture_base_address]
+space = "rz"
+offset = 0x8580
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture base address: where the format-converting copy reads its source, in local memory."
+
+[registers.texture_map_format]
+space = "rz"
+offset = 0x8588
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture map format: texel size and the width partial products."
+
+[registers.texture_data_format]
+space = "rz"
+offset = 0x8590
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture data format. Written 0 at init."
+
+[registers.texel0]
+space = "rz"
+offset = 0x8600
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texel 0. Written 0 at init."
+
+[registers.texture_read_mode]
+space = "rz"
+offset = 0x8670
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture read mode."
+
+[registers.texel_lut_mode]
+space = "rz"
+offset = 0x8678
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texel look-up table mode; 1 enables it for 8-bit colour-index copies."
+
+[registers.texture_color_mode]
+space = "rz"
+offset = 0x8680
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Texture colour mode."
+
+[registers.fog_mode]
+space = "rz"
+offset = 0x8690
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Fog mode. Written 0."
+
+[registers.r_start]
+space = "rz"
+offset = 0x8780
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA red start; used only by the start-up screen fill."
+
+[registers.d_r_dx]
+space = "rz"
+offset = 0x8788
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA red step per pixel."
+
+[registers.d_r_dy_dom]
+space = "rz"
+offset = 0x8790
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA red step per scanline."
+
+[registers.g_start]
+space = "rz"
+offset = 0x8798
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA green start."
+
+[registers.d_g_dx]
+space = "rz"
+offset = 0x87a0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA green step per pixel."
+
+[registers.d_g_dy_dom]
+space = "rz"
+offset = 0x87a8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA green step per scanline."
+
+[registers.b_start]
+space = "rz"
+offset = 0x87b0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA blue start."
+
+[registers.d_b_dx]
+space = "rz"
+offset = 0x87b8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA blue step per pixel."
+
+[registers.d_b_dy_dom]
+space = "rz"
+offset = 0x87c0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA blue step per scanline."
+
+[registers.a_start]
+space = "rz"
+offset = 0x87c8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA alpha start."
+
+[registers.color_dda_mode]
+space = "rz"
+offset = 0x87e0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour DDA mode; enabled with Gouraud shading only for the start-up screen fill."
+
+[registers.alpha_blend_mode]
+space = "rz"
+offset = 0x8810
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Alpha blend mode. Written 0 at init and set to the format operation for a read-back."
+
+[registers.dither_mode]
+space = "rz"
+offset = 0x8818
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Dither mode. Written with the unit enable bit set at init."
+
+[registers.fb_software_write_mask]
+space = "rz"
+offset = 0x8820
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer software write mask. Written all ones at init; the rectangle fill and copy paths put the caller's mask here."
+
+[registers.logical_op_mode]
+space = "rz"
+offset = 0x8828
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software expectation."
+
+[registers.fb_write_data]
+space = "rz"
+offset = 0x8830
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Constant framebuffer write data: the colour of a fill or a textport pixel."
+
+[registers.lb_read_mode]
+space = "rz"
+offset = 0x8880
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Local buffer read mode. Written 0 at init."
+
+[registers.lb_window_base]
+space = "rz"
+offset = 0x88b8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Local buffer window base. Written 0."
+
+[registers.lb_write_mode]
+space = "rz"
+offset = 0x88c0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Local buffer write mode. Written 0."
+
+[registers.lb_write_format]
+space = "rz"
+offset = 0x88c8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Local buffer write format. Written 0."
+
+[registers.window]
+space = "rz"
+offset = 0x8980
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Window: the local buffer update fields. Written with the update disabled."
+
+[registers.stencil_mode]
+space = "rz"
+offset = 0x8988
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Stencil mode. Written 0."
+
+[registers.depth_mode]
+space = "rz"
+offset = 0x89a0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Depth mode. Written 0."
+
+[registers.fb_read_mode]
+space = "rz"
+offset = 0x8a80
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer read mode: source and destination read enables, packed data, relative offset and the screen-width partial products."
+
+[registers.fb_pixel_offset]
+space = "rz"
+offset = 0x8a90
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer pixel offset. Written 0."
+
+[registers.fb_window_base]
+space = "rz"
+offset = 0x8ab0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer window base. Written 0."
+
+[registers.fb_write_mode]
+space = "rz"
+offset = 0x8ab8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer write mode: write enable, and the upload-to-host bit for a read-back."
+
+[registers.fb_hard_write_mask]
+space = "rz"
+offset = 0x8ac0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer hardware write mask. Written all ones at init and 0x00ffffff afterwards."
+
+[registers.fb_block_color]
+space = "rz"
+offset = 0x8ac8
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Block colour for a fast fill."
+
+[registers.fb_read_pixel]
+space = "rz"
+offset = 0x8ad0
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer read pixel size. Written 2 (32 bits)."
+
+[registers.filter_mode]
+space = "rz"
+offset = 0x8c00
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Filter mode: which output tags reach the host. Synchronisation data for a sync, colour data for a read-back."
+
+[registers.statistic_mode]
+space = "rz"
+offset = 0x8c08
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Statistic mode. Written 0 at init."
+
+[registers.sync]
+space = "rz"
+offset = 0x8c40
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Sync: writing a tag with bit 31 set raises the sync interrupt when the pipeline reaches it, and the tag appears in the output FIFO."
+
+[registers.fb_source_base]
+space = "rz"
+offset = 0x8d80
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer source base. Written 0 at init."
+
+[registers.fb_source_delta]
+space = "rz"
+offset = 0x8d88
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Framebuffer source delta: the Y and X offset of a screen-to-screen copy's source, negated."
+
+[registers.yuv_mode]
+space = "rz"
+offset = 0x8f00
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "YUV mode. Written 0 at init."
+
+[registers.delta_mode]
+space = "rz"
+offset = 0x9300
+access = "rw"
+width = 32
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Delta mode. Written 0 at init."
+
+# Permedia 2 (104c:3d07) indexed RAMDAC registers
+
+[registers.rd_cursor_control]
+space = "p2dac"
+offset = 0x6
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor control: 64x64 size and the cursor mode. Software expectation."
+
+[registers.rd_color_mode]
+space = "p2dac"
+offset = 0x18
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour mode: 8888 pixel format with GUI, RGB and true colour set at init."
+
+[registers.rd_mode_control]
+space = "p2dac"
+offset = 0x19
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Mode control. Written 0."
+
+[registers.rd_misc_control]
+space = "p2dac"
+offset = 0x1e
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Misc control: 8-bit palette, sync polarities and sync on green."
+
+[registers.rd_pixel_clock_c1]
+space = "p2dac"
+offset = 0x26
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel clock C, feedback (M)."
+
+[registers.rd_pixel_clock_c2]
+space = "p2dac"
+offset = 0x27
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel clock C, prescale (N)."
+
+[registers.rd_pixel_clock_c3]
+space = "p2dac"
+offset = 0x28
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel clock C, postscale (P) with the enable bit (bit 3). Written 0 first to stop the PLL."
+
+[registers.rd_pixel_clock_status]
+space = "p2dac"
+offset = 0x29
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel clock status; bit 4 is the lock flag."
+
+[registers.rd_memory_clock_1]
+space = "p2dac"
+offset = 0x30
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock, feedback (M)."
+
+[registers.rd_memory_clock_2]
+space = "p2dac"
+offset = 0x31
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock, prescale (N)."
+
+[registers.rd_memory_clock_3]
+space = "p2dac"
+offset = 0x32
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock, postscale (P) with the enable bit. Written 6 first to stop the PLL."
+
+[registers.rd_memory_clock_status]
+space = "p2dac"
+offset = 0x33
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock status; bit 4 is the lock flag."
+
+# Permedia 2V (3d3d:0009) indexed RAMDAC registers
+
+[registers.rd_misc_control_2v]
+space = "p2vdac"
+offset = 0x0
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Misc control: high colour resolution, direct colour and overlay set at init."
+
+[registers.rd_sync_control_2v]
+space = "p2vdac"
+offset = 0x1
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Sync control: horizontal and vertical polarity at the pin. Software expectation."
+
+[registers.rd_dac_control_2v]
+space = "p2vdac"
+offset = 0x2
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "DAC control: blank pedestal at init; the textport blank sets and clears the low-power bit."
+
+[registers.rd_pixel_size_2v]
+space = "p2vdac"
+offset = 0x3
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel size: 2 (32 bits) at init."
+
+[registers.rd_color_format_2v]
+space = "p2vdac"
+offset = 0x4
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Colour format: RGB and 8888 at init."
+
+[registers.rd_cursor_mode_2v]
+space = "p2vdac"
+offset = 0x5
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor mode: format (64x64), type and enable. The kernel driver turns the cursor on and off through this register."
+
+[registers.rd_cursor_control_2v]
+space = "p2vdac"
+offset = 0x6
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Cursor control. Written 0 at init."
+
+[registers.rd_cursor_x_low_2v]
+space = "p2vdac"
+offset = 0x7
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor X, low byte."
+
+[registers.rd_cursor_x_high_2v]
+space = "p2vdac"
+offset = 0x8
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor X, high byte."
+
+[registers.rd_cursor_y_low_2v]
+space = "p2vdac"
+offset = 0x9
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor Y, low byte."
+
+[registers.rd_cursor_y_high_2v]
+space = "p2vdac"
+offset = 0xa
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor Y, high byte."
+
+[registers.rd_cursor_hot_spot_x_2v]
+space = "p2vdac"
+offset = 0xb
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor hot spot X, 6 bits."
+
+[registers.rd_cursor_hot_spot_y_2v]
+space = "p2vdac"
+offset = 0xc
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor hot spot Y, 6 bits."
+
+[registers.rd_overlay_key_2v]
+space = "p2vdac"
+offset = 0xd
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Overlay key. Written 0 at init."
+
+[registers.rd_pan_2v]
+space = "p2vdac"
+offset = 0xe
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pan. Written 0 at init."
+
+[registers.rd_dclk_control_2v]
+space = "p2vdac"
+offset = 0x200
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Pixel clock PLL control: bit 0 enable, bit 1 locked."
+
+[registers.rd_dclk2_prescale_2v]
+space = "p2vdac"
+offset = 0x207
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Pixel clock set 2 prescale (N). The mode loader programs sets 2 and 3 alike; the clock select picks set C."
+
+[registers.rd_dclk2_feedback_scale_2v]
+space = "p2vdac"
+offset = 0x208
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Pixel clock set 2 feedback (M)."
+
+[registers.rd_dclk2_postscale_2v]
+space = "p2vdac"
+offset = 0x209
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Pixel clock set 2 postscale (P)."
+
+[registers.rd_dclk3_prescale_2v]
+space = "p2vdac"
+offset = 0x20a
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Pixel clock set 3 prescale (N)."
+
+[registers.rd_dclk3_feedback_scale_2v]
+space = "p2vdac"
+offset = 0x20b
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Pixel clock set 3 feedback (M)."
+
+[registers.rd_dclk3_postscale_2v]
+space = "p2vdac"
+offset = 0x20c
+access = "rw"
+width = 8
+grade = "inferred"
+name_source = "ours"
+from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
+doc = "Pixel clock set 3 postscale (P)."
+
+[registers.rd_mclk_control_2v]
+space = "p2vdac"
+offset = 0x20d
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock PLL control: bit 0 enable, bit 1 locked."
+
+[registers.rd_mclk_prescale_2v]
+space = "p2vdac"
+offset = 0x20e
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock prescale (N): 11."
+
+[registers.rd_mclk_feedback_scale_2v]
+space = "p2vdac"
+offset = 0x20f
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock feedback (M): 128."
+
+[registers.rd_mclk_postscale_2v]
+space = "p2vdac"
+offset = 0x210
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Memory clock postscale (P): 1."
+
+[registers.rd_cursor_palette_2v]
+space = "p2vdac"
+offset = 0x303
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor palette: colours stored in consecutive stores."
+
+[registers.rd_cursor_pattern_2v]
+space = "p2vdac"
+offset = 0x400
+access = "rw"
+width = 8
+grade = "established"
+name_source = "public"
+name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
+doc = "Cursor pattern RAM: 64x64 at two bits a pixel, 1 KiB."
