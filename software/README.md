@@ -14,4 +14,7 @@
 
 | Page | Title | Summary |
 |---|---|---|
+| [kernel-driver.md](rad4/kernel-driver.md) | rad4pci: the kernel driver, read through | What PsiTech's kernel driver for the RAD4 does, from the driver object in release 1.3k: probe and attach in order... |
 | [package.md](rad4/package.md) | PsiTech RAD4 release 1.3k package for IRIX 6.5 | What the vendor package contains and how its parts fit together. |
+| [proms-and-kernel.md](rad4/proms-and-kernel.md) | RAD4 in firmware images and kernel objects | Which firmware images and IRIX kernel objects know the PsiTech RAD4 (`12d1:0104`) and RAD4-KM (`12d1:0105`), how... |
+| [xserver-paths.md](rad4/xserver-paths.md) | rad4: X server paths, window IDs, colormaps and the buffered and multi-head arrangements | What the standalone X server, the display-extension module and the start-up scripts of release 1.3k for IRIX 6.5 do... |
