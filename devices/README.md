@@ -4,4 +4,5 @@
 
 | Page | Title | Summary |
 |---|---|---|
+| [rad1/](rad1/README.md) | rad1: PsiTech RAD1 board identity and register map | The RAD1 is PsiTech's low-cost PCI graphics card for the Origin 200: 8 MB of SGRAM, an HD-15 connector and a TI or... |
 | [rad4/](rad4/README.md) | rad4: PsiTech RAD4 board identity and register map | The RAD4 is a PCI graphics card with an 8 MB framebuffer, a PLX PCI 9060-compatible bus interface and an IBM... |
