@@ -21,9 +21,9 @@ The X server and tools reach the board through ioctls on the driver's device nod
 | 122, 123 | cursor enable and disable | established |
 | 135 | return any mode record's geometry | established |
 | 140 | rectangle copy, DMA only; returns without copying when DMA is unavailable | established |
-| 120 (0x78) | set the pixel write mask | observed: seen as the server's per-GC mask writes in an emulator run; handler not read |
+| 120 (0x78) | set the pixel write mask: the handler writes the mask register when the value differs from the saved one and saves it | established (handler read); the server's per-GC use was also observed in an emulator run |
 
-A device type 3 (the buffered, multi-device mode) takes distinct branches in the dispatcher; those were not audited. Cursor handlers perform CPU writes through the indexed RAMDAC ports under driver locks and call none of the rectangle helpers; this identifies their mechanism, not the RAMDAC's full register set.
+The full request table (101 to 140, including the colour map, window-depth, gamma, screen blank, flash and EEPROM requests) and each handler's register writes are in [../../software/rad4/kernel-driver.md](../../software/rad4/kernel-driver.md#ioctl-interface). A device type 3 (the buffered, multi-device mode) takes distinct branches in the dispatcher: the driver side applies a register-changing request to every attached board, positions the cursor on the board whose horizontal span holds it, and the server side is not audited here. Cursor handlers perform CPU writes through the indexed RAMDAC ports under driver locks and call none of the rectangle helpers; this identifies their mechanism, not the RAMDAC's full register set.
 
 ## No-DMA desktop path
 

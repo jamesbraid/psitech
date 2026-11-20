@@ -52,6 +52,8 @@ The eight timing counts of each record, in four-pixel words for the horizontal s
 
 The record bytes are: horizontal total at 16 to 17, blank at 18 to 19, parameters 2 and 3 at 20 to 23, the vertical set at 24 to 31, the clock at 32 to 35, the two PLL bytes at 36 and 37 and zero padding at 38 to 39. The loaders write at most 1656 vertical words (mode 5) and 781 horizontal words per bank (mode 4), which is the room the timing banks must have. Each timing count set is table data; every timing-memory word is computed by the two loaders, and so are the sync value and the board-control bracket (which the loader takes from a saved control word, not a constant). The table is established (read from the binary). Every mode is four bytes per pixel with a row stride of four times its width; that is the driver's software stride, and the board's scanout pitch is inferred to match. The largest image, mode 11, takes 8,294,400 bytes and fits the 8 MiB framebuffer.
 
+The shipped header `rad4pci.h` names only seven modes (0 to 6) and gives index 0 the 72 Hz label and index 1 the 60 Hz label for 1280 by 1024, the opposite of the driver's table above (established, both read). The header's other five constant names do match the table's geometry and label for modes 2 to 6. Which ordering a real card's EEPROM follows is unknown; the factory default of index 1 recorded further below favours the table.
+
 ## Mode programming sequence
 
 One routine programs any record, so the register write order is the same for all modes (established, from the binary):
