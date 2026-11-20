@@ -15,8 +15,8 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | X server and driver requests | request table, call sites, window types, buffered and multi-head paths, scripts and daemon read; `rad4_X_knp` event loop not | [software/rad4/xserver-paths.md](software/rad4/xserver-paths.md), [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md) |
 | Binary inventory (functions, MMIO, ioctls) | all 40 ioctl handlers and the driver's 179 functions listed by role; no inventory configuration yet | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport read; terminal escape table and key translation not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
-| Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; ROM body past its first dispatcher not | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
-| Open questions | 22 recorded | [questions/open-questions.md](questions/open-questions.md) |
+| Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; the ROM's initialiser, console draw and keyboard read are read in [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md), its mode routine is not | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
+| Open questions | 26 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
 
 ## RAD1 (Permedia 2 board)
 
@@ -31,11 +31,24 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | X server and DDX | not held: PsiTech's Graphics Server for the RAD1 is not in the Library; the RAD4 server's request set is a subset of what the RAD1 driver serves | [software/rad1/package.md](software/rad1/package.md) |
 | TI TVP4020 manual cross-check | not done: bit meanings beyond the public driver headers are unread | [questions/open-questions.md](questions/open-questions.md) |
 
+## Firmware and early console (all PsiTech boards)
+
+| Area | State | Where |
+|---|---|---|
+| Which firmware recognises which board | every held IO6, IP27, IP35, IP30, IP32 and IO4 PROM, `sash`, `ide`, `fx` and the 6.5.30 kernels scanned; the RAD4 family only in PsiTech's own IP27 PROM 5.30, the RAD1 in IO6 and IP27 6.27 onward | [software/firmware/which-firmware.md](software/firmware/which-firmware.md) |
+| PsiTech IP27 PROM 5.30 | PCI table, install routine and output path read in full; the boot stage's ROM copy is in the RAD4 survey and agrees with the entry address | [software/firmware/psitech-ip27-prom.md](software/firmware/psitech-ip27-prom.md) |
+| RAD4 and RAD4-KM expansion ROM | initialiser, character draw, font, cursor, scroll, EEPROM read and keyboard read read in full; mode routine and RAMDAC initialiser's caller not read | [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md) |
+| RAD1 console in SGI PROMs | release history, PCI table row and start-up mode record read; drawing functions are in the RAD1 pages | [software/firmware/sgi-prom-rad1.md](software/firmware/sgi-prom-rad1.md) |
+| Other firmware | negative results with what was searched; the Origin 300 PROM only names the board, by a lookup not traced | [software/firmware/other-firmware.md](software/firmware/other-firmware.md) |
+| `console=g` and the kernel's textport hooks | PROM selection, environment hand-over and the kernel's early-init hooks read; the RAD4 driver's hand-over and the keyboard patch not read | [software/firmware/console-selection.md](software/firmware/console-selection.md) |
+| What a model must present | per firmware; the PsiTech PROM loads the ROM itself | [software/firmware/model-needs.md](software/firmware/model-needs.md) |
+
 ## Other PsiTech boards
 
 | Board | State |
 |---|---|
 | RAD4-KM (`12d1:0105`) | controller at BAR2 + 0xe00000, registers in defs form (inferred from the SCC68681 correspondence and the driver's use); initialisation, transmit, receive and interrupt read; see [devices/rad4/km-controller.md](devices/rad4/km-controller.md) |
+| `12d1:0100` | named only by the PsiTech IP27 PROM's PCI table; no document, driver or software |
 | RAD4C-KM | a 1999 product sheet only: 8 MB VRAM, 200 MHz RAMDAC, overlay, gamma and two PS/2-style connectors. No PCI IDs, no registers, no software |
 | RAD1 | covered in the section above |
 
