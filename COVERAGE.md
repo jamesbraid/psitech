@@ -6,16 +6,17 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 
 | Area | State | Where |
 |---|---|---|
-| PCI identity and board parts | IDs established; parts partly inferred; revision, class, BAR sizes unknown | [devices/rad4/README.md](devices/rad4/README.md) |
-| Bus interface registers (BAR0) | defined in TOML: mailbox, interrupt control, EEPROM control and two stored registers | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
+| PCI identity and board parts | IDs, host systems, IRIX releases, patches and how O2 and Origin firmware list the card established; flash and keyboard controller located; parts partly inferred; revision, class, BAR sizes unknown | [devices/rad4/README.md](devices/rad4/README.md) |
+| Bus interface registers (BAR0) | defined in TOML: mailbox, interrupt control, EEPROM control (with the DMA read command nibble) and two stored registers; interrupt handler read in full | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
 | DMA channel 0 (expansion ROM route) | defined in TOML with the descriptor next-pointer word; behaviour written up | [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md#dma) |
 | Board registers (BAR2): RAMDAC ports, timing banks, mask, board control | defined in TOML; physical effects and bit meanings of timing words unknown | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
 | RAMDAC indexed registers | the sync, PLL and cursor registers the software uses are defined; window attribute, gamma, colour and cursor tables and the initialisation registers are described in prose only, because the definition format has no way to express tables with a per-entry index step | [devices/rad4/README.md](devices/rad4/README.md#ramdac-registers-the-software-uses) |
 | Display modes and EEPROM | 13 modes established; clock arithmetic reproduces all 13; option fields unknown electrically | [devices/rad4/modes.md](devices/rad4/modes.md) |
-| X server and driver requests | request table, no-DMA path, overlay drawing paths and the greyed-label quirk read; buffered and multi-device paths not audited | [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md) |
-| Binary inventory (functions, MMIO, ioctls) | not started: no inventory configuration or `root/` yet | |
-| Driver function-by-function readings | not started | |
-| Open questions | 11 recorded | [questions/open-questions.md](questions/open-questions.md) |
+| X server and driver requests | request table, call sites, window types, buffered and multi-head paths, scripts and daemon read; `rad4_X_knp` event loop not | [software/rad4/xserver-paths.md](software/rad4/xserver-paths.md), [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md) |
+| Binary inventory (functions, MMIO, ioctls) | all 40 ioctl handlers and the driver's 179 functions listed by role; no inventory configuration yet | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
+| Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport read; terminal escape table and key translation not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
+| Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; ROM body past its first dispatcher not | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
+| Open questions | 15 recorded | [questions/open-questions.md](questions/open-questions.md) |
 
 ## RAD1 (Permedia 2 board)
 
@@ -34,7 +35,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 
 | Board | State |
 |---|---|
-| RAD4-KM (`12d1:0105`) | controller registers match the SCC68681 dual UART index for index (inferred); not yet in defs form because the layout rests on one datasheet correspondence and the driver's use, with the board-level interrupt register's address unknown |
+| RAD4-KM (`12d1:0105`) | controller at BAR2 + 0xe00000, registers in defs form (inferred from the SCC68681 correspondence and the driver's use); initialisation, transmit, receive and interrupt read; see [devices/rad4/km-controller.md](devices/rad4/km-controller.md) |
 | RAD4C-KM | a 1999 product sheet only: 8 MB VRAM, 200 MHz RAMDAC, overlay, gamma and two PS/2-style connectors. No PCI IDs, no registers, no software |
 | RAD1 | covered in the section above |
 
