@@ -2,6 +2,18 @@
 
 # software
 
+## firmware
+
+| Page | Title | Summary |
+|---|---|---|
+| [console-selection.md](firmware/console-selection.md) | How `console=g` reaches a PsiTech board | The `console` variable, the environment variables the PROMs set from it and the kernel hooks that take over after boot. |
+| [model-needs.md](firmware/model-needs.md) | What a model must present for each PROM to find the board and print | Requirements read off the firmware, per firmware. |
+| [other-firmware.md](firmware/other-firmware.md) | Firmware and standalone programs that do not drive a PsiTech board | The negative results, with what was searched, so nobody repeats it. |
+| [psitech-ip27-prom.md](firmware/psitech-ip27-prom.md) | PsiTech's IP27 PROM, version 5.30 | The RAD4 package, release 1.3k, carries a modified Origin 200 and Origin 2000 node-board PROM, installed as... |
+| [rad4-option-rom.md](firmware/rad4-option-rom.md) | The RAD4 and RAD4-KM expansion ROM image | The 1.3k package ships the contents of the board's expansion ROM as `var/rad4/rad4_rom` (Motorola S-records) and the... |
+| [sgi-prom-rad1.md](firmware/sgi-prom-rad1.md) | The RAD1 console in SGI's PROMs | SGI's base I/O (IO6) and node (IP27) PROMs for the Origin 200 and Origin 2000 carry a console driver for the RAD1, a... |
+| [which-firmware.md](firmware/which-firmware.md) | PsiTech boards in SGI firmware and standalone programs | Which SGI and PsiTech firmware images know a PsiTech board, how each one finds it and what it draws. |
+
 ## rad1
 
 | Page | Title | Summary |
