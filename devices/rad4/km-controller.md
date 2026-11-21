@@ -32,7 +32,7 @@ When the mailbox is nonzero the driver does not run this: it takes the codes fro
 - **Interrupt** (`duart_interrupt`): reads the interrupt status and ANDs it with the saved mask; bit 1 drains channel A's receive FIFO and bit 5 channel B's into a 1,024-byte ring buffer per device (the ring's capacity is one less than its size), then signals the reading process. The driver assigns the ring by what the channel carries: keyboard bytes go to the keyboard ring and mouse bytes to the pointer ring, whichever channel they came in on (established).
 - **Enable and disable** (`duart_interrupt_control`): per device, set or clear the channel's mask bit (2 for A, 0x20 for B) in the saved mask, write it to register 5, and set or clear board-control bit 7 accordingly. DMA and mode programming drop both enables for their duration (established, see the kernel driver page).
 
-Everything above the receive ring (scan code translation for the terminal, key handler, keyboard LEDs through the kernel's keyboard helper, queueing and the `/dev/rad4_kbd` and `/dev/rad4_pntr` read paths) was not decoded: Unverified.
+Everything above the receive ring is read in [the kernel driver page](../../software/rad4/kernel-driver.md#keyboard-pointer-and-escape-sequences): the keyboard is put in PS/2 scan code set 3 with per-key types, the terminal's `translate_key` and `key_handler` turn set 3 codes into characters and arrow-key escape sequences, the LEDs are driven with the PS/2 `0xed` command, and the `/dev/rad4_kbd` and `/dev/rad4_pntr` reads copy from the 1,024-byte rings (established). The pointer is put in streaming mode with a sample rate of 20 (`0xf3 0x14`, `0xf4`); how the pointer's packets are decoded by the readers of `/dev/rad4_pntr` (the server's input code and `rad4_X_knp`) was not read here.
 
 ## PS/2 correspondence (inferred)
 
@@ -40,4 +40,4 @@ The command 0xff is the PS/2 "reset" command, 0xaa the self-test pass reply and 
 
 ## Not known
 
-The controller part number, the board wiring of its output port bits, the interrupt routing from the UART to the PLX local interrupt input (the board-control register's bit 7 is the only board-level control the driver touches) and whether the RAD4-KM has a separate crystal.
+The controller part number, the board wiring of its output port bits, the interrupt routing from the UART to the PLX local interrupt input (the board-control register's bit 7 is the only board-level control the driver touches) and whether the RAD4-KM has a separate crystal. Unknown: no shipped software or published source depends on them. Routes tried: the whole controller path in the driver, including the terminal's keyboard and pointer paths; the option ROM's keyboard read (it polls bit 4 of the board-control register, which no driver path reads); the SCC68681 data sheet and the product sheet.
