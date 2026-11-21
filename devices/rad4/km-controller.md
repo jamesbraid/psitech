@@ -41,3 +41,7 @@ The command 0xff is the PS/2 "reset" command, 0xaa the self-test pass reply and 
 ## Not known
 
 The controller part number, the board wiring of its output port bits, the interrupt routing from the UART to the PLX local interrupt input (the board-control register's bit 7 is the only board-level control the driver touches) and whether the RAD4-KM has a separate crystal. Unknown: no shipped software or published source depends on them. Routes tried: the whole controller path in the driver, including the terminal's keyboard and pointer paths; the option ROM's keyboard read (it polls bit 4 of the board-control register, which no driver path reads); the SCC68681 data sheet and the product sheet.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). The keyboard and pointer paths this page points to are reviewed in [../../software/rad4/kernel-driver.md](../../software/rad4/kernel-driver.md); the UART register layout and the unknowns were not re-read.

@@ -79,3 +79,7 @@ The software never touches the video-stream block, the reserved block or the byt
 ## What is not known
 
 See [../../questions/open-questions.md](../../questions/open-questions.md) for the routes tried. In short: the PCI configuration of a real card, which chip the card carried, the part numbers, the flash part and its BAR, reset values, and any PsiTech software other than the stock driver.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). The ratings converted from the retired six-rating scheme were sampled (see [../../AGENTS.md](../../AGENTS.md)); the sampled rows in this page read consistently with their evidence. The 6.5.4 first-release claim rests on media listings this review could not re-open (only the 6.5.22 discs and the 6.5.30 first disc are on hand), so it is carried as written; the 6.5.30 archive hash and size in `references/binaries.md` were re-checked.

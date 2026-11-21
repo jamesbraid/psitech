@@ -57,3 +57,7 @@ Where to put them for the checks: [../../references/irix-files.md](../../referen
 ## Not covered
 
 PsiTech's own RAD1 software (above), the kernel driver builds between 6.5.4 and 6.5.30 (all held, listed in [../../references/binaries.md](../../references/binaries.md); only 6.5.4 was compared with 6.5.30), the 6.5.1 media (its first disc is not held), the PROM at 6.11, the PROM images between 6.11 and 6.156, and 64-bit userland that talks to the driver.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). The archive hash and size of the 6.5.30 `rad1pci.a` were re-checked against the media; the other releases in [../../references/binaries.md](../../references/binaries.md) were not.

@@ -81,3 +81,7 @@ The buffered server (`chkconfig rad4X_buffered_server on`) renders into a host-m
 ## What is not covered
 
 The buffered, multi-device and extension drawing paths; clipped glyphs and planar images; GC validation alternatives and non-copy raster operations; and the physical effect of anything the driver writes to the board-control register.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). Re-read: the 0x0fffffff mask store at `init_ramdac` (`lui 0x0fff; ori 0xffff` at 0x48c5b4, request 0x78, call at 0x48c5c0 in the standalone server; it is the only such constant pair in the file). The driver-side mask ordering for the buffered upload was not re-read.

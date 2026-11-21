@@ -53,3 +53,7 @@ The initialiser's two chip paths differ by identity word: for `9` (Permedia 2V) 
 ## What the PROM does not do
 
 No RAD1 code reads or writes the PLX-style registers of the RAD4 family, and none calls code in the board's ROM: the RAD1 console is drawn by the PROM's own render-command sequences ([../rad1/textport.md](../rad1/textport.md#the-textport-functions)). This is a different mechanism from the PsiTech PROM's ([psitech-ip27-prom.md](psitech-ip27-prom.md)).
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). Not re-read in this review (the release table rests on a set of PROM images that were not opened). The mode table it points to was re-checked in [../../devices/rad1/modes.md](../../devices/rad1/modes.md).

@@ -190,3 +190,7 @@ The board "init" routine does not program the mode itself. The kernel textport t
 ## Limits
 
 Not read in full: the individual handlers of the terminal's escape table beyond `A`, `H` and `f`, the unread branches of `rad4_read_tty`, `rad4_rect_dma_fill` and `rad4_rect_dma_copy` beyond what they share with the move routine, and the multi-board corner cases of the buffered device. The selection of the doorbell and abort bits in the interrupt handler is unresolved from the decompilation.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). Re-read in the driver object: the region-descriptor mask constants (`0xfaf7ffff` is the first 8-byte literal and `0xfaffffff` the second, in `.lit8`; the clear and set bit lists in the text follow from them), the gamma-ramp loop, and the page's F-key, lock-key, shift, control and arrow codes against the standard PS/2 set 3 layout (the codes were compared with that layout, not re-read from the table in the object). Not re-read: the escape-sequence handlers and `rad4_read_tty`, which the page itself marks as partial. `rad4d` was re-read: an open, then a loop on request 0x80 with the value 2 while the result is not negative.

@@ -263,3 +263,7 @@ The type-3 branches of the dispatcher, the buffered server's drawing paths and t
 | How the host server calls `psitech.so` and what `-nodriver psitech,1280,1024` fields mean | the host server's binary, which is not in the package |
 | Type-3 mode-index width multiplier in request 135 | a re-read of the handler against the board-count variable's other uses |
 | Contents of the gamma scale constants in `rad4setres` | the program's constant pool |
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). Re-read in the standalone server: the `init_ramdac` mask (request 0x78, argument 0x0fffffff at 0x48c5b4) and the `GLoverlay_vid` writer (the stores at 0x6aa414 and 0x6aa41c, guarded by a positive test of the entry's word at offset 0x44, as described). The 17-handler count, the `WTtable` mask words and the `generate_palette` branches were not repeated. Decoded hashes of `rad4pci.o`, `Xradsgi` and `rad4d` from the archive match [../../references/binaries.md](../../references/binaries.md).

@@ -84,3 +84,7 @@ The PsiTech PROM never calls command 2. The use of board control bit 4 here is n
 ## The configuration EEPROM image
 
 `var/rad4/36500202` holds a 128-byte image (SHA-256 `9caa82c0b75366409af6c4f06304b7d45940c6e98c25702bdb28e04d9d750a41`). Read as little-endian halfwords it starts `0105`, `12d1`, `0380`, `0002`, which is a device ID of `0105` and a vendor ID of `12d1` followed by the class and revision words in the order the PLX serial EEPROM format uses (inferred from the values: the class matches the ROM's `0x038000`). The last 40 bytes, the block the mode word comes from, are all zero, so a card programmed from it starts in mode 0 (1280 by 1024 at 60 Hz) with no option bits (established, bytes read). The programming tool `rad4_prog` is a small command-line program that talks to `/dev/rad4` (not read beyond its strings); the ROM file name suggests the package intended both files for the board's own programmers (inferred).
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). The ROM's 272-byte keyboard table was compared with the driver's: identical over the whole table. The offsets of the mode routine, the loaders and the paint helper, and the gradient description, were not re-derived.

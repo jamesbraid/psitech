@@ -38,3 +38,7 @@ Searched in the IRIX 6.5.30 boot directory:
 ## Not searched
 
 PROM images for the IP28 (Indigo2 Impact), IP22, IP24, IP26, IP12, IP17, IP20, IP5, IP6 and IP7/IP9 families. PsiTech sold for the Origin, Octane and O2 only, so these are low value; they are in the same PROM catalogue and could be scanned the same way.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). Re-read in the 6.210 CPU payload (extracted from the packaged image at offset 0x1000; SHA-256 matches [../../references/binaries.md](../../references/binaries.md)): the word 0x00093d3d is built in both routines (the `lui 9; ori 0x3d3d` pairs at 0x42704, 0x42758 and 0x480cc), and `PSITECH_RAD1` and `PSITECH` sit at 0x84b80 and 0x881f0. The path from the equality test to the name pointer through the global-pointer table was not retraced, so that link stays as the author graded it on the strength of the other reading.

@@ -129,3 +129,7 @@ Reading is the same byte-by-byte copy with the same index swizzle.
 - The interrupt handler's loop signals 200 times.
 - The two palette requests do nothing on the `104c:3d07` chip, so the palette stays at its power-on ramp there.
 - The vertical-retrace palette deferral and the depth-change requests are compiled out.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). Not re-read in this review: the attach routine, the configuration reads and the 6.5.4 comparison. The mode-word handling in the init object (limit and bit fields) was re-read and agrees with [../../devices/rad1/modes.md](../../devices/rad1/modes.md).

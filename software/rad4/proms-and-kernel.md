@@ -169,3 +169,7 @@ The two objects export **the identical set of 155 symbols and import the identic
 - **No `.IP32` master/system file; IRIX 6.3/6.4 objects.** No 6.3/6.4 object ships, so the README claim and the 6.5 build date cannot be reconciled from files; settle with an earlier PsiTech release package.
 - **Retention of PSITECH names in IP35 and IO7**: the strings exist; which code uses them was not traced.
 - **Material not opened under the hard rule**: no restricted IRIX source tree, vendor source or restricted-root Library hit was opened. The only Library results were the public owner's guide family and an unrelated Cray-user-group proceedings file, which was not opened.
+
+## Review note
+
+Independent review, 2026-11-21 (not the author). The EEPROM decode was repeated from the shipped S-record file and matches every row of the table (device and vendor, class and revision, the zero mailboxes, the 16 MiB and 8 MiB ranges, the re-map words and the descriptor value, nothing set from offset 0x30). The datasheet table numbers and the reading of the descriptor bits were not re-read.
