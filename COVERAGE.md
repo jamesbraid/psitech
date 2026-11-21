@@ -16,14 +16,14 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | Binary inventory (functions, MMIO, ioctls) | all 40 ioctl handlers and the driver's 179 functions listed by role; no inventory configuration yet | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport, region descriptor bits, key translation and the terminal's escape table read; the individual escape handlers beyond three not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; the ROM's initialiser, mode routine, timing loaders, paint helper, console draw and keyboard read are read in [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md) | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
-| Open questions | 23 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
+| Open questions | 21 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
 
 ## RAD1 (Permedia 2 board)
 
 | Area | State | Where |
 |---|---|---|
 | Board identity | product, bundle, display and memory established from the sheet; chip family inferred; the PROM's PCI row, the kernel's two registrations and the PROM's subsystem pair `12d1:0101` read; revision, class, BAR sizes, part numbers unknown | [devices/rad1/README.md](devices/rad1/README.md) |
-| Machines and releases | IP27 kernel family; driver in 6.5.30 media, absent from the June 1998 6.5 media; console code in PROM 6.156, absent from 6.11; first release not pinned | [devices/rad1/README.md](devices/rad1/README.md#where-it-runs) |
+| Machines and releases | IP27 kernel family; driver first in the held 6.5.4 media (13 Apr 1999), absent from 6.5.3 and earlier held media, present to 6.5.30; console code in PROM 6.156, first in 6.27, absent from 6.11; 6.5.1 not held | [devices/rad1/README.md](devices/rad1/README.md#where-it-runs) |
 | Registers (Region Zero and the RAMDAC's indexed registers) | 167 registers defined in TOML for both chips; every offset the stock software uses confirmed in the objects; bit fields only for the interrupt bits and video enable | [devices/rad1/registers.toml](devices/rad1/registers.toml) |
 | Display modes and flash settings | three kernel modes, the IO6 PROM's eight and the 33-row partial-product table read in full; clock arithmetic; mode word layout | [devices/rad1/modes.md](devices/rad1/modes.md) |
 | Kernel driver | registration, attach front half, interrupt handler, request jump table, chip initialiser, flash programming read in full; DMA sequences, per-request behaviour, start-up fill, detach and read, write and map traced but unverified | [software/rad1/kernel-driver.md](software/rad1/kernel-driver.md) |
@@ -39,7 +39,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | PsiTech IP27 PROM 5.30 | PCI table, install routine and output path read in full; the boot stage's ROM copy is in the RAD4 survey and agrees with the entry address | [software/firmware/psitech-ip27-prom.md](software/firmware/psitech-ip27-prom.md) |
 | RAD4 and RAD4-KM expansion ROM | initialiser, mode routine, both timing loaders, paint helper, character draw, font, cursor, scroll, EEPROM read and keyboard read read in full | [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md) |
 | RAD1 console in SGI PROMs | release history, PCI table row and start-up mode record read; drawing functions are in the RAD1 pages | [software/firmware/sgi-prom-rad1.md](software/firmware/sgi-prom-rad1.md) |
-| Other firmware | negative results with what was searched; the Origin 300 PROM only names the board, by a lookup not traced | [software/firmware/other-firmware.md](software/firmware/other-firmware.md) |
+| Other firmware | negative results with what was searched; the Origin 300 PROM only names the board, by an exact match on the PCI word `3d3d:0009` (both routines read) | [software/firmware/other-firmware.md](software/firmware/other-firmware.md) |
 | `console=g` and the kernel's textport hooks | PROM selection, environment hand-over and the kernel's early-init hooks read; the RAD4 driver's hand-over and the keyboard patch not read | [software/firmware/console-selection.md](software/firmware/console-selection.md) |
 | What a model must present | per firmware; the PsiTech PROM loads the ROM itself | [software/firmware/model-needs.md](software/firmware/model-needs.md) |
 

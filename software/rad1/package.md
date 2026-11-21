@@ -56,4 +56,4 @@ Where to put them for the checks: [../../references/irix-files.md](../../referen
 
 ## Not covered
 
-PsiTech's own RAD1 software (above), any IRIX release between 6.5.0 and 6.5.30 other than the PROM at 6.11, the PROM images between 6.11 and 6.156, and 64-bit userland that talks to the driver.
+PsiTech's own RAD1 software (above), the kernel driver builds between 6.5.4 and 6.5.30 (all held, listed in [../../references/binaries.md](../../references/binaries.md); only 6.5.4 was compared with 6.5.30), the 6.5.1 media (its first disc is not held), the PROM at 6.11, the PROM images between 6.11 and 6.156, and 64-bit userland that talks to the driver.

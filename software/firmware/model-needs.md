@@ -43,7 +43,7 @@ On IP27 PROMs 6.27 to 6.48 the same board is also reachable from the node PROM; 
 
 ## Origin 300, Octane, O2
 
-No PROM console. The Origin 300 PROM may print `PSITECH` or `PSITECH_RAD1` in a configuration listing, which needs only the identity (the identity pair that selects the name is not traced; see [other-firmware.md](other-firmware.md)).
+No PROM console. The Origin 300 PROM may print `PSITECH` or `PSITECH_RAD1` in a configuration listing, which needs only the identity: the PCI word `3d3d:0009` alone selects the name and the subsystem is not read (established; see [other-firmware.md](other-firmware.md)).
 
 ## After the PROM: the kernel
 

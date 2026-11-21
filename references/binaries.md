@@ -27,3 +27,37 @@ The release archive, unpacked and its members decoded (each is stored compressed
 | `usr/include/rad4pci.h` | 4,225 | `5d92aad7fb7cbd87402a675d114db10ff2ca664430bded0d20b5f3dd3b7469ee` |
 
 Public documents are listed in [documents/INDEX.md](documents/INDEX.md).
+
+## RAD1 kernel driver, by IRIX release
+
+SGI's stock driver archive `rad1pci.a` (five members: `rad1drv.o`, `rad1_init.o`, `rad1_tpinit.o`, `rad1_tport.o`, `rad1data.o`) as installed under the IP27 kernel object directory by the base operating system overlay, SHA-256 of the extracted file. The overlay's machine-dependent ("m") and full ("f") products carry separate copies from 6.5.4 to 6.5.21; the date is the build date the object carries as a string. Absent from the held media of 6.5 (June 1998), the 6.5 beta, 6.5.2 and 6.5.3.
+
+| Release | Build date | Bytes | SHA-256 |
+|---|---|--:|---|
+| 6.5.4 (m) | 13 Apr 1999 | 99,156 | `66f4ad21b39cb6c529a8dff06b58c4e303c00280c8fc8752e78b7977d2a8ebc2` |
+| 6.5.4 (f) | 13 Apr 1999 | 99,156 | `47b0398f5f04bc7cf64b466f72adcb32abf236cb61b8d4b7e4c84deecf86e319` |
+| 6.5.10 (m) | 11 Oct 2000 | 99,844 | `298fdfe9e90c9b8ac78ee726bbab4b21f52cfe68c15a4731979eb97e67c6ff04` |
+| 6.5.11 (m) | 8 Jan 2001 | 93,844 | `eb702715e4eb232a000c8c13f1b9c239e97c8416f0fe1745d32cd9a5a8bc292c` |
+| 6.5.14 (f) | 9 Oct 2001 | 93,828 | `21c3f5969c38c21ccfbf5d8fe91ac59a3d79560d204ac5f6998105b33f0b131e` |
+| 6.5.22 (m) | 6 Oct 2003 | 93,828 | `07d04647c65bf1f43b63ba8c8b81324d25f56f9ee2d81d261a23646c777de81e` |
+| 6.5.30 (m) | 20 Jul 2006 | 93,828 | `43b86a8e6d29b8b29796604e0f6fc626fdf17c6532e3e43df944531eb8096f2b` |
+
+Members of the 6.5.4 (m) archive (the 6.5.30 members are in [../software/rad1/package.md](../software/rad1/package.md#files-read)):
+
+| Member | Bytes | SHA-256 |
+|---|--:|---|
+| `rad1drv.o` | 57844 | `0db1ae61eb6d5859769d953c74ce2d7027d576afdb378a977bcb1886e9b5fc75` |
+| `rad1_init.o` | 12164 | `f281855e4562f2764d56f54ab44cb94e980bf3eefc0cc7c80063a02c0774d0a7` |
+| `rad1_tpinit.o` | 10388 | `7bf7759d2f7daf7aec373e0ca19ef29ac1d58e4b7b01b7fc70ba72bb20495b5f` |
+| `rad1_tport.o` | 12884 | `1b3ddd285841cc0329a8c9d32b7a9f2a2bac42ae7585f4ea7635bb20fd876cb0` |
+| `rad1data.o` | 4724 | `9b700a65af858cff804b76f6cd4583262c8f55cdbefea076346b5b0dd75a738f` |
+
+Copies of the archive also exist for every release not listed above, namely 6.5.5 (11 Jul 1999), 6.5.6 (1 Oct 1999), 6.5.7 (20 Jan 2000), 6.5.8 (11 Apr 2000), 6.5.9 (11 Jul 2000), 6.5.12 (6 Apr 2001), 6.5.13 (5 to 6 Jul 2001), 6.5.15 (8 Jan 2002), 6.5.16 (4 Apr 2002), 6.5.17 (28 Jun 2002), 6.5.18 (10 Oct 2002), 6.5.19 (10 Jan 2003), 6.5.20 (9 Apr 2003), 6.5.21 (7 Jul 2003), 6.5.23 (7 Jan 2004), 6.5.24 (7 Apr 2004), 6.5.25 (7 Jul 2004), 6.5.26 (6 Oct 2004), 6.5.27 (6 Jan 2005), 6.5.28 (1 Jul 2005) and 6.5.29 (9 Jan 2006); only the rows above were read.
+
+## Origin 300 (IP35) PROM image read for the PCI name routines
+
+| File | Bytes | SHA-256 |
+|---|--:|---|
+| CPU PROM payload, IRIX 6.5.30 installation tools (release 6.210) | 1,476,264 | `554924380189a03a512156af2faa38344902f251b49fd5c80c253c23ecaff27b` |
+| packaged `ip35prom.img` | 1,480,360 | `d74b4b7ef9c11c66692019db9af698104595be7a0573a86feae8a83441921318` |
+| `io7prom.bin` (carries the same name strings; not re-read) | 1,468,990 | `f903b3ce33b86c286f168ba43395f36a0073c24b1d4e703adce240f683b8c2d7` |

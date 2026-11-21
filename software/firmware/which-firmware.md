@@ -26,7 +26,7 @@ Images are named by the banner they print. Every version listed was searched for
 | IP27 PROM 6.27 to 6.48 | console code and table row present | no | [sgi-prom-rad1.md](sgi-prom-rad1.md) |
 | IP27 PROM 6.57 to 6.156 | initialisation code left in the image; no table row and no install message, so unreachable (inferred) | no | [sgi-prom-rad1.md](sgi-prom-rad1.md) |
 | IO6 PROM 4.9 to 6.25; IP27 PROM 4.9 to 6.25 | no | no | [sgi-prom-rad1.md](sgi-prom-rad1.md) |
-| IP35 (Origin 300) PROM 6.37 to 6.211 | the name `PSITECH_RAD1` in diagnostic name tables only; no console code | name `PSITECH` only | [other-firmware.md](other-firmware.md) |
+| IP35 (Origin 300) PROM 6.37 to 6.211 | the name `PSITECH_RAD1` in diagnostic name tables only, chosen by the exact identity `3d3d:0009`; no console code | name `PSITECH` only | [other-firmware.md](other-firmware.md) |
 | IP30 (Octane) PROM 2.15 to 4.17; IP32 (O2) PROM 2.3 to 4.18; IO4 PROMs | no | no | [other-firmware.md](other-firmware.md) |
 | `sash64`, `sashARCS`, `fx.64`, `ide` of IRIX 6.5.30 | no (`ide` has an unrelated SGI audio chip test named RAD) | no | [other-firmware.md](other-firmware.md) |
 | IRIX 6.5.30 kernels | textport hooks `rad1_earlyinit` and `rad4_earlyinit` in the IP27 kernel only | hook present, driver comes from PsiTech's package | [console-selection.md](console-selection.md) |
