@@ -6,17 +6,17 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 
 | Area | State | Where |
 |---|---|---|
-| PCI identity and board parts | IDs, host systems, IRIX releases, patches and how O2 and Origin firmware list the card established; flash and keyboard controller located; parts partly inferred; revision, class, BAR sizes unknown | [devices/rad4/README.md](devices/rad4/README.md) |
+| PCI identity and board parts | IDs, host systems, IRIX releases, patches and how O2 and Origin firmware list the card established; flash and keyboard controller located; parts partly inferred; class, revision and BAR sizes as the shipped RAD4-KM serial EEPROM image declares them, subsystem IDs unknown | [devices/rad4/README.md](devices/rad4/README.md) |
 | Bus interface registers (BAR0) | defined in TOML: mailbox, interrupt control, EEPROM control (with the DMA read command nibble) and two stored registers; interrupt handler read in full | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
 | DMA channel 0 (expansion ROM route) | defined in TOML with the descriptor next-pointer word; behaviour written up | [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md#dma) |
-| Board registers (BAR2): RAMDAC ports, timing banks, mask, board control | defined in TOML; physical effects and bit meanings of timing words unknown | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
+| Board registers (BAR2): RAMDAC ports, timing banks, mask, board control | defined in TOML; timing word bits named from the loaders and VESA timings (inferred), physical effects, bank depths and the mask-to-plane wiring unknown | [devices/rad4/registers.toml](devices/rad4/registers.toml) |
 | RAMDAC indexed registers | the sync, PLL and cursor registers the software uses are defined; window attribute, gamma, colour and cursor tables and the initialisation registers are described in prose only, because the definition format has no way to express tables with a per-entry index step | [devices/rad4/README.md](devices/rad4/README.md#ramdac-registers-the-software-uses) |
-| Display modes and EEPROM | 13 modes established; clock arithmetic reproduces all 13; option fields unknown electrically | [devices/rad4/modes.md](devices/rad4/modes.md) |
+| Display modes and EEPROM | 13 modes established; clock arithmetic reproduces all 13; timing words' bit rules established and their fields named; option fields unknown electrically | [devices/rad4/modes.md](devices/rad4/modes.md) |
 | X server and driver requests | request table, call sites, window types, buffered and multi-head paths, scripts and daemon read; `rad4_X_knp` event loop not | [software/rad4/xserver-paths.md](software/rad4/xserver-paths.md), [devices/rad4/xserver-decode.md](devices/rad4/xserver-decode.md) |
 | Binary inventory (functions, MMIO, ioctls) | all 40 ioctl handlers and the driver's 179 functions listed by role; no inventory configuration yet | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
-| Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport read; terminal escape table and key translation not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
-| Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; the ROM's initialiser, console draw and keyboard read are read in [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md), its mode routine is not | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
-| Open questions | 26 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
+| Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport, region descriptor bits, key translation and the terminal's escape table read; the individual escape handlers beyond three not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
+| Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; the ROM's initialiser, mode routine, timing loaders, paint helper, console draw and keyboard read are read in [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md) | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
+| Open questions | 23 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
 
 ## RAD1 (Permedia 2 board)
 
@@ -37,7 +37,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 |---|---|---|
 | Which firmware recognises which board | every held IO6, IP27, IP35, IP30, IP32 and IO4 PROM, `sash`, `ide`, `fx` and the 6.5.30 kernels scanned; the RAD4 family only in PsiTech's own IP27 PROM 5.30, the RAD1 in IO6 and IP27 6.27 onward | [software/firmware/which-firmware.md](software/firmware/which-firmware.md) |
 | PsiTech IP27 PROM 5.30 | PCI table, install routine and output path read in full; the boot stage's ROM copy is in the RAD4 survey and agrees with the entry address | [software/firmware/psitech-ip27-prom.md](software/firmware/psitech-ip27-prom.md) |
-| RAD4 and RAD4-KM expansion ROM | initialiser, character draw, font, cursor, scroll, EEPROM read and keyboard read read in full; mode routine and RAMDAC initialiser's caller not read | [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md) |
+| RAD4 and RAD4-KM expansion ROM | initialiser, mode routine, both timing loaders, paint helper, character draw, font, cursor, scroll, EEPROM read and keyboard read read in full | [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md) |
 | RAD1 console in SGI PROMs | release history, PCI table row and start-up mode record read; drawing functions are in the RAD1 pages | [software/firmware/sgi-prom-rad1.md](software/firmware/sgi-prom-rad1.md) |
 | Other firmware | negative results with what was searched; the Origin 300 PROM only names the board, by a lookup not traced | [software/firmware/other-firmware.md](software/firmware/other-firmware.md) |
 | `console=g` and the kernel's textport hooks | PROM selection, environment hand-over and the kernel's early-init hooks read; the RAD4 driver's hand-over and the keyboard patch not read | [software/firmware/console-selection.md](software/firmware/console-selection.md) |
