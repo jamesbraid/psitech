@@ -1,7 +1,7 @@
 /* generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28 */
+/* input sha256 41966f1bd72c1959f7ae6ad7fe24ed136ae73f0c96d4b97155353c46d9c3d511 */
 /* RAD4 graphics head registers */
 #ifndef RAD4_GEN_H
 #define RAD4_GEN_H
@@ -117,39 +117,93 @@
 #define RAD4_RGB561_DATA_MULTI_VALUE_INPLACE         (RAD4_RGB561_DATA_MULTI_VALUE_MASK << RAD4_RGB561_DATA_MULTI_VALUE_SHIFT)
 
 /*
- * Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 1024 words is the room between banks, and the bit meanings are unknown.
+ * Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total (at most 781 words in the driver's modes). The words are computed from the mode record by the loader, read in full, and bank 1 and the vertical bank are written the same way; the field names below are the loader's structure read against VESA-style timings (modes.md, timing words), not a hardware statement. The bank depth is not known: 1024 words is the room before the next bank.
  */
 /* timing_h0: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_TIMING_H0_OFFSET                        0xa00000u /* inferred */
 #define RAD4_TIMING_H0_COUNT                         1024
 #define RAD4_TIMING_H0_STRIDE                        4
+#define RAD4_TIMING_H0_SYNC_LEVEL_SHIFT              7 /* inferred */
+#define RAD4_TIMING_H0_SYNC_LEVEL_MASK               0x1u
+#define RAD4_TIMING_H0_SYNC_LEVEL_INPLACE            (RAD4_TIMING_H0_SYNC_LEVEL_MASK << RAD4_TIMING_H0_SYNC_LEVEL_SHIFT)
+#define RAD4_TIMING_H0_SYNC_WINDOW_SHIFT             6 /* inferred */
+#define RAD4_TIMING_H0_SYNC_WINDOW_MASK              0x1u
+#define RAD4_TIMING_H0_SYNC_WINDOW_INPLACE           (RAD4_TIMING_H0_SYNC_WINDOW_MASK << RAD4_TIMING_H0_SYNC_WINDOW_SHIFT)
+#define RAD4_TIMING_H0_DISPLAY_ENABLE_SHIFT          3 /* inferred */
+#define RAD4_TIMING_H0_DISPLAY_ENABLE_MASK           0x1u
+#define RAD4_TIMING_H0_DISPLAY_ENABLE_INPLACE        (RAD4_TIMING_H0_DISPLAY_ENABLE_MASK << RAD4_TIMING_H0_DISPLAY_ENABLE_SHIFT)
+#define RAD4_TIMING_H0_LINE_END_B_SHIFT              2 /* inferred */
+#define RAD4_TIMING_H0_LINE_END_B_MASK               0x1u
+#define RAD4_TIMING_H0_LINE_END_B_INPLACE            (RAD4_TIMING_H0_LINE_END_B_MASK << RAD4_TIMING_H0_LINE_END_B_SHIFT)
+#define RAD4_TIMING_H0_FETCH_ENABLE_SHIFT            1 /* inferred */
+#define RAD4_TIMING_H0_FETCH_ENABLE_MASK             0x1u
+#define RAD4_TIMING_H0_FETCH_ENABLE_INPLACE          (RAD4_TIMING_H0_FETCH_ENABLE_MASK << RAD4_TIMING_H0_FETCH_ENABLE_SHIFT)
+#define RAD4_TIMING_H0_LINE_END_A_SHIFT              0 /* inferred */
+#define RAD4_TIMING_H0_LINE_END_A_MASK               0x1u
+#define RAD4_TIMING_H0_LINE_END_A_INPLACE            (RAD4_TIMING_H0_LINE_END_A_MASK << RAD4_TIMING_H0_LINE_END_A_SHIFT)
 
 /*
- * Horizontal timing bank 1. Same use and limits as bank 0.
+ * Horizontal timing bank 1. Same use and limits as bank 0, but the loader sets only the line-end, sync-window and sync-level bits, never the two enable bits.
  */
 /* timing_h1: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_TIMING_H1_OFFSET                        0xa01000u /* inferred */
 #define RAD4_TIMING_H1_COUNT                         1024
 #define RAD4_TIMING_H1_STRIDE                        4
+#define RAD4_TIMING_H1_SYNC_LEVEL_SHIFT              7 /* inferred */
+#define RAD4_TIMING_H1_SYNC_LEVEL_MASK               0x1u
+#define RAD4_TIMING_H1_SYNC_LEVEL_INPLACE            (RAD4_TIMING_H1_SYNC_LEVEL_MASK << RAD4_TIMING_H1_SYNC_LEVEL_SHIFT)
+#define RAD4_TIMING_H1_SYNC_WINDOW_SHIFT             6 /* inferred */
+#define RAD4_TIMING_H1_SYNC_WINDOW_MASK              0x1u
+#define RAD4_TIMING_H1_SYNC_WINDOW_INPLACE           (RAD4_TIMING_H1_SYNC_WINDOW_MASK << RAD4_TIMING_H1_SYNC_WINDOW_SHIFT)
+#define RAD4_TIMING_H1_LINE_END_B_SHIFT              2 /* inferred */
+#define RAD4_TIMING_H1_LINE_END_B_MASK               0x1u
+#define RAD4_TIMING_H1_LINE_END_B_INPLACE            (RAD4_TIMING_H1_LINE_END_B_MASK << RAD4_TIMING_H1_LINE_END_B_SHIFT)
+#define RAD4_TIMING_H1_LINE_END_A_SHIFT              0 /* inferred */
+#define RAD4_TIMING_H1_LINE_END_A_MASK               0x1u
+#define RAD4_TIMING_H1_LINE_END_A_INPLACE            (RAD4_TIMING_H1_LINE_END_A_MASK << RAD4_TIMING_H1_LINE_END_A_SHIFT)
 
 /*
- * Horizontal timing bank 3. Same use and limits as bank 0. The loader holds a pointer to a bank between 1 and 3 and never writes it.
+ * Horizontal timing bank 3. Same use and limits as bank 1, with the sync-window bit inverted relative to banks 0 and 1 and the sync-level bit equal to theirs for separate sync (sync type 0) and inverted for composite sync and sync on green. The loader also holds a pointer to the slot between banks 1 and 3 and never writes it.
  */
 /* timing_h3: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_TIMING_H3_OFFSET                        0xa03000u /* inferred */
 #define RAD4_TIMING_H3_COUNT                         1024
 #define RAD4_TIMING_H3_STRIDE                        4
+#define RAD4_TIMING_H3_SYNC_LEVEL_SHIFT              7 /* inferred */
+#define RAD4_TIMING_H3_SYNC_LEVEL_MASK               0x1u
+#define RAD4_TIMING_H3_SYNC_LEVEL_INPLACE            (RAD4_TIMING_H3_SYNC_LEVEL_MASK << RAD4_TIMING_H3_SYNC_LEVEL_SHIFT)
+#define RAD4_TIMING_H3_SYNC_WINDOW_SHIFT             6 /* inferred */
+#define RAD4_TIMING_H3_SYNC_WINDOW_MASK              0x1u
+#define RAD4_TIMING_H3_SYNC_WINDOW_INPLACE           (RAD4_TIMING_H3_SYNC_WINDOW_MASK << RAD4_TIMING_H3_SYNC_WINDOW_SHIFT)
+#define RAD4_TIMING_H3_LINE_END_B_SHIFT              2 /* inferred */
+#define RAD4_TIMING_H3_LINE_END_B_MASK               0x1u
+#define RAD4_TIMING_H3_LINE_END_B_INPLACE            (RAD4_TIMING_H3_LINE_END_B_MASK << RAD4_TIMING_H3_LINE_END_B_SHIFT)
+#define RAD4_TIMING_H3_LINE_END_A_SHIFT              0 /* inferred */
+#define RAD4_TIMING_H3_LINE_END_A_MASK               0x1u
+#define RAD4_TIMING_H3_LINE_END_A_INPLACE            (RAD4_TIMING_H3_LINE_END_A_MASK << RAD4_TIMING_H3_LINE_END_A_SHIFT)
 
 /*
- * Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit meanings are unknown.
+ * Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes, computed by the loader from the record. The depth is not known; 1656 is the largest count any shipped mode needs. The field names are the loader's structure read against VESA-style timings (modes.md, timing words).
  */
 /* timing_v: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_TIMING_V_OFFSET                         0xb00000u /* inferred */
 #define RAD4_TIMING_V_COUNT                          2048
 #define RAD4_TIMING_V_STRIDE                         4
+#define RAD4_TIMING_V_SYNC_LEVEL_SHIFT               7 /* inferred */
+#define RAD4_TIMING_V_SYNC_LEVEL_MASK                0x1u
+#define RAD4_TIMING_V_SYNC_LEVEL_INPLACE             (RAD4_TIMING_V_SYNC_LEVEL_MASK << RAD4_TIMING_V_SYNC_LEVEL_SHIFT)
+#define RAD4_TIMING_V_BLANK_SHIFT                    6 /* inferred */
+#define RAD4_TIMING_V_BLANK_MASK                     0x1u
+#define RAD4_TIMING_V_BLANK_INPLACE                  (RAD4_TIMING_V_BLANK_MASK << RAD4_TIMING_V_BLANK_SHIFT)
+#define RAD4_TIMING_V_SYNC_MARKER_SHIFT              1 /* inferred */
+#define RAD4_TIMING_V_SYNC_MARKER_MASK               0x1u
+#define RAD4_TIMING_V_SYNC_MARKER_INPLACE            (RAD4_TIMING_V_SYNC_MARKER_MASK << RAD4_TIMING_V_SYNC_MARKER_SHIFT)
+#define RAD4_TIMING_V_FRAME_END_SHIFT                0 /* inferred */
+#define RAD4_TIMING_V_FRAME_END_MASK                 0x1u
+#define RAD4_TIMING_V_FRAME_END_INPLACE              (RAD4_TIMING_V_FRAME_END_MASK << RAD4_TIMING_V_FRAME_END_SHIFT)
 
 /*
- * Pixel write mask. Software use: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown.
+ * Pixel write mask. Software use: the driver programs 0xffffffff at attach and around its DMA descriptor stores; the X server programs 0x0fffffff at screen start, then 0x00ffffff for colour drawing and 0x0f000000 for the overlay nibble before stores, and paints the window-type nibble under 0xf0000000 through the rectangle-fill request. The driver's buffered path sets the mask to the request mask before a DMA upload and restores the previous one after the transfer has finished, which is how the mask is kept live for DMA data (inferred). That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown: the software only treats bits 23 to 0 as colour, 27 to 24 as overlay and 31 to 28 as window type.
  */
 /* plane_mask: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver and standalone X server */
 #define RAD4_PLANE_MASK_OFFSET                       0xd00000u /* inferred */

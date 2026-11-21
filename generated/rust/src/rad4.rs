@@ -1,7 +1,7 @@
 // generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source
 // SPDX-License-Identifier: BSD-3-Clause
 // defs-gen 2
-// input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28
+// input sha256 41966f1bd72c1959f7ae6ad7fe24ed136ae73f0c96d4b97155353c46d9c3d511
 // RAD4 graphics head registers
 #![allow(dead_code)]
 
@@ -207,35 +207,215 @@ pub mod rgb561_data_multi {
         }
     }
 }
-/// Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 102 (inferred)
+/// Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total (at most 781 words in the driver' (inferred)
 pub mod timing_h0 {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xa00000;
     pub const COUNT: u32 = 1024;
     pub const STRIDE: u64 = 4;
+    pub mod sync_level { // bits 7:7, inferred
+        pub const SHIFT: u32 = 7;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod sync_window { // bits 6:6, inferred
+        pub const SHIFT: u32 = 6;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod display_enable { // bits 3:3, inferred
+        pub const SHIFT: u32 = 3;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod line_end_b { // bits 2:2, inferred
+        pub const SHIFT: u32 = 2;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod fetch_enable { // bits 1:1, inferred
+        pub const SHIFT: u32 = 1;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod line_end_a { // bits 0:0, inferred
+        pub const SHIFT: u32 = 0;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
 }
-/// Horizontal timing bank 1. Same use and limits as bank 0. (inferred)
+/// Horizontal timing bank 1. Same use and limits as bank 0, but the loader sets only the line-end, sync-window and sync-level bits, never the two enable  (inferred)
 pub mod timing_h1 {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xa01000;
     pub const COUNT: u32 = 1024;
     pub const STRIDE: u64 = 4;
+    pub mod sync_level { // bits 7:7, inferred
+        pub const SHIFT: u32 = 7;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod sync_window { // bits 6:6, inferred
+        pub const SHIFT: u32 = 6;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod line_end_b { // bits 2:2, inferred
+        pub const SHIFT: u32 = 2;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod line_end_a { // bits 0:0, inferred
+        pub const SHIFT: u32 = 0;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
 }
-/// Horizontal timing bank 3. Same use and limits as bank 0. The loader holds a pointer to a bank between 1 and 3 and never writes it. (inferred)
+/// Horizontal timing bank 3. Same use and limits as bank 1, with the sync-window bit inverted relative to banks 0 and 1 and the sync-level bit equal to t (inferred)
 pub mod timing_h3 {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xa03000;
     pub const COUNT: u32 = 1024;
     pub const STRIDE: u64 = 4;
+    pub mod sync_level { // bits 7:7, inferred
+        pub const SHIFT: u32 = 7;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod sync_window { // bits 6:6, inferred
+        pub const SHIFT: u32 = 6;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod line_end_b { // bits 2:2, inferred
+        pub const SHIFT: u32 = 2;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod line_end_a { // bits 0:0, inferred
+        pub const SHIFT: u32 = 0;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
 }
-/// Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit m (inferred)
+/// Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes, computed by the loader from the reco (inferred)
 pub mod timing_v {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xb00000;
     pub const COUNT: u32 = 2048;
     pub const STRIDE: u64 = 4;
+    pub mod sync_level { // bits 7:7, inferred
+        pub const SHIFT: u32 = 7;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod blank { // bits 6:6, inferred
+        pub const SHIFT: u32 = 6;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod sync_marker { // bits 1:1, inferred
+        pub const SHIFT: u32 = 1;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
+    pub mod frame_end { // bits 0:0, inferred
+        pub const SHIFT: u32 = 0;
+        pub const MASK: u32 = 0x1;
+        pub const fn get(v: u32) -> u32 {
+            (v >> SHIFT) & MASK
+        }
+        pub const fn set(v: u32, x: u32) -> u32 {
+            (v & !(MASK << SHIFT)) | ((x & MASK) << SHIFT)
+        }
+    }
 }
-/// Pixel write mask. Software use: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before (inferred)
+/// Pixel write mask. Software use: the driver programs 0xffffffff at attach and around its DMA descriptor stores; the X server programs 0x0fffffff at scr (inferred)
 pub mod plane_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xd00000;

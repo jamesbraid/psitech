@@ -1,7 +1,7 @@
 {
  "license": "BSD-3-Clause",
  "generator": "defs-gen 2",
- "input_sha256": "5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28",
+ "input_sha256": "41966f1bd72c1959f7ae6ad7fe24ed136ae73f0c96d4b97155353c46d9c3d511",
  "schema": "defs-flat/1",
  "source": "devices/rad4/registers.toml",
  "profile": "public",
@@ -297,6 +297,60 @@
   },
   {
    "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h0.sync_level",
+   "hi": 7,
+   "lo": 7,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h0.sync_window",
+   "hi": 6,
+   "lo": 6,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h0.display_enable",
+   "hi": 3,
+   "lo": 3,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h0.line_end_b",
+   "hi": 2,
+   "lo": 2,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h0.fetch_enable",
+   "hi": 1,
+   "lo": 1,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h0.line_end_a",
+   "hi": 0,
+   "lo": 0,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
    "kind": "register",
    "name": "timing_h1",
    "offset": 10489856,
@@ -306,6 +360,42 @@
    "stride": 4,
    "space": "bar2",
    "reset": "unknown",
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h1.sync_level",
+   "hi": 7,
+   "lo": 7,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h1.sync_window",
+   "hi": 6,
+   "lo": 6,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h1.line_end_b",
+   "hi": 2,
+   "lo": 2,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h1.line_end_a",
+   "hi": 0,
+   "lo": 0,
    "grade": "inferred",
    "from": "PsiTech RAD4 release 1.3k driver"
   },
@@ -325,6 +415,42 @@
   },
   {
    "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h3.sync_level",
+   "hi": 7,
+   "lo": 7,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h3.sync_window",
+   "hi": 6,
+   "lo": 6,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h3.line_end_b",
+   "hi": 2,
+   "lo": 2,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_h3.line_end_a",
+   "hi": 0,
+   "lo": 0,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
    "kind": "register",
    "name": "timing_v",
    "offset": 11534336,
@@ -334,6 +460,42 @@
    "stride": 4,
    "space": "bar2",
    "reset": "unknown",
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_v.sync_level",
+   "hi": 7,
+   "lo": 7,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_v.blank",
+   "hi": 6,
+   "lo": 6,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_v.sync_marker",
+   "hi": 1,
+   "lo": 1,
+   "grade": "inferred",
+   "from": "PsiTech RAD4 release 1.3k driver"
+  },
+  {
+   "unit": "rad4",
+   "kind": "field",
+   "name": "timing_v.frame_end",
+   "hi": 0,
+   "lo": 0,
    "grade": "inferred",
    "from": "PsiTech RAD4 release 1.3k driver"
   },

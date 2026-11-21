@@ -1,7 +1,7 @@
 <!-- generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source -->
 <!-- SPDX-License-Identifier: BSD-3-Clause -->
 <!-- defs-gen 2 -->
-<!-- input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28 -->
+<!-- input sha256 41966f1bd72c1959f7ae6ad7fe24ed136ae73f0c96d4b97155353c46d9c3d511 -->
 
 # RAD4 graphics head registers
 
@@ -141,31 +141,61 @@ RAMDAC multi-cycle data port for tables whose entries are wider than a byte: two
 
 ### Register `timing_h0`
 
-Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 1024 words is the room between banks, and the bit meanings are unknown.
+Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total (at most 781 words in the driver's modes). The words are computed from the mode record by the loader, read in full, and bank 1 and the vertical bank are written the same way; the field names below are the loader's structure read against VESA-style timings (modes.md, timing words), not a hardware statement. The bank depth is not known: 1024 words is the room before the next bank.
 
 Array of 1024 registers, stride 4.
+
+| Bits | Field | Grade | Values | Source | Description |
+|---|---|---|---|---|---|
+| 7 | `sync_level` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 6 | `sync_window` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 3 | `display_enable` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 2 | `line_end_b` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 1 | `fetch_enable` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 0 | `line_end_a` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
 
 ### Register `timing_h1`
 
-Horizontal timing bank 1. Same use and limits as bank 0.
+Horizontal timing bank 1. Same use and limits as bank 0, but the loader sets only the line-end, sync-window and sync-level bits, never the two enable bits.
 
 Array of 1024 registers, stride 4.
+
+| Bits | Field | Grade | Values | Source | Description |
+|---|---|---|---|---|---|
+| 7 | `sync_level` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 6 | `sync_window` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 2 | `line_end_b` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 0 | `line_end_a` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
 
 ### Register `timing_h3`
 
-Horizontal timing bank 3. Same use and limits as bank 0. The loader holds a pointer to a bank between 1 and 3 and never writes it.
+Horizontal timing bank 3. Same use and limits as bank 1, with the sync-window bit inverted relative to banks 0 and 1 and the sync-level bit equal to theirs for separate sync (sync type 0) and inverted for composite sync and sync on green. The loader also holds a pointer to the slot between banks 1 and 3 and never writes it.
 
 Array of 1024 registers, stride 4.
 
+| Bits | Field | Grade | Values | Source | Description |
+|---|---|---|---|---|---|
+| 7 | `sync_level` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 6 | `sync_window` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 2 | `line_end_b` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 0 | `line_end_a` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+
 ### Register `timing_v`
 
-Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit meanings are unknown.
+Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes, computed by the loader from the record. The depth is not known; 1656 is the largest count any shipped mode needs. The field names are the loader's structure read against VESA-style timings (modes.md, timing words).
 
 Array of 2048 registers, stride 4.
 
+| Bits | Field | Grade | Values | Source | Description |
+|---|---|---|---|---|---|
+| 7 | `sync_level` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 6 | `blank` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 1 | `sync_marker` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+| 0 | `frame_end` | inferred |  | PsiTech RAD4 release 1.3k driver |  |
+
 ### Register `plane_mask`
 
-Pixel write mask. Software use: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown.
+Pixel write mask. Software use: the driver programs 0xffffffff at attach and around its DMA descriptor stores; the X server programs 0x0fffffff at screen start, then 0x00ffffff for colour drawing and 0x0f000000 for the overlay nibble before stores, and paints the window-type nibble under 0xf0000000 through the rectangle-fill request. The driver's buffered path sets the mask to the request mask before a DMA upload and restores the previous one after the transfer has finished, which is how the mask is kept live for DMA data (inferred). That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown: the software only treats bits 23 to 0 as colour, 27 to 24 as overlay and 31 to 28 as window type.
 
 ### Register `km_mr`
 

@@ -1,7 +1,7 @@
 /* generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28 */
+/* input sha256 41966f1bd72c1959f7ae6ad7fe24ed136ae73f0c96d4b97155353c46d9c3d511 */
 /* RAD4 graphics head registers */
 /* Names are RAD4_BOARD_*; name source: ours. */
 #ifndef HW_SGI_GPU_RAD4_BOARD_REGS_H
@@ -49,18 +49,36 @@ FIELD(RAD4_BOARD_RGB561_DATA_MULTI, VALUE, 0, 8) /* inferred */
 REG32(RAD4_BOARD_TIMING_H0, 0xa00000) /* inferred */
 #define RAD4_BOARD_TIMING_H0_COUNT 1024
 #define RAD4_BOARD_TIMING_H0_STRIDE 0x4
+FIELD(RAD4_BOARD_TIMING_H0, SYNC_LEVEL, 7, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H0, SYNC_WINDOW, 6, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H0, DISPLAY_ENABLE, 3, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H0, LINE_END_B, 2, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H0, FETCH_ENABLE, 1, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H0, LINE_END_A, 0, 1) /* inferred */
 
 REG32(RAD4_BOARD_TIMING_H1, 0xa01000) /* inferred */
 #define RAD4_BOARD_TIMING_H1_COUNT 1024
 #define RAD4_BOARD_TIMING_H1_STRIDE 0x4
+FIELD(RAD4_BOARD_TIMING_H1, SYNC_LEVEL, 7, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H1, SYNC_WINDOW, 6, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H1, LINE_END_B, 2, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H1, LINE_END_A, 0, 1) /* inferred */
 
 REG32(RAD4_BOARD_TIMING_H3, 0xa03000) /* inferred */
 #define RAD4_BOARD_TIMING_H3_COUNT 1024
 #define RAD4_BOARD_TIMING_H3_STRIDE 0x4
+FIELD(RAD4_BOARD_TIMING_H3, SYNC_LEVEL, 7, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H3, SYNC_WINDOW, 6, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H3, LINE_END_B, 2, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_H3, LINE_END_A, 0, 1) /* inferred */
 
 REG32(RAD4_BOARD_TIMING_V, 0xb00000) /* inferred */
 #define RAD4_BOARD_TIMING_V_COUNT 2048
 #define RAD4_BOARD_TIMING_V_STRIDE 0x4
+FIELD(RAD4_BOARD_TIMING_V, SYNC_LEVEL, 7, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_V, BLANK, 6, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_V, SYNC_MARKER, 1, 1) /* inferred */
+FIELD(RAD4_BOARD_TIMING_V, FRAME_END, 0, 1) /* inferred */
 
 REG32(RAD4_BOARD_PLANE_MASK, 0xd00000) /* inferred */
 

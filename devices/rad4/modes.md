@@ -65,7 +65,31 @@ One routine programs any record, so the register write order is the same for all
 5. Write index 0x20 and its sync value: 1, or 0x23 when the selector field of the EEPROM configuration word (bits 12 and 13) equals 2.
 6. Set bit 5 of board control.
 
-Only the PLL bytes, the bank lengths and the bank contents depend on the mode. In every record the horizontal total is a quarter of the width plus the horizontal blank, and the vertical total is the height plus the vertical blank, so horizontal words count four-pixel groups (established as a table property; consistent with the 4:1 serializer the general initialisation selects, which is inferred for the board). Parameters 2 and 3 are inferred to be sync start and end counted from the start of blanking: mode 0 then has the 48-pixel front porch and 112-pixel sync of the VESA 1280 by 1024 at 60 Hz timing.
+Only the PLL bytes, the bank lengths and the bank contents depend on the mode. In every record the horizontal total is a quarter of the width plus the horizontal blank, and the vertical total is the height plus the vertical blank, so horizontal words count four-pixel groups (established as a table property; consistent with the 4:1 serializer the general initialisation selects, which is inferred for the board). Parameters 2 and 3 are the front porch and the sync end, counted from the start of blanking in words, horizontally; vertically they are the front porch and the sync width in lines (inferred: the loaders' structure and a comparison with VESA timings, in the section below).
+
+### Timing words
+
+The horizontal loader (`load_horiz_video_timing_ram`) and the vertical loader (`load_vert_video_timing_ram`) were read in full in the driver, and the option ROM's two loaders are the same code (the decompilations are identical apart from symbol names). Take horizontal total T, blank B and parameters S and E for a record, in words; the loop index `i` runs over 0 to T minus 1. `sel` is the sync-type selector (bits 12 and 13 of the configuration word) and `hp` and `vp` the polarity options (bits 8 and 10). Every word is built from the bits below and nothing else (established, from the binary):
+
+| Bank | Bit | Set when | What it looks like (inferred) |
+|---|--:|---|---|
+| horizontal bank 0 (first) | 3 | `i >= B` | display enable: blanking occupies the first B words of a line and the visible part is the last T minus B |
+| horizontal bank 0 | 1 | `B - 2 <= i < T - 2` | the same window two words early: a fetch or pipeline lead |
+| horizontal banks 0, 1 and 3 | 0 and 2 | `i == T - 2` | an end-of-line mark, both bits together |
+| horizontal banks 0 and 1 | 6 | `i < S` or `i >= E` | the sync window, inverted: clear for `S <= i < E` |
+| horizontal bank 3 | 6 | `S <= i < E` | the same window, not inverted |
+| horizontal banks 0 and 1 | 7 | outside `S + 5 <= i < E + 5`: set unless (`sel` 0 and `hp` 1); inside: set only when `sel` is 0 and `hp` is 1 | the sync output, delayed five words, in the polarity `hp` selects when the sync is separate (`sel` 0); a fixed negative pulse for `sel` 1 and 2 |
+| horizontal bank 3 | 7 | outside the delayed window: set only when `sel` is 0 and `hp` is 0; inside: set when `sel` is 1 or 2 or `hp` is 1 | the same level as banks 0 and 1 for `sel` 0, the complement of it for `sel` 1 and 2, and neither for `sel` 3 |
+| vertical | 6 | `i < B - S` or `i >= T - S` | vertical blank: the window is the B blank lines shifted earlier by S lines |
+| vertical | 1 | `i < E` | the sync-pulse lines, at the start of the frame |
+| vertical | 7 | on the pulse lines: set when `sel` is 1 or (`sel` 0 and `vp` 1); on the others: set unless `sel` is 0 and `vp` is 1 | the vertical sync output; held high for `sel` 1, the composite case |
+| vertical | 0 | `i == T - 1` | the last line of the frame |
+
+The register block's fourth horizontal slot, one 4 KiB step above bank 1, is built by the driver and never written by either loader.
+
+So the fields the table gives are, in order: horizontal total, blank, front porch (S), sync end (E) and, vertically, total, blank, front porch, sync width. The names are a reading, not a statement about the board, but three of the modes checked agree with the VESA tables for their resolution and rate: mode 10 (1024 by 768 at 70 Hz) reproduces every number, horizontally 1328 total, 304 blank, 24-pixel front porch and 136-pixel sync, and vertically 806 total, 38 blank, 3-line front porch and 6-line sync; mode 0 (1280 by 1024 at 60 Hz) has the 1688-pixel line, 48-pixel front porch and 112-pixel sync and the 1-line front porch and 3-line sync, with a frame one line short; mode 8 (800 by 600 at 56 Hz) matches horizontally and has the 2-line sync but a 2-line front porch. Modes 7 and 9 differ from the VESA totals (mode 7's line is 848 pixels, not 832, and mode 9's 1328, not 1344); modes 1 to 6 and 11 and 12 were not compared. The meaning of each parameter is inferred, since only the vendor's code and the VESA tables are compared; the bit rules above are established.
+
+Bank depth: the loaders write T words to each horizontal bank (781 at most, mode 4) and the frame's lines to the vertical bank (1656 at most, mode 5), so the banks hold at least that many words. The bank spacing in the register map is 4 KiB, which is 1024 words, and nothing in the shipped software writes past the lengths above, so the real depth is unknown: no shipped software or published source depends on it.
 
 ### Option fields
 
