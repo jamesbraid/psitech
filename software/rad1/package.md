@@ -28,7 +28,7 @@ What differs for a client:
 - The two palette requests (101, 102) do nothing on a board with the `104c:3d07` chip.
 - Request 141 loads the texel table used for 8-bit writes; it has no RAD4 counterpart in the list above.
 - The RAD4's depth, gamma, serial-ROM and overlay-start requests (103 to 112, 127, 131 to 134) are accepted and ignored. The RAD1 has no overlay-plane or window-ID request: the sheet's 8-bit overlay has no request in the stock driver.
-- The mode word (request 114) selects one of three modes, not the RAD4's thirteen.
+- The mode word (request 114) selects one of three modes in the stock kernel's table (the IO6 PROM carries eight), not the RAD4's thirteen.
 
 ## Files read
 

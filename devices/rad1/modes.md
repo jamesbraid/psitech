@@ -1,6 +1,6 @@
 # rad1: display modes, clocks and the settings sector
 
-The stock RAD1 software carries three display modes, a table of memory-width partial products, and one mode word kept in the board's flash. This page records what the mode loader writes for each. Ratings are as defined in [README.md](README.md). Everything here was read from the tables in `rad1data.o` (member of `rad1pci.a`) and the mode loader in `rad1_init.o` (established), and the same loader in the IO6 PROM 6.156 agrees with it.
+The stock RAD1 software carries three display modes, a table of memory-width partial products, and one mode word kept in the board's flash. This page records what the mode loader writes for each. Ratings are as defined in [README.md](README.md). Everything here was read from the tables in `rad1data.o` (member of `rad1pci.a`) and the mode loader in `rad1_init.o` (established), and the same loader in the IO6 PROM 6.156 agrees with it. The PROM's table is longer than the driver's: see "The PROM's own table" below.
 
 ## The three modes
 
@@ -20,6 +20,23 @@ How the loader writes a record to the chip (established, loader read in full):
 - The video FIFO control register gets 0x0b07, the screen base gets 0, the screen size gets the visible width and height, and the packed-data X limit gets the width minus one.
 - The memory-width partial products for the visible width are looked up in the 33-row table and written to the framebuffer read, bypass DMA, local buffer read and texture map format registers. A width not in the table falls back to the zero row.
 - The video control word is built from: refresh enabled, blank active high, 64-bit data, active-high sync outputs. Refresh is turned off while the clock and timing are programmed and turned on again afterwards. The legacy VGA core is switched off first with one store to the SVGA control register.
+
+## The PROM's own table
+
+The IO6 PROM 6.156 holds eight records of the same 68-byte layout, in a table of its own; its start-up routine compares the mode word's index (bits 6 to 0) with a limit word stored in the data right after the table and prints "rad1 resolution unknown mode" and uses index 0 with the options cleared when the index is not below it (established: the table and the compare were read in the image's decompilation). The limit is 8. It is the seventeenth word of the last record, which in every other record is zero padding, so a reading that stops at the padding sees three records and a limit that is not a record at all.
+
+| Index | Visible | Label rate | Total, blank end | Vertical total | Same record in the kernel's table |
+|--:|---|--:|---|--:|---|
+| 0 | 1280 by 1024 | 60 Hz | 1687, 408 | 1064 | index 0 |
+| 1 | 800 by 600 | 75 Hz | 1055, 256 | 624 | none |
+| 2 | 1280 by 1024 | 72 Hz | 1695, 416 | 1062 | index 1 |
+| 3 | 640 by 480 | 72 Hz | 847, 208 | 522 | none |
+| 4 | 800 by 600 | 56 Hz | 1023, 224 | 624 | none |
+| 5 | 1024 by 768 | 60 Hz | 1327, 304 | 798 | index 2 |
+| 6 | 1024 by 768 | 70 Hz | 1327, 304 | 805 | none |
+| 7 | 1024 by 1024 | 60 Hz | 1327, 304 | 1063 | none |
+
+Records 0, 2 and 5 are word for word the kernel's three records (established, compared). The 1024 by 1024 record the product sheet lists is therefore present in the PROM and absent from the kernel's table (see above).
 
 ## Clock arithmetic
 
@@ -50,6 +67,6 @@ The mode word is item 0 of a 128-byte settings sector at offset 0xff00 of the 64
 | 10 | vertical sync polarity: 0 negative, 1 positive | established |
 | 13 to 12 | sync type: 0 separate, 1 composite on horizontal sync, 2 sync on green | established |
 
-The kernel driver accepts an index below 4 and uses index 0 with negative polarities and separate sync for anything else; the PROM accepts an index below the number of records (3). The kernel's limit is one too high for a three-record table: an index of 3 would read past the table (established, comparison constants read in both binaries; the effect is unobserved). The Permedia 2V path programs the sync polarity into the RAMDAC's sync control register; sync on green is not supported on that chip and is reported only (established). On the other chip the polarity and sync-on-green bits go into the RAMDAC misc control register.
+The kernel driver accepts an index below 4 and uses index 0 with negative polarities and separate sync for anything else; the PROM accepts an index below 8, the limit its own table carries (the next section). The kernel's limit is one too high for its three-record table: an index of 3 would read past the table (established, comparison constants read in both binaries; the effect is unobserved). The two tables number their modes differently, so one mode word means different modes to the PROM and to the kernel: indexes 1 and 2 are 1280 by 1024 at 72 Hz and 1024 by 768 at 60 Hz in the kernel's table and 800 by 600 at 75 Hz and 1280 by 1024 at 72 Hz in the PROM's (established, both tables read; the consequence for a real card's console is inferred). The Permedia 2V path programs the sync polarity into the RAMDAC's sync control register; sync on green is not supported on that chip and is reported only (established). On the other chip the polarity and sync-on-green bits go into the RAMDAC misc control register.
 
 The mode-change request writes the word back to flash when it changed, one 128-byte sector at a time, with the standard unlock; see [../../software/rad1/kernel-driver.md](../../software/rad1/kernel-driver.md#settings-sector-and-flash). A factory-fresh flash content, and therefore the mode a new card starts in, is unknown: no flash dump has been found.

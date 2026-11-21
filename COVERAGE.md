@@ -16,7 +16,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | Binary inventory (functions, MMIO, ioctls) | all 40 ioctl handlers and the driver's 179 functions listed by role; no inventory configuration yet | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Driver function-by-function readings | attach, interrupt, DMA, ioctls, RAMDAC and keyboard controller initialisation, flash, early textport read; terminal escape table and key translation not | [software/rad4/kernel-driver.md](software/rad4/kernel-driver.md) |
 | Option ROM, PROM image, kernel patches | PsiTech PROM image, option ROM, textport and keyboard patches surveyed; the ROM's initialiser, console draw and keyboard read are read in [software/firmware/rad4-option-rom.md](software/firmware/rad4-option-rom.md), its mode routine is not | [software/rad4/proms-and-kernel.md](software/rad4/proms-and-kernel.md) |
-| Open questions | 27 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
+| Open questions | 26 recorded across the RAD4, RAD1 and firmware work | [questions/open-questions.md](questions/open-questions.md) |
 
 ## RAD1 (Permedia 2 board)
 
@@ -25,7 +25,7 @@ The areas of PsiTech's graphics boards for SGI systems and where each stands. Th
 | Board identity | product, bundle, display and memory established from the sheet; chip family inferred; the PROM's PCI row, the kernel's two registrations and the PROM's subsystem pair `12d1:0101` read; revision, class, BAR sizes, part numbers unknown | [devices/rad1/README.md](devices/rad1/README.md) |
 | Machines and releases | IP27 kernel family; driver in 6.5.30 media, absent from the June 1998 6.5 media; console code in PROM 6.156, absent from 6.11; first release not pinned | [devices/rad1/README.md](devices/rad1/README.md#where-it-runs) |
 | Registers (Region Zero and the RAMDAC's indexed registers) | 167 registers defined in TOML for both chips; every offset the stock software uses confirmed in the objects; bit fields only for the interrupt bits and video enable | [devices/rad1/registers.toml](devices/rad1/registers.toml) |
-| Display modes and flash settings | three modes and the 33-row partial-product table read in full; clock arithmetic; mode word layout | [devices/rad1/modes.md](devices/rad1/modes.md) |
+| Display modes and flash settings | three kernel modes, the IO6 PROM's eight and the 33-row partial-product table read in full; clock arithmetic; mode word layout | [devices/rad1/modes.md](devices/rad1/modes.md) |
 | Kernel driver | registration, attach front half, interrupt handler, request jump table, chip initialiser, flash programming read in full; DMA sequences, per-request behaviour, start-up fill, detach and read, write and map traced but unverified | [software/rad1/kernel-driver.md](software/rad1/kernel-driver.md) |
 | Textport and early console | PROM install and board bring-up read in full; kernel early-console registration read in full; PROM drawing functions and cursor inferred from the kernel's | [software/rad1/textport.md](software/rad1/textport.md) |
 | X server and DDX | not held: PsiTech's Graphics Server for the RAD1 is not in the Library; the RAD4 server's request set is a subset of what the RAD1 driver serves | [software/rad1/package.md](software/rad1/package.md) |

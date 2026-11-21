@@ -22,7 +22,7 @@ The board state has room for four boards; the textport uses the first (establish
 The routine (read in full) resets the chip, runs the chip initialiser with console mode off (so it programs the PLLs, memory timing and the mode from the flash mode word, see [../../devices/rad1/modes.md](../../devices/rad1/modes.md)), and clears the screen:
 
 - Reset: write 0 to the reset register and spin until bit 31 clears.
-- Initialise: as in the kernel driver, with the Permedia 2V paths. The PROM's copy of the routine compares the mode index against the real number of table records (3), where the kernel compares against 4.
+- Initialise: as in the kernel driver, with the Permedia 2V paths. The PROM's copy of the routine compares the mode index against the limit word stored after its own table of eight records (8), where the kernel compares against 4 for its table of three; see [../../devices/rad1/modes.md](../../devices/rad1/modes.md#the-proms-own-table).
 - Clear: set the logical operation to use constant framebuffer data, set the write data and block colour to 0, rectangle origin 0, rectangle size to the mode's width and height, and render a fast-filled rectangle (0x6000c8: rectangle, fast fill, increasing X and Y). Then the logical operation constant bit goes off again, refresh goes on and the hardware write mask is restored.
 
 The PROM's drawing goes through the textport functions below, which use render commands only (inferred: the PROM's register stores in the textport range are all graphics-processor and RAMDAC offsets; no framebuffer-window or DMA access was found in them).
