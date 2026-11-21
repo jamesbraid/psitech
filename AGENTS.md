@@ -6,7 +6,7 @@ This project reverse-engineers PsiTech's graphics boards for SGI systems, starti
 
 The RAD4 is a third-party PCI card. The software that drives it is one vendor package: a kernel driver, a standalone X server, the `rad4setres` mode tool and the `rad4d` refresh daemon. The board is built around a PLX PCI 9060-compatible bus interface and an IBM RGB561-compatible RAMDAC, with board-local framebuffer, timing and control logic whose chips are not identified. A later RAD4C-KM and an earlier RAD1 (a Permedia 2 board) exist; only the RAD4 is covered so far.
 
-Facts are labelled with one of six ratings. **established**: stated by a published document or read in full from a shipped binary, cited. **observed**: seen in a run of the shipped software on an emulator; model behaviour, never hardware evidence. **software expectation**: what the shipped software assumes the board does. **inferred**: a reasoned reading, with the reasoning. **approximation**: a value or behaviour chosen where the evidence stops, with its limit. **unknown**: nothing published or shipped decides it. Anything unlabelled is unknown. Do not fill gaps from memory, other graphics boards or other emulators. The register definitions in `registers.toml` carry only the three grades the format allows: established (which includes software expectations read from the binaries, and the doc text says so), inferred (which includes approximations) and unknown.
+Facts are labelled with one of three ratings. **established**: read in full from a shipped binary (the whole function, table or code path), a published document, or a public driver, cited with the release, function, page or file. **inferred**: a reasoned reading, with the reasoning. A reading built from call lists, store summaries, a name, a sibling chip or a partial read is inferred, and so is any approximation, with its limit stated. An emulator run is inferred, never established: it shows model behaviour, not hardware. **unknown**: nothing published or shipped decides it. Anything unlabelled is unknown. Do not fill gaps from memory, other graphics boards or other emulators. The register definitions in `registers.toml` carry the three grades the format allows; each doc text says which source the entry rests on.
 
 ## 2. Binaries
 
@@ -37,7 +37,7 @@ When every route is exhausted, label the fact "unknown: no shipped software or p
 For a register or behaviour fact, take it from the highest source that states it and grade it by that source:
 
 1. Public documents for the parts on the board (PLX, IBM, the EEPROM and UART datasheets) and PsiTech's own guides and product sheets: write the fact in your own words and cite document, revision and page. A fact one of them defines is `established` for that part.
-2. Shipped binaries: confirm what the software does, as a software expectation, and note which release.
+2. Shipped binaries: confirm what the software does, graded established where read in full, and note which release.
 3. Public Linux, OpenBSD and NetBSD headers and drivers for the same parts: `established` once a document or binary confirms them. No public driver for the RAD4 itself exists.
 4. Notes from other projects (other projects' datasheets, manual pages and emulator code): may confirm or contradict, never supply a fact. A fact resting only on one stays `unknown`, with the note named.
 

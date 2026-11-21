@@ -1,11 +1,11 @@
 <!-- generated from devices/rad1/registers.toml by defs-gen - do not edit, change the source -->
 <!-- SPDX-License-Identifier: BSD-3-Clause -->
 <!-- defs-gen 2 -->
-<!-- input sha256 6d6effab60d3ecf0befbc61265bbab43ca515e793be20c3bb700c2f97c1a0b10 -->
+<!-- input sha256 a9a892a647d6a57b2df92f69c6bbdb08055de7deec89f257a352440128d5323d -->
 
 # RAD1 graphics head registers
 
-Registers of the PsiTech RAD1 PCI graphics board as the stock IRIX 6.5 kernel driver and the IO6 PROM textport use them. The board's chip is a TI TVP4020 (Permedia 2) or a 3Dlabs Permedia 2V, so every register here is a chip register: Region Zero (the 128 KiB register region) and the RAMDAC registers the chip holds behind its index ports. Names come from public X.Org and Linux drivers for those chips; the offsets are confirmed against the shipped objects. Grades here are the three the definition format allows: established covers what a public source or the shipped binaries state outright (the doc says which), inferred covers inferences and model approximations. The finer ratings are in devices/rad1/README.md.
+Registers of the PsiTech RAD1 PCI graphics board as the stock IRIX 6.5 kernel driver and the IO6 PROM textport use them. The board's chip is a TI TVP4020 (Permedia 2) or a 3Dlabs Permedia 2V, so every register here is a chip register: Region Zero (the 128 KiB register region) and the RAMDAC registers the chip holds behind its index ports. Names come from public X.Org and Linux drivers for those chips; the offsets are confirmed against the shipped objects. Grades here are the three the definition format allows: established covers what a public source or the shipped binaries state outright (the doc says which), inferred covers inferences and approximations, with the limit stated in the doc.
 
 Unit `rad1`, macro prefix `RAD1`.
 
@@ -195,7 +195,7 @@ Every item has a grade: established, inferred or unknown. A grade says how the i
 
 ### Register `rd_cursor_control`
 
-Cursor control: 64x64 size and the cursor mode. Software expectation.
+Cursor control: 64x64 size and the cursor mode. Software use.
 
 ### Register `rd_color_mode`
 
@@ -247,7 +247,7 @@ Misc control: high colour resolution, direct colour and overlay set at init.
 
 ### Register `rd_sync_control_2v`
 
-Sync control: horizontal and vertical polarity at the pin. Software expectation.
+Sync control: horizontal and vertical polarity at the pin. Software use.
 
 ### Register `rd_dac_control_2v`
 
@@ -355,11 +355,11 @@ Cursor pattern RAM: 64x64 at two bits a pixel, 1 KiB.
 
 ### Register `reset_status`
 
-Soft reset. Software expectation: board start-up writes 0 and polls bit 31 until it clears, before programming anything else.
+Soft reset. Software use: board start-up writes 0 and polls bit 31 until it clears, before programming anything else.
 
 ### Register `int_enable`
 
-Interrupt enable. Software expectation: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0.
+Interrupt enable. Software use: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0.
 
 | Bits | Field | Grade | Values | Source | Description |
 |---|---|---|---|---|---|
@@ -369,7 +369,7 @@ Interrupt enable. Software expectation: the kernel driver writes 0x83 once at at
 
 ### Register `int_flags`
 
-Interrupt status, cleared by writing the bits back. Software expectation: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested.
+Interrupt status, cleared by writing the bits back. Software use: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested.
 
 | Bits | Field | Grade | Values | Source | Description |
 |---|---|---|---|---|---|
@@ -379,47 +379,47 @@ Interrupt status, cleared by writing the bits back. Software expectation: the ha
 
 ### Register `in_fifo_space`
 
-Free entries in the input FIFO. Software expectation: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100.
+Free entries in the input FIFO. Software use: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100.
 
 ### Register `out_fifo_words`
 
-Words waiting in the output FIFO. Software expectation: polled until nonzero after a sync or a read-back, and drained to empty after a timeout.
+Words waiting in the output FIFO. Software use: polled until nonzero after a sync or a read-back, and drained to empty after a timeout.
 
 ### Register `error_flags`
 
-Error status. Software expectation: read before a read-back DMA and written back to clear it, and again after the transfer.
+Error status. Software use: read before a read-back DMA and written back to clear it, and again after the transfer.
 
 ### Register `vclk_ctl`
 
-Video clock control. Software expectation: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock.
+Video clock control. Software use: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock.
 
 ### Register `aperture_one`
 
-Aperture one control. Software expectation: written 0 at init.
+Aperture one control. Software use: written 0 at init.
 
 ### Register `aperture_two`
 
-Aperture two control. Software expectation: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector.
+Aperture two control. Software use: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector.
 
 ### Register `dma_control`
 
-DMA control. Software expectation: written 0x8 at init.
+DMA control. Software use: written 0x8 at init.
 
 ### Register `chip_config`
 
-Chip configuration. Software expectation: only read, by a diagnostic dump routine.
+Chip configuration. Software use: only read, by a diagnostic dump routine.
 
 ### Register `out_dma_address`
 
-Output DMA address: the host (PCI) address a read-back is written to. Software expectation: set per chunk before the count.
+Output DMA address: the host (PCI) address a read-back is written to. Software use: set per chunk before the count.
 
 ### Register `out_dma_count`
 
-Output DMA count in words; writing it starts the transfer. Software expectation: at most 0xffff words per write.
+Output DMA count in words; writing it starts the transfer. Software use: at most 0xffff words per write.
 
 ### Register `by_dma_address`
 
-Bypass DMA host address. Software expectation: the source of a host-to-framebuffer transfer.
+Bypass DMA host address. Software use: the source of a host-to-framebuffer transfer.
 
 ### Register `by_dma_stride`
 
@@ -431,39 +431,39 @@ Bypass DMA destination in local memory, in pixels (or in pixel units of the form
 
 ### Register `by_dma_size`
 
-Bypass DMA size: width in bits 11 to 0, height from bit 16. Software expectation.
+Bypass DMA size: width in bits 11 to 0, height from bit 16. Software use.
 
 ### Register `by_dma_byte_mask`
 
-Bypass DMA byte mask. Software expectation: always written 0x000f000f (all lanes at both edges).
+Bypass DMA byte mask. Software use: always written 0x000f000f (all lanes at both edges).
 
 ### Register `by_dma_control`
 
-Bypass DMA control; the write starts the transfer. Software expectation: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart.
+Bypass DMA control; the write starts the transfer. Software use: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart.
 
 ### Register `mem_control`
 
-Memory type. Software expectation: written 0 (SGRAM).
+Memory type. Software use: written 0 (SGRAM).
 
 ### Register `boot_address`
 
-Memory boot address (the SGRAM mode word). Software expectation: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type.
+Memory boot address (the SGRAM mode word). Software use: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type.
 
 ### Register `mem_config`
 
-Memory timing. Software expectation: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks.
+Memory timing. Software use: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks.
 
 ### Register `bypass_write_mask`
 
-Plane write mask for bypass (host and DMA) writes. Software expectation: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it.
+Plane write mask for bypass (host and DMA) writes. Software use: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it.
 
 ### Register `out_fifo`
 
-Output FIFO read port. Software expectation: read to drain sync tags and read-back words.
+Output FIFO read port. Software use: read to drain sync tags and read-back words.
 
 ### Register `screen_base`
 
-Screen base, in 64-bit units. Software expectation: 0.
+Screen base, in 64-bit units. Software use: 0.
 
 ### Register `screen_stride`
 
@@ -507,7 +507,7 @@ Vertical sync end in lines.
 
 ### Register `video_control`
 
-Video control. Software expectation: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change.
+Video control. Software use: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change.
 
 | Bits | Field | Grade | Values | Source | Description |
 |---|---|---|---|---|---|
@@ -515,31 +515,31 @@ Video control. Software expectation: bit 0 enables refresh; the mode loader also
 
 ### Register `fifo_control`
 
-Video FIFO control. Software expectation: written 0x0b07.
+Video FIFO control. Software use: written 0x0b07.
 
 ### Register `screen_base_right`
 
-Right-eye screen base. Software expectation: written 0.
+Right-eye screen base. Software use: written 0.
 
 ### Register `rd_palette_write_address`
 
-Palette write address; also the index port of the Permedia 2 indexed registers. Software expectation: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries.
+Palette write address; also the index port of the Permedia 2 indexed registers. Software use: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries.
 
 ### Register `rd_palette_data`
 
-Palette data. Software expectation: three consecutive byte stores per entry.
+Palette data. Software use: three consecutive byte stores per entry.
 
 ### Register `rd_pixel_mask`
 
-Pixel read mask. Software expectation: written 0xff.
+Pixel read mask. Software use: written 0xff.
 
 ### Register `rd_palette_read_address`
 
-Palette read address. Software expectation: written 0 before a palette load.
+Palette read address. Software use: written 0 before a palette load.
 
 ### Register `vga_control`
 
-SVGA control (name ours). Software expectation: written 0x40 before the mode is set, to turn the legacy VGA core off.
+SVGA control (name ours). Software use: written 0x40 before the mode is set, to turn the legacy VGA core off.
 
 ### Register `start_x_dom`
 
@@ -571,7 +571,7 @@ Scanline count of a trapezoid. The screen clear writes the mode height.
 
 ### Register `render`
 
-Render command; the write starts the operation. Software expectation: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used.
+Render command; the write starts the operation. Software use: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used.
 
 ### Register `wait_for_completion`
 
@@ -739,7 +739,7 @@ Framebuffer software write mask. Written all ones at init; the rectangle fill an
 
 ### Register `logical_op_mode`
 
-Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software expectation.
+Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software use.
 
 ### Register `fb_write_data`
 
@@ -831,7 +831,7 @@ Delta mode. Written 0 at init.
 
 ### Register `rd_cursor_color_address`
 
-Cursor colour address. Software expectation: written 1 before the cursor colours.
+Cursor colour address. Software use: written 1 before the cursor colours.
 
 ### Register `rd_cursor_color_data`
 
@@ -839,7 +839,7 @@ Cursor colour data: three bytes background then three bytes foreground.
 
 ### Register `rd_indexed_data`
 
-Data port of the indexed registers, selected through the palette write address. Software expectation: read to poll the PLL lock bits.
+Data port of the indexed registers, selected through the palette write address. Software use: read to poll the PLL lock bits.
 
 ### Register `rd_cursor_ram_data`
 
@@ -863,7 +863,7 @@ Cursor Y, high byte.
 
 ### Register `rd_index_low_2v`
 
-Index, low byte. Software expectation: written before each access to an indexed register.
+Index, low byte. Software use: written before each access to an indexed register.
 
 ### Register `rd_index_high_2v`
 
@@ -871,8 +871,8 @@ Index, high byte.
 
 ### Register `rd_indexed_data_2v`
 
-Indexed data port. Software expectation: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments.
+Indexed data port. Software use: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments.
 
 ### Register `rd_index_control_2v`
 
-Index control. Software expectation: written 1 at init to turn auto-increment on.
+Index control. Software use: written 1 at init to turn auto-increment on.

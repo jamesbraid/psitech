@@ -1,6 +1,6 @@
 # PsiTech boards in SGI firmware and standalone programs
 
-Which SGI and PsiTech firmware images know a PsiTech board, how each one finds it and what it draws. Ratings follow [AGENTS.md](../../AGENTS.md): **established** (a table or function body read in full from a shipped binary), **software expectation** (what the firmware assumes the board does), **inferred**, **approximation** and **unknown**. Everything here comes from the shipped images; no manual covers a PsiTech board's registers. Names such as `rad4_earlyinit` are symbols the shipped objects carry.
+Which SGI and PsiTech firmware images know a PsiTech board, how each one finds it and what it draws. Ratings follow [AGENTS.md](../../AGENTS.md): **established** (a table or function body read in full from a shipped binary), **inferred** (a reasoned reading, or one from a partial read) and **unknown**. Everything here comes from the shipped images; no manual covers a PsiTech board's registers. Names such as `rad4_earlyinit` are symbols the shipped objects carry.
 
 ## Pages
 

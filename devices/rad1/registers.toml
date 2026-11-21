@@ -1,7 +1,7 @@
 unit = "rad1"
 prefix = "RAD1"
 title = "RAD1 graphics head registers"
-doc = "Registers of the PsiTech RAD1 PCI graphics board as the stock IRIX 6.5 kernel driver and the IO6 PROM textport use them. The board's chip is a TI TVP4020 (Permedia 2) or a 3Dlabs Permedia 2V, so every register here is a chip register: Region Zero (the 128 KiB register region) and the RAMDAC registers the chip holds behind its index ports. Names come from public X.Org and Linux drivers for those chips; the offsets are confirmed against the shipped objects. Grades here are the three the definition format allows: established covers what a public source or the shipped binaries state outright (the doc says which), inferred covers inferences and model approximations. The finer ratings are in devices/rad1/README.md."
+doc = "Registers of the PsiTech RAD1 PCI graphics board as the stock IRIX 6.5 kernel driver and the IO6 PROM textport use them. The board's chip is a TI TVP4020 (Permedia 2) or a 3Dlabs Permedia 2V, so every register here is a chip register: Region Zero (the 128 KiB register region) and the RAMDAC registers the chip holds behind its index ports. Names come from public X.Org and Linux drivers for those chips; the offsets are confirmed against the shipped objects. Grades here are the three the definition format allows: established covers what a public source or the shipped binaries state outright (the doc says which), inferred covers inferences and approximations, with the limit stated in the doc."
 from = "xf86-video-glint, src/glint_regs.h; Linux include/video/permedia2.h; stock IRIX 6.5.30 kernel driver and IO6 PROM 6.156"
 public_from = ["xf86-video-glint src/glint_regs.h", "Linux include/video/permedia2.h", "TI TVP4020 (Permedia 2) Programmer's Reference Manual"]
 name_source = "public"
@@ -32,7 +32,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Soft reset. Software expectation: board start-up writes 0 and polls bit 31 until it clears, before programming anything else."
+doc = "Soft reset. Software use: board start-up writes 0 and polls bit 31 until it clears, before programming anything else."
 
 [registers.int_enable]
 space = "rz"
@@ -42,7 +42,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Interrupt enable. Software expectation: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0."
+doc = "Interrupt enable. Software use: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0."
 
 [registers.int_enable.fields]
 dma = { bits = [0, 0], grade = "established" }
@@ -57,7 +57,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Interrupt status, cleared by writing the bits back. Software expectation: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested."
+doc = "Interrupt status, cleared by writing the bits back. Software use: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested."
 
 [registers.int_flags.fields]
 dma = { bits = [0, 0], grade = "established" }
@@ -72,7 +72,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Free entries in the input FIFO. Software expectation: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100."
+doc = "Free entries in the input FIFO. Software use: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100."
 
 [registers.out_fifo_words]
 space = "rz"
@@ -82,7 +82,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Words waiting in the output FIFO. Software expectation: polled until nonzero after a sync or a read-back, and drained to empty after a timeout."
+doc = "Words waiting in the output FIFO. Software use: polled until nonzero after a sync or a read-back, and drained to empty after a timeout."
 
 [registers.error_flags]
 space = "rz"
@@ -92,7 +92,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Error status. Software expectation: read before a read-back DMA and written back to clear it, and again after the transfer."
+doc = "Error status. Software use: read before a read-back DMA and written back to clear it, and again after the transfer."
 
 [registers.vclk_ctl]
 space = "rz"
@@ -102,7 +102,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Video clock control. Software expectation: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock."
+doc = "Video clock control. Software use: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock."
 
 [registers.aperture_one]
 space = "rz"
@@ -112,7 +112,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Aperture one control. Software expectation: written 0 at init."
+doc = "Aperture one control. Software use: written 0 at init."
 
 [registers.aperture_two]
 space = "rz"
@@ -122,7 +122,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Aperture two control. Software expectation: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector."
+doc = "Aperture two control. Software use: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector."
 
 [registers.dma_control]
 space = "rz"
@@ -132,7 +132,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "DMA control. Software expectation: written 0x8 at init."
+doc = "DMA control. Software use: written 0x8 at init."
 
 [registers.chip_config]
 space = "rz"
@@ -142,7 +142,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Chip configuration. Software expectation: only read, by a diagnostic dump routine."
+doc = "Chip configuration. Software use: only read, by a diagnostic dump routine."
 
 [registers.out_dma_address]
 space = "rz"
@@ -152,7 +152,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Output DMA address: the host (PCI) address a read-back is written to. Software expectation: set per chunk before the count."
+doc = "Output DMA address: the host (PCI) address a read-back is written to. Software use: set per chunk before the count."
 
 [registers.out_dma_count]
 space = "rz"
@@ -162,7 +162,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Output DMA count in words; writing it starts the transfer. Software expectation: at most 0xffff words per write."
+doc = "Output DMA count in words; writing it starts the transfer. Software use: at most 0xffff words per write."
 
 [registers.by_dma_address]
 space = "rz"
@@ -172,7 +172,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Bypass DMA host address. Software expectation: the source of a host-to-framebuffer transfer."
+doc = "Bypass DMA host address. Software use: the source of a host-to-framebuffer transfer."
 
 [registers.by_dma_stride]
 space = "rz"
@@ -202,7 +202,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Bypass DMA size: width in bits 11 to 0, height from bit 16. Software expectation."
+doc = "Bypass DMA size: width in bits 11 to 0, height from bit 16. Software use."
 
 [registers.by_dma_byte_mask]
 space = "rz"
@@ -212,7 +212,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Bypass DMA byte mask. Software expectation: always written 0x000f000f (all lanes at both edges)."
+doc = "Bypass DMA byte mask. Software use: always written 0x000f000f (all lanes at both edges)."
 
 [registers.by_dma_control]
 space = "rz"
@@ -222,7 +222,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Bypass DMA control; the write starts the transfer. Software expectation: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart."
+doc = "Bypass DMA control; the write starts the transfer. Software use: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart."
 
 # Region Zero: memory control
 
@@ -234,7 +234,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Memory type. Software expectation: written 0 (SGRAM)."
+doc = "Memory type. Software use: written 0 (SGRAM)."
 
 [registers.boot_address]
 space = "rz"
@@ -244,7 +244,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Memory boot address (the SGRAM mode word). Software expectation: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type."
+doc = "Memory boot address (the SGRAM mode word). Software use: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type."
 
 [registers.mem_config]
 space = "rz"
@@ -254,7 +254,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Memory timing. Software expectation: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks."
+doc = "Memory timing. Software use: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks."
 
 [registers.bypass_write_mask]
 space = "rz"
@@ -264,7 +264,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Plane write mask for bypass (host and DMA) writes. Software expectation: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it."
+doc = "Plane write mask for bypass (host and DMA) writes. Software use: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it."
 
 [registers.out_fifo]
 space = "rz"
@@ -274,7 +274,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Output FIFO read port. Software expectation: read to drain sync tags and read-back words."
+doc = "Output FIFO read port. Software use: read to drain sync tags and read-back words."
 
 # Region Zero: video timing
 
@@ -286,7 +286,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Screen base, in 64-bit units. Software expectation: 0."
+doc = "Screen base, in 64-bit units. Software use: 0."
 
 [registers.screen_stride]
 space = "rz"
@@ -396,7 +396,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Video control. Software expectation: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change."
+doc = "Video control. Software use: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change."
 
 [registers.video_control.fields]
 enable = { bits = [0, 0], grade = "established" }
@@ -409,7 +409,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Video FIFO control. Software expectation: written 0x0b07."
+doc = "Video FIFO control. Software use: written 0x0b07."
 
 [registers.screen_base_right]
 space = "rz"
@@ -419,7 +419,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Right-eye screen base. Software expectation: written 0."
+doc = "Right-eye screen base. Software use: written 0."
 
 # Region Zero: RAMDAC ports common to both chips
 
@@ -431,7 +431,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Palette write address; also the index port of the Permedia 2 indexed registers. Software expectation: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries."
+doc = "Palette write address; also the index port of the Permedia 2 indexed registers. Software use: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries."
 
 [registers.rd_palette_data]
 space = "rz"
@@ -441,7 +441,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Palette data. Software expectation: three consecutive byte stores per entry."
+doc = "Palette data. Software use: three consecutive byte stores per entry."
 
 [registers.rd_pixel_mask]
 space = "rz"
@@ -451,7 +451,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Pixel read mask. Software expectation: written 0xff."
+doc = "Pixel read mask. Software use: written 0xff."
 
 [registers.rd_palette_read_address]
 space = "rz"
@@ -461,7 +461,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Palette read address. Software expectation: written 0 before a palette load."
+doc = "Palette read address. Software use: written 0 before a palette load."
 
 # Region Zero: RAMDAC ports on the 104c:3d07 chip
 
@@ -473,7 +473,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Cursor colour address. Software expectation: written 1 before the cursor colours."
+doc = "Cursor colour address. Software use: written 1 before the cursor colours."
 
 [registers.rd_cursor_color_data]
 space = "rz_p2"
@@ -493,7 +493,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Data port of the indexed registers, selected through the palette write address. Software expectation: read to poll the PLL lock bits."
+doc = "Data port of the indexed registers, selected through the palette write address. Software use: read to poll the PLL lock bits."
 
 [registers.rd_cursor_ram_data]
 space = "rz_p2"
@@ -555,7 +555,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Index, low byte. Software expectation: written before each access to an indexed register."
+doc = "Index, low byte. Software use: written before each access to an indexed register."
 
 [registers.rd_index_high_2v]
 space = "rz_p2v"
@@ -575,7 +575,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Indexed data port. Software expectation: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments."
+doc = "Indexed data port. Software use: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments."
 
 [registers.rd_index_control_2v]
 space = "rz_p2v"
@@ -585,7 +585,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Index control. Software expectation: written 1 at init to turn auto-increment on."
+doc = "Index control. Software use: written 1 at init to turn auto-increment on."
 
 # Region Zero: SVGA
 
@@ -597,7 +597,7 @@ width = 32
 grade = "inferred"
 name_source = "ours"
 from = "PsiTech RAD1 kernel driver and IO6 PROM textport (IRIX 6.5.30)"
-doc = "SVGA control (name ours). Software expectation: written 0x40 before the mode is set, to turn the legacy VGA core off."
+doc = "SVGA control (name ours). Software use: written 0x40 before the mode is set, to turn the legacy VGA core off."
 
 # Region Zero: GP registers
 
@@ -679,7 +679,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Render command; the write starts the operation. Software expectation: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used."
+doc = "Render command; the write starts the operation. Software use: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used."
 
 [registers.wait_for_completion]
 space = "rz"
@@ -1099,7 +1099,7 @@ width = 32
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software expectation."
+doc = "Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software use."
 
 [registers.fb_write_data]
 space = "rz"
@@ -1331,7 +1331,7 @@ width = 8
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Cursor control: 64x64 size and the cursor mode. Software expectation."
+doc = "Cursor control: 64x64 size and the cursor mode. Software use."
 
 [registers.rd_color_mode]
 space = "p2dac"
@@ -1463,7 +1463,7 @@ width = 8
 grade = "established"
 name_source = "public"
 name_cite = "xf86-video-glint src/glint_regs.h (X.Org); Linux include/video/permedia2.h"
-doc = "Sync control: horizontal and vertical polarity at the pin. Software expectation."
+doc = "Sync control: horizontal and vertical polarity at the pin. Software use."
 
 [registers.rd_dac_control_2v]
 space = "p2vdac"

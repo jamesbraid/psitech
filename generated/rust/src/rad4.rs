@@ -1,21 +1,21 @@
 // generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source
 // SPDX-License-Identifier: BSD-3-Clause
 // defs-gen 2
-// input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1
+// input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28
 // RAD4 graphics head registers
 #![allow(dead_code)]
 
-/// Expansion ROM remap register. Software expectation: the driver writes it once at attach, with the top byte 0xe1. Nothing reads it back. (established)
+/// Expansion ROM remap register. Software use: the driver writes it once at attach, with the top byte 0xe1. Nothing reads it back. (established)
 pub mod rom_remap {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x14;
 }
-/// Local bus region descriptor. Software expectation: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus. (established)
+/// Local bus region descriptor. Software use: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus. (established)
 pub mod bus_region_descriptor {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x18;
 }
-/// Mailbox 0. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to me (established)
+/// Mailbox 0. Software use: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a fir (established)
 pub mod mailbox {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x40;
@@ -140,7 +140,7 @@ pub mod eeprom_ctl {
         }
     }
 }
-/// Parallel flash, 64 KiB in 128-byte sectors. Software expectation: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at t (inferred)
+/// Parallel flash, 64 KiB in 128-byte sectors. Software use: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at the addre (inferred)
 pub mod flash {
     pub const WIDTH: u32 = 8;
     pub const OFFSET: u64 = 0x800000;
@@ -207,7 +207,7 @@ pub mod rgb561_data_multi {
         }
     }
 }
-/// Horizontal timing bank 0. Software expectation: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not kn (inferred)
+/// Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 102 (inferred)
 pub mod timing_h0 {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xa00000;
@@ -228,14 +228,14 @@ pub mod timing_h3 {
     pub const COUNT: u32 = 1024;
     pub const STRIDE: u64 = 4;
 }
-/// Vertical timing bank. Software expectation: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and t (inferred)
+/// Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit m (inferred)
 pub mod timing_v {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xb00000;
     pub const COUNT: u32 = 2048;
     pub const STRIDE: u64 = 4;
 }
-/// Pixel write mask. Software expectation: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay plane (inferred)
+/// Pixel write mask. Software use: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before (inferred)
 pub mod plane_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xd00000;
@@ -325,7 +325,7 @@ pub mod km_opr_reset {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xef0000;
 }
-/// Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an inte (inferred)
+/// Board control and status. Software use: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at (inferred)
 pub mod board_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xf00000;
@@ -450,7 +450,7 @@ pub mod rgb561_cursor_hot_y {
         }
     }
 }
-/// DMA channel 0 mode. Software expectation: the driver reaches the DMA registers through the expansion ROM resource, writes 0x7c3 here (32-bit local bus (established)
+/// DMA channel 0 mode. Software use: the driver reaches the DMA registers through the expansion ROM resource, writes 0x7c3 here (32-bit local bus, chaini (established)
 pub mod dmamode0 {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x100;

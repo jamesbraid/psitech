@@ -8,7 +8,7 @@ The controller is in BAR2 of the board, not in a separate region: its register b
 
 ## The part
 
-The register layout and every use match the SCN2681/SCC68681 dual UART index for index: mode registers at 0 and 8, status and clock select at 1 and 9, command at 2 and 10, data at 3 and 11, auxiliary control at 4, interrupt status and mask at 5, the output port configuration at 13 and the output-port set and reset at 14 and 15 (software expectation for the use; inferred that the part is that UART or a compatible one, since nothing names it). The status bits the driver tests are receiver ready (bit 0) and transmitter ready (bit 2). The controller is clocked as 0xff in both clock-select registers, the "external clock, 1x" code of the public part, so the PS/2 clock line is inferred to drive the receiver and transmitter clocks.
+The register layout and every use match the SCN2681/SCC68681 dual UART index for index: mode registers at 0 and 8, status and clock select at 1 and 9, command at 2 and 10, data at 3 and 11, auxiliary control at 4, interrupt status and mask at 5, the output port configuration at 13 and the output-port set and reset at 14 and 15 (established for the use; inferred that the part is that UART or a compatible one, since nothing names it). The status bits the driver tests are receiver ready (bit 0) and transmitter ready (bit 2). The controller is clocked as 0xff in both clock-select registers, the "external clock, 1x" code of the public part, so the PS/2 clock line is inferred to drive the receiver and transmitter clocks.
 
 The counter and timer registers (6, 7, 12 and the start and stop reads at 14 and 15) are unused. The board's control register has bit 7 set whenever the saved interrupt mask is nonzero (see [registers.toml](registers.toml), `board_control`).
 
@@ -23,7 +23,7 @@ Run at attach when the mailbox is zero and the device is `0x105`. In order:
 5. Both channels: command 0x05 (enable receiver and transmitter).
 6. For each channel, detect the attached device: send 0xff (the PS/2 reset command, see below) and read the reply. A first reply byte of 0xaa followed by 0x00 marks a mouse (code 2); 0xaa followed by anything else marks a keyboard (code 1); no reply leaves the code 0. For a mouse, the channel is then reconfigured: command 0x1a, mode register 0x47, mode register 0x07, command 0x05. The codes are stored in the board state; in the same order the driver treats channel A first, channel B second.
 
-When the mailbox is nonzero the driver does not run this: it takes the codes from mailbox words 1 and 2 instead (BAR0 offsets 0x44 and 0x48), which means a firmware initialiser that ran first stored them there (software expectation).
+When the mailbox is nonzero the driver does not run this: it takes the codes from mailbox words 1 and 2 instead (BAR0 offsets 0x44 and 0x48), which means a firmware initialiser that ran first stored them there (established).
 
 ## Transmit and receive
 

@@ -1,7 +1,7 @@
 /* generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1 */
+/* input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28 */
 /* RAD4 graphics head registers */
 /* Names are RAD4_BOARD_*; name source: ours. */
 #ifndef HW_SGI_GPU_RAD4_BOARD_REGS_H

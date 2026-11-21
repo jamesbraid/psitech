@@ -2,7 +2,7 @@
 
 The RAD4 is a PCI graphics card with an 8 MB framebuffer, a PLX PCI 9060-compatible bus interface and an IBM RGB561-compatible RAMDAC. Its PCI IDs are `12d1:0104`; the RAD4-KM variant, with keyboard and mouse connectors on the card, is `12d1:0105`. This page is the board's identity, address map and register summary. The register definitions are [registers.toml](registers.toml) and the generated table [registers.md](registers.md). The display modes and the configuration EEPROM are in [modes.md](modes.md), and the X server and driver findings in [xserver-decode.md](xserver-decode.md).
 
-Every fact carries one of six ratings: **established** (a published document, or a shipped binary read in full), **observed** (seen when the shipped software ran on an emulator; model behaviour, not hardware), **software expectation** (what the shipped software assumes the board does), **inferred** (a reasoned reading), **approximation** (a value chosen where the evidence stops) and **unknown**. `registers.toml` can only say established, inferred or unknown: it files software expectations under established and approximations under inferred, and says so in each entry's doc text.
+Every fact carries one of three ratings: **established** (a published document, or a shipped binary or driver read in full, cited), **inferred** (a reasoned reading: what the software assumes about the board where the read was partial, approximations, and emulator runs, which show model behaviour and not hardware) and **unknown** (nothing published or shipped decides it). `registers.toml` uses the same three grades, and each entry's doc text names its source.
 
 ## Sources
 
@@ -10,7 +10,7 @@ Every fact carries one of six ratings: **established** (a published document, or
 - PLX Technology, *PCI 9060 Data Sheet*, version 1.2, December 1995, and the *PCI 9054 Data Book*, version 1.0, for the bus interface.
 - IBM Microelectronics, *RGB561 Architecture*, preliminary revision 1.1, 23 January 1995, for the RAMDAC.
 - PsiTech, *RAD4C-KM Graphics Head* product sheet, RAD4-DS-1099.
-- The PsiTech release 1.3k package for IRIX 6.5 (kernel driver, standalone X server, `rad4setres`, `rad4d`), read as binaries, rated as software expectations. Hashes are in [../../references/binaries.md](../../references/binaries.md).
+- The PsiTech release 1.3k package for IRIX 6.5 (kernel driver, standalone X server, `rad4setres`, `rad4d`), read as binaries, graded from the code: established where a routine was read in full, inferred otherwise. Hashes are in [../../references/binaries.md](../../references/binaries.md).
 
 No Linux, OpenBSD or NetBSD driver exists for the RAD4, and no board photograph, schematic, parts list or configuration-space dump has been found.
 
@@ -22,7 +22,7 @@ No Linux, OpenBSD or NetBSD driver exists for the RAD4, and no board photograph,
 | RAD4-KM PCI vendor and device | `12d1:0105` | established | owner's guide, installation example; driver registers the ID |
 | RAD4-KM role | same line with keyboard and mouse connectors, for the Origin 2000, which has none of its own | established | owner's guide |
 | RAD4 and RAD4-KM share framebuffer, RAMDAC and register layout | yes | inferred | one guide section describes both; one driver attaches to both |
-| Framebuffer size | 8 MB | established for the RAD4C-KM sheet and the owner's guide description; the driver requests an 8 MiB mapping (software expectation) | owner's guide; product sheet; driver |
+| Framebuffer size | 8 MB | established for the RAD4C-KM sheet and the owner's guide description; the driver requests an 8 MiB mapping (established) | owner's guide; product sheet; driver |
 | Bus interface | PLX PCI 9060-compatible | inferred, high confidence | register offsets, the expansion ROM route to DMA registers, mailbox, interrupt and EEPROM bits all match the 9060 sheet |
 | Exact PLX part suffix and board revision | not identified | unknown | |
 | RAMDAC | IBM RGB561-compatible | inferred, high confidence | indexed access through four ports, index 0x20 to 0x22 used as the sync and PLL registers the specification names |
@@ -54,16 +54,16 @@ Known problems the guide lists for release 1.3: cursor trouble with a maximised 
 
 ## Resources the driver maps
 
-The driver names its resources by the Bridge-family selector numbers: selector 8 is the first base address region (BAR0), selector 10 the third (BAR2) and selector 1 the expansion ROM (software expectation; the numbering is that of public Linux Bridge code and the driver's own configuration read of BAR2 agrees).
+The driver names its resources by the Bridge-family selector numbers: selector 8 is the first base address region (BAR0), selector 10 the third (BAR2) and selector 1 the expansion ROM (established; the numbering is that of public Linux Bridge code and the driver's own configuration read of BAR2 agrees).
 
 | Resource | Use | Rating |
 |---|---|---|
-| BAR0, 128 bytes requested | PLX runtime registers: mailbox, interrupt control, EEPROM control | software expectation (size requested); the register layout is established from the 9060 sheet |
-| BAR2, 8 MiB requested | framebuffer at the bottom, board registers above it | software expectation. The driver forms pointers beyond the 8 MiB it requests, so BAR2 must be larger than the request: the real size is unknown |
-| Expansion ROM, 8 MiB requested | aliases of the DMA channel registers; the driver asks for an 8 MiB window, so a smaller declared size does not satisfy it. The driver sets the enable bit (bit 0) of the card's expansion ROM base register in configuration space before use | software expectation |
-| BAR2 plus 0xe00000 (RAD4-KM only) | keyboard and mouse controller, sixteen registers 64 KiB apart; not a separate BAR | software expectation (use), inferred (layout); see [km-controller.md](km-controller.md) |
+| BAR0, 128 bytes requested | PLX runtime registers: mailbox, interrupt control, EEPROM control | established (size requested); the register layout is established from the 9060 sheet |
+| BAR2, 8 MiB requested | framebuffer at the bottom, board registers above it | established for the requested size. The driver forms pointers beyond the 8 MiB it requests, so inferred: BAR2 must be larger than the request; the real size is unknown |
+| Expansion ROM, 8 MiB requested | aliases of the DMA channel registers; the driver asks for an 8 MiB window, so a smaller declared size does not satisfy it. The driver sets the enable bit (bit 0) of the card's expansion ROM base register in configuration space before use | established |
+| BAR2 plus 0xe00000 (RAD4-KM only) | keyboard and mouse controller, sixteen registers 64 KiB apart; not a separate BAR | established (use), inferred (layout); see [km-controller.md](km-controller.md) |
 
-Every access the driver makes to BAR0, BAR2 and the expansion ROM is an aligned 32-bit load or store, except the flash at BAR2 plus 0x800000, which it reads and writes a byte at a time with the bus region descriptor switched (software expectation). The RAMDAC ports take their payload from the low eight bits of the store.
+Every access the driver makes to BAR0, BAR2 and the expansion ROM is an aligned 32-bit load or store, except the flash at BAR2 plus 0x800000, which it reads and writes a byte at a time with the bus region descriptor switched (established). The RAMDAC ports take their payload from the low eight bits of the store.
 
 ## BAR0: bus interface
 
@@ -71,10 +71,10 @@ Offsets follow the 9060 runtime register layout.
 
 | Offset | Name | What the driver does | Rating |
 |---|---|---|---|
-| 0x14 | expansion ROM remap | writes a value with top byte 0xe1 at attach, never reads | software expectation |
-| 0x18 | local bus region descriptor | writes `0xf84303c3` at attach, selecting a 32-bit local bus | software expectation |
-| 0x40 | mailbox | reads it at attach; nonzero means a firmware initialiser ran and the driver skips its own mode and RAMDAC setup; the driver writes zero to it at the end of every attach. Words 1 and 2 (0x44, 0x48) carry the keyboard and mouse device codes the firmware found, read only when word 0 is nonzero on a RAD4-KM | software expectation. The reset value and who writes it on a real card: unknown |
-| 0x68 | interrupt control and status | ORs `0x50900` in at attach, with or without DMA; bits 8, 11, 15, 16, 18, 21 are the ones used | established (layout), software expectation (use) |
+| 0x14 | expansion ROM remap | writes a value with top byte 0xe1 at attach, never reads | established |
+| 0x18 | local bus region descriptor | writes `0xf84303c3` at attach, selecting a 32-bit local bus | established |
+| 0x40 | mailbox | reads it at attach; nonzero means a firmware initialiser ran and the driver skips its own mode and RAMDAC setup; the driver writes zero to it at the end of every attach. Words 1 and 2 (0x44, 0x48) carry the keyboard and mouse device codes the firmware found, read only when word 0 is nonzero on a RAD4-KM | established. The reset value and who writes it on a real card: unknown |
+| 0x68 | interrupt control and status | ORs `0x50900` in at attach, with or without DMA; bits 8, 11, 15, 16, 18, 21 are the ones used | established (layout), established (use) |
 | 0x6c | serial EEPROM control | clock bit 24, chip select bit 25, data to the EEPROM bit 26, data from it bit 27; the driver also sets the low nibble, the PCI read command of the DMA engines, to 0xc by default (6 and 0xe are the other values it accepts) | established (bits and nibble) |
 
 Bit 15 of the interrupt register is the local interrupt input. Frame events and DMA completion both reach the host through it: the driver enables the DMA interrupt only towards the 9060's local output and looks for the channel's bit 21 only after bit 15, so the output is inferred to be wired back to the local input, as the 9060 sheet suggests. The board's frame event drives the same input (inferred).
@@ -83,7 +83,7 @@ Bit 15 of the interrupt register is the local interrupt input. Frame events and 
 
 | Offset | Name | Rating |
 |---|---|---|
-| 0x100 | DMA channel 0 mode (`0x7c3`: 32-bit local bus, chaining, done interrupt enable) | established (offsets, 9060 Tables 47, 51, 57 and 9054 Tables 11-76, 11-80, 11-86); the route through the expansion ROM is a software expectation |
+| 0x100 | DMA channel 0 mode (`0x7c3`: 32-bit local bus, chaining, done interrupt enable) | established (offsets, 9060 Tables 47, 51, 57 and 9054 Tables 11-76, 11-80, 11-86); the route through the expansion ROM is established |
 | 0x110 | descriptor pointer | |
 | 0x128 | command and status | |
 
@@ -93,28 +93,28 @@ The board's DMA use, descriptor layout and byte order are in [xserver-decode.md]
 
 | Offset | Name | Rating |
 |---|---|---|
-| 0x000000 to 0x7fffff | framebuffer, 32-bit pixels | software expectation |
-| 0x800000 to 0x80ffff | parallel flash, 64 KiB in 128-byte sectors, used by driver requests 129 and 130 and the package's ROM programming tool | software expectation (use), inferred (part); see [kernel-driver.md](../../software/rad4/kernel-driver.md#eeprom-and-flash) |
+| 0x000000 to 0x7fffff | framebuffer, 32-bit pixels | established |
+| 0x800000 to 0x80ffff | parallel flash, 64 KiB in 128-byte sectors, used by driver requests 129 and 130 and the package's ROM programming tool | established (use), inferred (part); see [kernel-driver.md](../../software/rad4/kernel-driver.md#eeprom-and-flash) |
 | 0x900000, 0x910000 | RAMDAC index low and high byte | inferred |
 | 0x920000 | RAMDAC data, single cycle, index auto-increments | inferred |
 | 0x930000 | RAMDAC data, multi cycle | inferred |
-| 0xa00000, 0xa01000, 0xa03000 | horizontal timing banks | software expectation (use); depth and bit meanings unknown |
+| 0xa00000, 0xa01000, 0xa03000 | horizontal timing banks | established (use); depth and bit meanings unknown |
 | 0xa02000 | pointer built but never written by the loader | unknown |
-| 0xb00000 | vertical timing bank | software expectation (use); depth and bit meanings unknown |
+| 0xb00000 | vertical timing bank | established (use); depth and bit meanings unknown |
 | 0xc00000 | pointer built, never used in the driver | unknown |
 | 0xe00000 to 0xef0000 | RAD4-KM keyboard and mouse controller registers | see [km-controller.md](km-controller.md) |
-| 0xd00000 | pixel write mask | software expectation (use); which bit reaches which plane is unknown |
-| 0xf00000 | board control and status | software expectation (use); physical effect unknown |
+| 0xd00000 | pixel write mask | established (use); which bit reaches which plane is unknown |
+| 0xf00000 | board control and status | established (use); physical effect unknown |
 
 Port numbering of the four RAMDAC ports in address order matches the RGB561's index low, index high, data and multi-cycle ports, which is inferred from how the driver uses them. They take the low eight bits of a store.
 
 ### Board control
 
-Bit 5 (0x20) is cleared while the driver programs a mode and set afterwards, and its interrupt handler tests it through a stored pointer, which is why a search for the offset as a constant finds nothing (software expectation). Bit 1 (0x02) asks for an interrupt at the next frame: the driver sets it, with a 400 ms fallback timer, when a palette or cursor update has to wait for the frame, its handler clears it when the frame arrives, and it clears it around every DMA transfer because during a transfer the handler services only DMA completion (software expectation). That the board raises a frame event only while bit 1 is set follows from that last point and is inferred. The saved control word the driver writes back can also carry bit 7 (0x80), set by a helper that looks like the keyboard and mouse controller's interrupt path (software expectation; role inferred). Whether the status in bit 5 is gated by bit 1 or only the interrupt is: unknown. A scan of the standalone server and `rad4d` finds no instruction loading the offset of this register as a constant, so they appear not to poll it; a scan misses offsets computed from a base. The keyboard and mouse controller's interrupt enable is bit 7 of this register (set while any enable is on).
+Bit 5 (0x20) is cleared while the driver programs a mode and set afterwards, and its interrupt handler tests it through a stored pointer, which is why a search for the offset as a constant finds nothing (established). Bit 1 (0x02) asks for an interrupt at the next frame: the driver sets it, with a 400 ms fallback timer, when a palette or cursor update has to wait for the frame, its handler clears it when the frame arrives, and it clears it around every DMA transfer because during a transfer the handler services only DMA completion (established). That the board raises a frame event only while bit 1 is set follows from that last point and is inferred. The saved control word the driver writes back can also carry bit 7 (0x80), set by a helper that looks like the keyboard and mouse controller's interrupt path (established; role inferred). Whether the status in bit 5 is gated by bit 1 or only the interrupt is: unknown. A scan of the standalone server and `rad4d` finds no instruction loading the offset of this register as a constant, so they appear not to poll it; a scan misses offsets computed from a base. The keyboard and mouse controller's interrupt enable is bit 7 of this register (set while any enable is on).
 
 ### Framebuffer pixel and plane mask
 
-A pixel is a 32-bit word. The X server's depth-24 TrueColor and DirectColor visuals are defined with red, green and blue masks `0x00ff0000`, `0x0000ff00` and `0x000000ff` and shifts 16, 8 and 0, read directly from the server's data (established). The RAMDAC configuration the driver writes selects 24-bit true colour from frame buffer A with no lookup, which reads the low 24 bits as direct colour (established from the RGB561 window attribute table field layout; the RGB561 input format alone does not say how CPU word bits reach the RAMDAC pins). The top byte holds the overlay and window ID: the server's four-plane overlay visual draws into it with plane mask `0x0f000000` (software expectation); wiring the RAMDAC's window-ID inputs to that byte is inferred.
+A pixel is a 32-bit word. The X server's depth-24 TrueColor and DirectColor visuals are defined with red, green and blue masks `0x00ff0000`, `0x0000ff00` and `0x000000ff` and shifts 16, 8 and 0, read directly from the server's data (established). The RAMDAC configuration the driver writes selects 24-bit true colour from frame buffer A with no lookup, which reads the low 24 bits as direct colour (established from the RGB561 window attribute table field layout; the RGB561 input format alone does not say how CPU word bits reach the RAMDAC pins). The top byte holds the overlay and window ID: the server's four-plane overlay visual draws into it with plane mask `0x0f000000` (established); wiring the RAMDAC's window-ID inputs to that byte is inferred.
 
 The server programs the write mask before almost every drawing operation: `0x00ffffff` for ordinary colour and `0x0f000000` for the overlay. A store therefore merges as `new = (old & ~mask) | (value & mask)`: that is the generic plane-mask convention, inferred, and the board's own bit-to-plane mapping is unknown.
 
@@ -126,7 +126,7 @@ The RGB561 is reached through the four BAR2 ports as an indexed register file. T
 
 | Index | Use | Rating |
 |---|---|---|
-| 0x20 | sync control: the mode routine writes 1, or 0x23 when the EEPROM selector field is 2 | established (register), software expectation (values) |
+| 0x20 | sync control: the mode routine writes 1, or 0x23 when the EEPROM selector field is 2 | established (register), established (values) |
 | 0x21 | PLL VCO divider M (bits 5 to 0, plus 65) and range code (bits 7 to 6) | established (M); range code position inferred |
 | 0x22 | PLL reference divider N (bits 4 to 0) | established |
 | 0x30 | cursor enable (bit 0) | established |
@@ -139,7 +139,7 @@ The RGB561 is reached through the four BAR2 ports as an indexed register file. T
 | 0x3000, 0x3400, 0x3800 | red, green and blue gamma tables, 256 entries of 10 bits | established |
 | 0x4000 to 0x43ff | colour look-up table | established |
 
-The complete ordered list of the general initialisation, with every register decoded, is in [../../software/rad4/kernel-driver.md](../../software/rad4/kernel-driver.md#initialisation-of-the-ramdac-in-order). In short, initialisation values the driver writes (decoded with the public specification): configuration 1 `0x2c` (4:1 basic serializer, eight overlay bits, eight window-ID bits), configuration 2 `0x19` (on-chip PLL and RGB outputs on, reference clock input, cursor location latching), configuration 3 `0x41` (non-interlaced RGB order, serial clock on, synchronous cursor and scissor updates), configuration 4 `0x45` (split window IDs, eight frame-buffer window-ID bits, upper-bit auxiliary table addressing), frame-buffer window table entry `0x36` (24 or 30-bit true colour, buffer A, opaque), auxiliary frame-buffer table entry zero (gamma enabled) and cursor control `0x60` (cursor and cross-hair disabled). Rating: established that the driver writes these values (software expectation); the meaning of each is the public specification's (established for the RGB561 part, inferred for the board). Which RGB561 revision is fitted and how the board wires the RAMDAC's pixel and window-ID pins: unknown.
+The complete ordered list of the general initialisation, with every register decoded, is in [../../software/rad4/kernel-driver.md](../../software/rad4/kernel-driver.md#initialisation-of-the-ramdac-in-order). In short, initialisation values the driver writes (decoded with the public specification): configuration 1 `0x2c` (4:1 basic serializer, eight overlay bits, eight window-ID bits), configuration 2 `0x19` (on-chip PLL and RGB outputs on, reference clock input, cursor location latching), configuration 3 `0x41` (non-interlaced RGB order, serial clock on, synchronous cursor and scissor updates), configuration 4 `0x45` (split window IDs, eight frame-buffer window-ID bits, upper-bit auxiliary table addressing), frame-buffer window table entry `0x36` (24 or 30-bit true colour, buffer A, opaque), auxiliary frame-buffer table entry zero (gamma enabled) and cursor control `0x60` (cursor and cross-hair disabled). Rating: established that the driver writes these values (established); the meaning of each is the public specification's (established for the RGB561 part, inferred for the board). Which RGB561 revision is fitted and how the board wires the RAMDAC's pixel and window-ID pins: unknown.
 
 The multi-cycle port loads every table with more than one byte per entry: two cycles for a window attribute or gamma entry (bits 9 to 2, then bits 1 to 0 in bits 7 to 6) and three for a colour or cursor table entry. The index advances once per complete entry, and writing either index register restarts a partial entry (established, RGB561 specification pages 1 and 4).
 

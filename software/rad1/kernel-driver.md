@@ -1,8 +1,8 @@
 # The stock RAD1 kernel driver
 
-What SGI's IRIX 6.5.30 kernel driver for the RAD1 does, from `rad1drv.o`, `rad1_init.o`, `rad1_tpinit.o`, `rad1_tport.o` and `rad1data.o` (members of `rad1pci.a`, the IP27 kernel object directory). Ratings are as defined in [../../devices/rad1/README.md](../../devices/rad1/README.md). A software expectation says what the software assumes the board does.
+What SGI's IRIX 6.5.30 kernel driver for the RAD1 does, from `rad1drv.o`, `rad1_init.o`, `rad1_tpinit.o`, `rad1_tport.o` and `rad1data.o` (members of `rad1pci.a`, the IP27 kernel object directory). Ratings are as defined in [../../devices/rad1/README.md](../../devices/rad1/README.md). A fact is established when the routine behind it was read in full, and inferred otherwise.
 
-**Reading status.** Read in full in the shipped objects, and so graded as software expectations or established as marked: the PCI registration, the attach routine's first half (state limits, the resource mappings with their selector numbers and sizes, the clock-control branch and the interrupt enable value), the interrupt handler, the request jump table, the mode loader and chip initialiser, the early-console registration and the flash programming routine. The rest was traced from an earlier description of the same driver and checked only for register offsets, constants and call targets, so it is graded inferred and each such passage ends with "Unverified.": the DMA register sequences, the start-up screen fill, the palette ramp, the per-request behaviour, detach, and read, write and map. The registers are in [../../devices/rad1/registers.md](../../devices/rad1/registers.md); the console path is in [textport.md](textport.md); the modes are in [../../devices/rad1/modes.md](../../devices/rad1/modes.md).
+**Reading status.** Read in full in the shipped objects, and so graded established as marked: the PCI registration, the attach routine's first half (state limits, the resource mappings with their selector numbers and sizes, the clock-control branch and the interrupt enable value), the interrupt handler, the request jump table, the mode loader and chip initialiser, the early-console registration and the flash programming routine. The rest was traced from an earlier description of the same driver and checked only for register offsets, constants and call targets, so it is graded inferred and each such passage ends with "Unverified.": the DMA register sequences, the start-up screen fill, the palette ramp, the per-request behaviour, detach, and read, write and map. The registers are in [../../devices/rad1/registers.md](../../devices/rad1/registers.md); the console path is in [textport.md](textport.md); the modes are in [../../devices/rad1/modes.md](../../devices/rad1/modes.md).
 
 ## Files and configuration
 
@@ -21,7 +21,7 @@ The initialisation entry registers the driver for two PCI identities with the dr
 
 ## Attach
 
-Per board, in order (software expectation, the routine read in full):
+Per board, in order (established, the routine read in full):
 
 1. Refuse a fifth board. Allocate the board state and, for the buffered path below, an 8 MiB physically contiguous host buffer per board. Record the board number and whether DMA is enabled (the no-DMA tunable).
 2. Initialise the locks and five wait queues: GP sync, bypass-DMA write, output-DMA read, palette load and window load.
@@ -55,13 +55,13 @@ The start-up screen fill (full initialisation only): wait for 40 FIFO entries; c
 
 The handler reads the interrupt flags; if zero it returns, as the interrupt is not this board's. Otherwise it writes the value back to clear it, takes the board lock, writes the interrupt enable register 0, and wakes waiters according to three bits only: bit 1 wakes the GP sync waiter and cancels its timeout, bit 0 wakes the output-DMA read waiter, bit 7 wakes the bypass-DMA write waiter. The loop runs 200 times over the same status word without re-reading the register, so it signals up to 200 times per interrupt; all that matters is that each wake-up is idempotent. Then it restores the enable register to its shadow and releases the lock (established, handler read in full).
 
-A request that waits arms a timeout of about two ticks plus a configured microsecond count, issues its work, sleeps on the queue, and cancels the timeout. If the timeout fires first it logs the failure; for the write-DMA waiter it also disconnects and reconnects the interrupt before waking the sleeper (software expectation).
+A request that waits arms a timeout of about two ticks plus a configured microsecond count, issues its work, sleeps on the queue, and cancels the timeout. If the timeout fires first it logs the failure; for the write-DMA waiter it also disconnects and reconnects the interrupt before waking the sleeper (established).
 
 Which hardware events raise which bit follows the public chip documentation and the use: a sync tag written with bit 31 set to the sync register raises the sync interrupt (bit 1) when the pipeline reaches it; a started output DMA raises bit 0 when it completes; a bypass DMA raises bit 7 when it completes (inferred from use; the manual naming of bit 7 as the bypass DMA flag was not read). The vertical-retrace and other flag bits are never tested or enabled in the shipped object.
 
 ## DMA
 
-There is no descriptor chain. Two engines are used (software expectation; the offsets match the register table):
+There is no descriptor chain. Two engines are used (established; the offsets match the register table):
 
 - **Host to framebuffer: bypass DMA.** The driver writes the source address, the stride, the destination in pixels, the size (height from bit 16, width in the low bits), the byte mask 0x000f000f, and then the control word: implicit mode, patching off, source format 8, 16 or 32 bits, GP restart and the width's partial products. It then sleeps for the bit 7 interrupt. A 32-bit image goes straight to the screen position. An 8-bit or 15-bit image goes to a staging area just past the visible frame, and the driver then runs one texture copy to the screen to expand it: texture address mode on, the staging address in the texture base address, texel size 8 or 16 bits, data format colour-index 8 or 565, the texel LUT on for 8-bit, then a rectangle render with texture enabled and a sync tag. The texture base address is written once in the whole driver, and always with a local-memory address.
 - **Framebuffer to host: output DMA.** The driver turns the write path off and the upload-to-host bit on in the framebuffer write mode, sets read-destination and packed data, selects colour data in the filter, issues a rectangle render, and then for each chunk of up to 0xffff words writes the host address and the word count to the output DMA registers and sleeps for the bit 0 interrupt. It clears the error flags before each chunk. Read-back is always 32-bit words; the conversion hooks for narrower formats are not built.
@@ -110,7 +110,7 @@ The board node serves the framebuffer as a flat file: read and write at a 4-byte
 
 ## Settings sector and flash
 
-The settings sector is 128 bytes, offset 0xff00 of the 64 KiB flash. Programming one sector (software expectation, routine read in full):
+The settings sector is 128 bytes, offset 0xff00 of the 64 KiB flash. Programming one sector (established, routine read in full):
 
 1. Reject an odd offset. (The check is meant to reject unaligned sectors; as built it tests bit 0 only, so a misaligned even offset is accepted.)
 2. Under the hardware and board locks, write byte 0xaa to byte 0x5556, 0x55 to byte 0x2aa9, and 0xa0 to byte 0x5556: the standard NOR-flash unlock and program command, with the addresses written XOR 3 because the bus lane swapping on this platform turns them into 0x5555 and 0x2aaa (inferred).

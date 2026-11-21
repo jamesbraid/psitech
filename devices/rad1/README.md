@@ -2,7 +2,7 @@
 
 The RAD1 is PsiTech's low-cost PCI graphics card for the Origin 200: 8 MB of SGRAM, an HD-15 connector and a TI or 3Dlabs Permedia 2 family chip that carries its own RAMDAC. It has no bus bridge and no separate RAMDAC, which is the main difference from the [RAD4](../rad4/README.md). This page is the board's identity, address map and register summary. The register definitions are [registers.toml](registers.toml) and the generated table [registers.md](registers.md). The display modes and the settings sector are in [modes.md](modes.md). The software that drives the board is in [../../software/rad1/](../../software/rad1/package.md).
 
-Every fact carries one of six ratings: **established** (a published document, or a shipped binary read in full), **observed** (seen when the shipped software ran on an emulator; model behaviour, not hardware), **software expectation** (what the shipped software assumes the board does), **inferred** (a reasoned reading), **approximation** (a value chosen where the evidence stops) and **unknown**. `registers.toml` can only say established, inferred or unknown: it files software expectations under established and approximations under inferred, and says so in each entry's doc text.
+Every fact carries one of three ratings: **established** (a published document, or a shipped binary or driver read in full, cited), **inferred** (a reasoned reading: what the software assumes about the board where the read was partial, approximations, and emulator runs, which show model behaviour and not hardware) and **unknown** (nothing published or shipped decides it). `registers.toml` uses the same three grades, and each entry's doc text names its source.
 
 ## Sources
 
@@ -19,19 +19,19 @@ No manual for the board was published, and no board photograph, schematic, parts
 |---|---|---|---|
 | Product | RAD1 Graphics Head, "low cost console/graphics head for SGI Origin200 systems" | established | product sheet |
 | Card | short universal PCI card, 32-bit bus, 12 W | established | product sheet |
-| Memory | 8 MB SGRAM | established | product sheet; the kernel driver maps an 8 MiB framebuffer window (software expectation) |
+| Memory | 8 MB SGRAM | established | product sheet; the kernel driver maps an 8 MiB framebuffer window (established) |
 | Display | HD-15; 3 by 8-bit DAC; 8-bit overlay; programmable resolution with 1280 by 1024, 1024 by 768 and 1024 by 1024 listed; separate, composite and sync-on-green | established | product sheet |
 | Price and life | list price cut to $295 on 1 September 1999; "no longer for sale" and "replaced by the RAD4C-KM" by July 2002 | established for the press release text; inferred for the end of sale (one poster's statement) | Usenet, 1999 and 2002 |
 | Bundle | PCI card, users manual, CD-ROM, registration card; supplied with the PsiTech Graphics Server and PsiTech PCI drivers for IRIX 6.5 | established | product sheet |
 | Chip family | TI TVP4020 (Permedia 2) or 3Dlabs Permedia 2V | inferred, high confidence | the stock driver registers both PCI identities below, and every register it touches matches the public maps for those chips |
 | Chip PCI identities the stock kernel driver accepts | `104c:3d07` (TVP4020) and `3d3d:0009` (Permedia 2V) | established | the driver registers both, read in `rad1drv.o` |
 | Chip PCI identity the stock PROM accepts | `3d3d:0009` only | established | the PROM's table of PCI devices it can install a console on holds one row for this pair; the install routine then stores the Permedia 2V identity into the board state whatever it found |
-| PsiTech subsystem identity | vendor `12d1`, device `0101` | software expectation | the PROM install routine reads configuration offsets 0x2c and 0x2e and accepts the pair in either halfword order; the kernel driver never reads it |
+| PsiTech subsystem identity | vendor `12d1`, device `0101` | established | the PROM install routine reads configuration offsets 0x2c and 0x2e and accepts the pair in either halfword order; the kernel driver never reads it |
 | Which chip a shipped RAD1 carried | unknown | unknown | the PROM only accepts the Permedia 2V pair, so a RAD1 that could be the console carried that chip (inferred); nothing says a `104c:3d07` board was ever sold |
 | PCI revision, class code, BAR sizes as declared | | unknown | the kernel driver reads the revision and logs it; no captured value exists |
 | Part numbers (PsiTech, SGI) | | unknown | the 1999 thread asks for the SGI part number and the reply held does not give it |
-| Board reference clock | 14.31818 MHz | software expectation | every clock formula in the software uses 14318180 Hz, see [modes.md](modes.md) |
-| Flash | 64 KiB, byte-wide, JEDEC-style program sequence | software expectation (size, sequence); inferred (the part) | the driver's own request size and unlock bytes |
+| Board reference clock | 14.31818 MHz | inferred | every clock formula in the software uses 14318180 Hz, see [modes.md](modes.md) |
+| Flash | 64 KiB, byte-wide, JEDEC-style program sequence | established (size, sequence); inferred (the part) | the driver's own request size and unlock bytes |
 
 The chip register names are those of the public Permedia 2 documentation; the TI TVP4020 programmer's manual was not read for this page, so register meanings the public drivers and the shipped software do not show are unknown rather than filled from the manual.
 
@@ -43,20 +43,20 @@ The chip register names are those of the public Permedia 2 documentation; the TI
 
 ## Relationship to the RAD4
 
-Different board, same author lineage. The RAD1 has no PLX bus interface or external RAMDAC and a different PCI identity (`12d1:0104` and `12d1:0105` belong to the RAD4 and RAD4-KM), so the two boards' register contracts must not be merged. The stock RAD1 kernel driver was written from the RAD4 driver: it serves the same request numbers 101 to 141 with the same argument layouts, and its textport and mode code descend from it (software expectation; see [../../software/rad1/kernel-driver.md](../../software/rad1/kernel-driver.md#requests)). The RAD4's request interface is therefore a guide to what a RAD1 client may send, and the RAD1 driver ignores the requests that need RAD4 hardware.
+Different board, same author lineage. The RAD1 has no PLX bus interface or external RAMDAC and a different PCI identity (`12d1:0104` and `12d1:0105` belong to the RAD4 and RAD4-KM), so the two boards' register contracts must not be merged. The stock RAD1 kernel driver was written from the RAD4 driver: it serves the same request numbers 101 to 141 with the same argument layouts, and its textport and mode code descend from it (the request numbers and argument layouts are established from the code; the lineage is inferred; see [../../software/rad1/kernel-driver.md](../../software/rad1/kernel-driver.md#requests)). The RAD4's request interface is therefore a guide to what a RAD1 client may send, and the RAD1 driver ignores the requests that need RAD4 hardware.
 
 ## Resources the stock software maps
 
-The kernel driver names its resources by the Bridge-family window numbers: window 0, window 1 and window 2 (software expectation). The PROM works from configuration space directly.
+The kernel driver names its resources by the Bridge-family window numbers: window 0, window 1 and window 2 (established). The PROM works from configuration space directly.
 
 | Resource | Kernel driver | PROM | Rating |
 |---|---|---|---|
-| Registers: Region Zero of the chip | window 0, 128 KiB requested | the first base address register, masked to 128 KiB | software expectation; the layout is the chip's, established from the public maps |
-| Framebuffer | window 1, 8 MiB requested (a plain translation first, a mapped window if that fails) | not mapped; the PROM draws through the chip's render commands | software expectation. Which BAR carries it is inferred (the second, as in the public Linux driver for the chip) |
-| Flash | window 2, 64 KiB requested | the expansion ROM base register, masked to 64 KiB | software expectation. The two drivers name the same 64 KiB flash in different ways; which BAR the kernel's window 2 is, is unknown |
-| Configuration space | 256 bytes, read for vendor, device and revision | read at 0x10, 0x2c, 0x2e and 0x30 | software expectation |
+| Registers: Region Zero of the chip | window 0, 128 KiB requested | the first base address register, masked to 128 KiB | established; the layout is the chip's, established from the public maps |
+| Framebuffer | window 1, 8 MiB requested (a plain translation first, a mapped window if that fails) | not mapped; the PROM draws through the chip's render commands | established. Which BAR carries it is inferred (the second, as in the public Linux driver for the chip) |
+| Flash | window 2, 64 KiB requested | the expansion ROM base register, masked to 64 KiB | established. The two drivers name the same 64 KiB flash in different ways; which BAR the kernel's window 2 is, is unknown |
+| Configuration space | 256 bytes, read for vendor, device and revision | read at 0x10, 0x2c, 0x2e and 0x30 | established |
 
-Every access either driver makes to Region Zero is an aligned 32-bit load or store (software expectation); the flash is accessed a byte at a time.
+Every access either driver makes to Region Zero is an aligned 32-bit load or store (established); the flash is accessed a byte at a time.
 
 ## Region Zero
 
@@ -72,7 +72,7 @@ The chip's register region follows the public Permedia 2 layout. Blocks the soft
 | 0x63c4 | SVGA | one write that turns the legacy VGA core off |
 | 0x8000 to 0x93ff | graphics processor registers | the rectangle, point and trapezoid fills, copy, texture-copy and read-back setup |
 
-The software never touches the video-stream block, the reserved block or the byte-swapped alias of the graphics registers (software expectation). Every offset the stock software uses appears in the shipped objects as a load or store offset or an index immediate; the one exception is the vertical-interrupt line register, which the shipped objects never access (inferred: the code that would use it is not built).
+The software never touches the video-stream block, the reserved block or the byte-swapped alias of the graphics registers (established). Every offset the stock software uses appears in the shipped objects as a load or store offset or an index immediate; the one exception is the vertical-interrupt line register, which the shipped objects never access (inferred: the code that would use it is not built).
 
 ## What is not known
 

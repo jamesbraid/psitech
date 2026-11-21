@@ -1,7 +1,7 @@
 /* generated from devices/rad1/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 6d6effab60d3ecf0befbc61265bbab43ca515e793be20c3bb700c2f97c1a0b10 */
+/* input sha256 a9a892a647d6a57b2df92f69c6bbdb08055de7deec89f257a352440128d5323d */
 /* RAD1 graphics head registers */
 #ifndef RAD1_GEN_H
 #define RAD1_GEN_H
@@ -10,7 +10,7 @@
 
 
 /*
- * Cursor control: 64x64 size and the cursor mode. Software expectation.
+ * Cursor control: 64x64 size and the cursor mode. Software use.
  */
 /* rd_cursor_control: rw8, space p2dac, reset unknown */
 #define RAD1_RD_CURSOR_CONTROL_OFFSET                0x6u /* established */
@@ -88,7 +88,7 @@
 #define RAD1_RD_MISC_CONTROL_2V_OFFSET               0x0u /* established */
 
 /*
- * Sync control: horizontal and vertical polarity at the pin. Software expectation.
+ * Sync control: horizontal and vertical polarity at the pin. Software use.
  */
 /* rd_sync_control_2v: rw8, space p2vdac, reset unknown */
 #define RAD1_RD_SYNC_CONTROL_2V_OFFSET               0x1u /* established */
@@ -250,13 +250,13 @@
 #define RAD1_RD_CURSOR_PATTERN_2V_OFFSET             0x400u /* established */
 
 /*
- * Soft reset. Software expectation: board start-up writes 0 and polls bit 31 until it clears, before programming anything else.
+ * Soft reset. Software use: board start-up writes 0 and polls bit 31 until it clears, before programming anything else.
  */
 /* reset_status: rw32, space rz, reset unknown */
 #define RAD1_RESET_STATUS_OFFSET                     0x0u /* established */
 
 /*
- * Interrupt enable. Software expectation: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0.
+ * Interrupt enable. Software use: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), and its interrupt handler writes 0 on entry and restores 0x83 on exit. The textport library writes 0.
  */
 /* int_enable: rw32, space rz, reset unknown */
 #define RAD1_INT_ENABLE_OFFSET                       0x8u /* established */
@@ -271,7 +271,7 @@
 #define RAD1_INT_ENABLE_DMA_INPLACE                  (RAD1_INT_ENABLE_DMA_MASK << RAD1_INT_ENABLE_DMA_SHIFT)
 
 /*
- * Interrupt status, cleared by writing the bits back. Software expectation: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested.
+ * Interrupt status, cleared by writing the bits back. Software use: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (sync), 0 (GP output DMA) and 7 (bypass DMA). No other bit is tested.
  */
 /* int_flags: rw32, space rz, reset unknown */
 #define RAD1_INT_FLAGS_OFFSET                        0x10u /* established */
@@ -286,67 +286,67 @@
 #define RAD1_INT_FLAGS_DMA_INPLACE                   (RAD1_INT_FLAGS_DMA_MASK << RAD1_INT_FLAGS_DMA_SHIFT)
 
 /*
- * Free entries in the input FIFO. Software expectation: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100.
+ * Free entries in the input FIFO. Software use: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thresholds used are 2, 3, 6, 9, 14, 20, 32, 40 and 100.
  */
 /* in_fifo_space: r32, space rz, reset unknown */
 #define RAD1_IN_FIFO_SPACE_OFFSET                    0x18u /* established */
 
 /*
- * Words waiting in the output FIFO. Software expectation: polled until nonzero after a sync or a read-back, and drained to empty after a timeout.
+ * Words waiting in the output FIFO. Software use: polled until nonzero after a sync or a read-back, and drained to empty after a timeout.
  */
 /* out_fifo_words: r32, space rz, reset unknown */
 #define RAD1_OUT_FIFO_WORDS_OFFSET                   0x20u /* established */
 
 /*
- * Error status. Software expectation: read before a read-back DMA and written back to clear it, and again after the transfer.
+ * Error status. Software use: read before a read-back DMA and written back to clear it, and again after the transfer.
  */
 /* error_flags: rw32, space rz, reset unknown */
 #define RAD1_ERROR_FLAGS_OFFSET                      0x38u /* established */
 
 /*
- * Video clock control. Software expectation: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock.
+ * Video clock control. Software use: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which skips the clock, memory and screen-clear steps; a zero value means a full initialisation. Start-up writes it with clock source 2 and a recovery time derived from the pixel clock.
  */
 /* vclk_ctl: rw32, space rz, reset unknown */
 #define RAD1_VCLK_CTL_OFFSET                         0x40u /* established */
 
 /*
- * Aperture one control. Software expectation: written 0 at init.
+ * Aperture one control. Software use: written 0 at init.
  */
 /* aperture_one: rw32, space rz, reset unknown */
 #define RAD1_APERTURE_ONE_OFFSET                     0x50u /* established */
 
 /*
- * Aperture two control. Software expectation: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector.
+ * Aperture two control. Software use: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the settings sector.
  */
 /* aperture_two: rw32, space rz, reset unknown */
 #define RAD1_APERTURE_TWO_OFFSET                     0x58u /* established */
 
 /*
- * DMA control. Software expectation: written 0x8 at init.
+ * DMA control. Software use: written 0x8 at init.
  */
 /* dma_control: rw32, space rz, reset unknown */
 #define RAD1_DMA_CONTROL_OFFSET                      0x60u /* established */
 
 /*
- * Chip configuration. Software expectation: only read, by a diagnostic dump routine.
+ * Chip configuration. Software use: only read, by a diagnostic dump routine.
  */
 /* chip_config: rw32, space rz, reset unknown */
 #define RAD1_CHIP_CONFIG_OFFSET                      0x70u /* established */
 
 /*
- * Output DMA address: the host (PCI) address a read-back is written to. Software expectation: set per chunk before the count.
+ * Output DMA address: the host (PCI) address a read-back is written to. Software use: set per chunk before the count.
  */
 /* out_dma_address: rw32, space rz, reset unknown */
 #define RAD1_OUT_DMA_ADDRESS_OFFSET                  0x80u /* established */
 
 /*
- * Output DMA count in words; writing it starts the transfer. Software expectation: at most 0xffff words per write.
+ * Output DMA count in words; writing it starts the transfer. Software use: at most 0xffff words per write.
  */
 /* out_dma_count: rw32, space rz, reset unknown */
 #define RAD1_OUT_DMA_COUNT_OFFSET                    0x88u /* established */
 
 /*
- * Bypass DMA host address. Software expectation: the source of a host-to-framebuffer transfer.
+ * Bypass DMA host address. Software use: the source of a host-to-framebuffer transfer.
  */
 /* by_dma_address: rw32, space rz, reset unknown */
 #define RAD1_BY_DMA_ADDRESS_OFFSET                   0xa0u /* established */
@@ -364,55 +364,55 @@
 #define RAD1_BY_DMA_MEM_ADDRESS_OFFSET               0xc0u /* established */
 
 /*
- * Bypass DMA size: width in bits 11 to 0, height from bit 16. Software expectation.
+ * Bypass DMA size: width in bits 11 to 0, height from bit 16. Software use.
  */
 /* by_dma_size: rw32, space rz, reset unknown */
 #define RAD1_BY_DMA_SIZE_OFFSET                      0xc8u /* established */
 
 /*
- * Bypass DMA byte mask. Software expectation: always written 0x000f000f (all lanes at both edges).
+ * Bypass DMA byte mask. Software use: always written 0x000f000f (all lanes at both edges).
  */
 /* by_dma_byte_mask: rw32, space rz, reset unknown */
 #define RAD1_BY_DMA_BYTE_MASK_OFFSET                 0xd0u /* established */
 
 /*
- * Bypass DMA control; the write starts the transfer. Software expectation: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart.
+ * Bypass DMA control; the write starts the transfer. Software use: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-product fields of the current screen width, and GP restart.
  */
 /* by_dma_control: rw32, space rz, reset unknown */
 #define RAD1_BY_DMA_CONTROL_OFFSET                   0xd8u /* established */
 
 /*
- * Memory type. Software expectation: written 0 (SGRAM).
+ * Memory type. Software use: written 0 (SGRAM).
  */
 /* mem_control: rw32, space rz, reset unknown */
 #define RAD1_MEM_CONTROL_OFFSET                      0x1040u /* established */
 
 /*
- * Memory boot address (the SGRAM mode word). Software expectation: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type.
+ * Memory boot address (the SGRAM mode word). Software use: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type.
  */
 /* boot_address: rw32, space rz, reset unknown */
 #define RAD1_BOOT_ADDRESS_OFFSET                     0x1080u /* established */
 
 /*
- * Memory timing. Software expectation: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks.
+ * Memory timing. Software use: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks.
  */
 /* mem_config: rw32, space rz, reset unknown */
 #define RAD1_MEM_CONFIG_OFFSET                       0x10c0u /* established */
 
 /*
- * Plane write mask for bypass (host and DMA) writes. Software expectation: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it.
+ * Plane write mask for bypass (host and DMA) writes. Software use: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it and restore it.
  */
 /* bypass_write_mask: rw32, space rz, reset unknown */
 #define RAD1_BYPASS_WRITE_MASK_OFFSET                0x1100u /* established */
 
 /*
- * Output FIFO read port. Software expectation: read to drain sync tags and read-back words.
+ * Output FIFO read port. Software use: read to drain sync tags and read-back words.
  */
 /* out_fifo: r32, space rz, reset unknown */
 #define RAD1_OUT_FIFO_OFFSET                         0x2000u /* established */
 
 /*
- * Screen base, in 64-bit units. Software expectation: 0.
+ * Screen base, in 64-bit units. Software use: 0.
  */
 /* screen_base: rw32, space rz, reset unknown */
 #define RAD1_SCREEN_BASE_OFFSET                      0x3000u /* established */
@@ -478,7 +478,7 @@
 #define RAD1_VS_END_OFFSET                           0x3050u /* established */
 
 /*
- * Video control. Software expectation: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change.
+ * Video control. Software use: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off and on around the mode change.
  */
 /* video_control: rw32, space rz, reset unknown */
 #define RAD1_VIDEO_CONTROL_OFFSET                    0x3058u /* established */
@@ -487,43 +487,43 @@
 #define RAD1_VIDEO_CONTROL_ENABLE_INPLACE            (RAD1_VIDEO_CONTROL_ENABLE_MASK << RAD1_VIDEO_CONTROL_ENABLE_SHIFT)
 
 /*
- * Video FIFO control. Software expectation: written 0x0b07.
+ * Video FIFO control. Software use: written 0x0b07.
  */
 /* fifo_control: rw32, space rz, reset unknown */
 #define RAD1_FIFO_CONTROL_OFFSET                     0x3078u /* established */
 
 /*
- * Right-eye screen base. Software expectation: written 0.
+ * Right-eye screen base. Software use: written 0.
  */
 /* screen_base_right: rw32, space rz, reset unknown */
 #define RAD1_SCREEN_BASE_RIGHT_OFFSET                0x3080u /* established */
 
 /*
- * Palette write address; also the index port of the Permedia 2 indexed registers. Software expectation: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries.
+ * Palette write address; also the index port of the Permedia 2 indexed registers. Software use: the palette load writes 0 here, then red, green and blue in turn to the data port for each of 256 entries.
  */
 /* rd_palette_write_address: rw32, space rz, reset unknown */
 #define RAD1_RD_PALETTE_WRITE_ADDRESS_OFFSET         0x4000u /* established */
 
 /*
- * Palette data. Software expectation: three consecutive byte stores per entry.
+ * Palette data. Software use: three consecutive byte stores per entry.
  */
 /* rd_palette_data: rw32, space rz, reset unknown */
 #define RAD1_RD_PALETTE_DATA_OFFSET                  0x4008u /* established */
 
 /*
- * Pixel read mask. Software expectation: written 0xff.
+ * Pixel read mask. Software use: written 0xff.
  */
 /* rd_pixel_mask: rw32, space rz, reset unknown */
 #define RAD1_RD_PIXEL_MASK_OFFSET                    0x4010u /* established */
 
 /*
- * Palette read address. Software expectation: written 0 before a palette load.
+ * Palette read address. Software use: written 0 before a palette load.
  */
 /* rd_palette_read_address: rw32, space rz, reset unknown */
 #define RAD1_RD_PALETTE_READ_ADDRESS_OFFSET          0x4018u /* established */
 
 /*
- * SVGA control (name ours). Software expectation: written 0x40 before the mode is set, to turn the legacy VGA core off.
+ * SVGA control (name ours). Software use: written 0x40 before the mode is set, to turn the legacy VGA core off.
  */
 /* vga_control: rw32, space rz, reset unknown */
 #define RAD1_VGA_CONTROL_OFFSET                      0x63c4u /* inferred */
@@ -571,7 +571,7 @@
 #define RAD1_COUNT_OFFSET                            0x8030u /* established */
 
 /*
- * Render command; the write starts the operation. Software expectation: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used.
+ * Render command; the write starts the operation. Software use: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable bit 13, increase X bit 21 and increase Y bit 22 are the bits used.
  */
 /* render: rw32, space rz, reset unknown */
 #define RAD1_RENDER_OFFSET                           0x8038u /* established */
@@ -823,7 +823,7 @@
 #define RAD1_FB_SOFTWARE_WRITE_MASK_OFFSET           0x8820u /* established */
 
 /*
- * Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software expectation.
+ * Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software use.
  */
 /* logical_op_mode: rw32, space rz, reset unknown */
 #define RAD1_LOGICAL_OP_MODE_OFFSET                  0x8828u /* established */
@@ -961,7 +961,7 @@
 #define RAD1_DELTA_MODE_OFFSET                       0x9300u /* established */
 
 /*
- * Cursor colour address. Software expectation: written 1 before the cursor colours.
+ * Cursor colour address. Software use: written 1 before the cursor colours.
  */
 /* rd_cursor_color_address: rw32, space rz_p2, reset unknown */
 #define RAD1_RD_CURSOR_COLOR_ADDRESS_OFFSET          0x4020u /* established */
@@ -973,7 +973,7 @@
 #define RAD1_RD_CURSOR_COLOR_DATA_OFFSET             0x4028u /* established */
 
 /*
- * Data port of the indexed registers, selected through the palette write address. Software expectation: read to poll the PLL lock bits.
+ * Data port of the indexed registers, selected through the palette write address. Software use: read to poll the PLL lock bits.
  */
 /* rd_indexed_data: rw32, space rz_p2, reset unknown */
 #define RAD1_RD_INDEXED_DATA_OFFSET                  0x4050u /* established */
@@ -1009,7 +1009,7 @@
 #define RAD1_RD_CURSOR_Y_HIGH_OFFSET                 0x4078u /* established */
 
 /*
- * Index, low byte. Software expectation: written before each access to an indexed register.
+ * Index, low byte. Software use: written before each access to an indexed register.
  */
 /* rd_index_low_2v: rw32, space rz_p2v, reset unknown */
 #define RAD1_RD_INDEX_LOW_2V_OFFSET                  0x4020u /* established */
@@ -1021,13 +1021,13 @@
 #define RAD1_RD_INDEX_HIGH_2V_OFFSET                 0x4028u /* established */
 
 /*
- * Indexed data port. Software expectation: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments.
+ * Indexed data port. Software use: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments.
  */
 /* rd_indexed_data_2v: rw32, space rz_p2v, reset unknown */
 #define RAD1_RD_INDEXED_DATA_2V_OFFSET               0x4030u /* established */
 
 /*
- * Index control. Software expectation: written 1 at init to turn auto-increment on.
+ * Index control. Software use: written 1 at init to turn auto-increment on.
  */
 /* rd_index_control_2v: rw32, space rz_p2v, reset unknown */
 #define RAD1_RD_INDEX_CONTROL_2V_OFFSET              0x4038u /* established */

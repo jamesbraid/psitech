@@ -1,6 +1,6 @@
 # rad4: X server paths, window IDs, colormaps and the buffered and multi-head arrangements
 
-What the standalone X server, the display-extension module and the start-up scripts of release 1.3k for IRIX 6.5 do with the board, and how the driver's device-type 3 node (the buffered, merged-screen device) behaves. It extends [xserver-decode.md](../../devices/rad4/xserver-decode.md), which holds the DMA register sequence, the plane-mask use and the no-DMA desktop path; none of that is repeated here. Ratings are as defined in [README.md](../../devices/rad4/README.md). Everything is a software expectation or weaker; none of it is a hardware measurement.
+What the standalone X server, the display-extension module and the start-up scripts of release 1.3k for IRIX 6.5 do with the board, and how the driver's device-type 3 node (the buffered, merged-screen device) behaves. It extends [xserver-decode.md](../../devices/rad4/xserver-decode.md), which holds the DMA register sequence, the plane-mask use and the no-DMA desktop path; none of that is repeated here. Ratings are as defined in [README.md](../../devices/rad4/README.md). Everything is established from the binaries or weaker; none of it is a hardware measurement.
 
 Sources: the standalone server (`var/rad4/Xradsgi`, ELF32 big-endian MIPS II, symbol table kept), the display-extension module (`usr/lib/X11/dyDDX/psitech.so`), the helper programs `rad4d`, `rad4_X_knp` and `rad4setres`, the shipped header `usr/include/rad4pci.h` (request names below are its names), the start-up scripts, the shipped manual pages, the kernel driver object for the Origin 200 class (`rad4pci.o.IP27`) and its tunable file. Server and module addresses are ELF virtual addresses. Driver addresses are offsets from the start of its text section, as in the other pages.
 
@@ -131,7 +131,7 @@ The attribute table is then loaded to the board through the same vblank-timed pa
 
 Type 12 is the value painted for a window that has no colormap (value 0xc0000000). The start values are in the request's own units (the driver shifts by 6, so 16 and 32 are 1,024 and 2,048); they exceed the 1,024-entry LUT, so what a start beyond the LUT does is unknown.
 
-### 3.3 Window ID bytes (software expectation)
+### 3.3 Window ID bytes (established)
 
 The server treats pixel bits 31 to 28 as the window type nibble and bits 27 to 24 as the overlay nibble, so the window ID byte the attribute table is indexed by is the pixel word's top byte; the attribute mask of 0xf makes the overlay nibble irrelevant (inferred from the masks used in the paints and from the table above).
 

@@ -68,7 +68,7 @@ The code draws straight into the 32-bit framebuffer from the host; it issues no 
 | Scroll | LF on the last row copies the lower half of the text area up, clears the lower half and puts the cursor at the middle row: a half-screen jump |
 | Wrap | at the last column the cursor goes to the next line start and a scroll as above |
 
-The geometry constants (cell 8 by 15, 80 by 34 at most, centring) are the same ones the kernel driver's own text screen uses (software expectation, from the driver's initialiser; see [console-selection.md](console-selection.md)).
+The geometry constants (cell 8 by 15, 80 by 34 at most, centring) are the same ones the kernel driver's own text screen uses (established, from the driver's initialiser; see [console-selection.md](console-selection.md)).
 
 ## Command 2: the RAD4-KM keyboard
 

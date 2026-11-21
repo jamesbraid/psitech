@@ -1,11 +1,11 @@
 // generated from devices/rad1/registers.toml by defs-gen - do not edit, change the source
 // SPDX-License-Identifier: BSD-3-Clause
 // defs-gen 2
-// input sha256 6d6effab60d3ecf0befbc61265bbab43ca515e793be20c3bb700c2f97c1a0b10
+// input sha256 a9a892a647d6a57b2df92f69c6bbdb08055de7deec89f257a352440128d5323d
 // RAD1 graphics head registers
 #![allow(dead_code)]
 
-/// Cursor control: 64x64 size and the cursor mode. Software expectation. (established)
+/// Cursor control: 64x64 size and the cursor mode. Software use. (established)
 pub mod rd_cursor_control {
     pub const WIDTH: u32 = 8;
     pub const OFFSET: u64 = 0x6;
@@ -70,7 +70,7 @@ pub mod rd_misc_control_2v {
     pub const WIDTH: u32 = 8;
     pub const OFFSET: u64 = 0x0;
 }
-/// Sync control: horizontal and vertical polarity at the pin. Software expectation. (established)
+/// Sync control: horizontal and vertical polarity at the pin. Software use. (established)
 pub mod rd_sync_control_2v {
     pub const WIDTH: u32 = 8;
     pub const OFFSET: u64 = 0x1;
@@ -205,12 +205,12 @@ pub mod rd_cursor_pattern_2v {
     pub const WIDTH: u32 = 8;
     pub const OFFSET: u64 = 0x400;
 }
-/// Soft reset. Software expectation: board start-up writes 0 and polls bit 31 until it clears, before programming anything else. (established)
+/// Soft reset. Software use: board start-up writes 0 and polls bit 31 until it clears, before programming anything else. (established)
 pub mod reset_status {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x0;
 }
-/// Interrupt enable. Software expectation: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 a (established)
+/// Interrupt enable. Software use: the kernel driver writes 0x83 once at attach, enabling the GP-DMA, sync and bypass-DMA interrupts (bits 0, 1 and 7), a (established)
 pub mod int_enable {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x8;
@@ -245,7 +245,7 @@ pub mod int_enable {
         }
     }
 }
-/// Interrupt status, cleared by writing the bits back. Software expectation: the handler reads it, writes the value back, and wakes one waiter for each o (established)
+/// Interrupt status, cleared by writing the bits back. Software use: the handler reads it, writes the value back, and wakes one waiter for each of bits 1 (established)
 pub mod int_flags {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x10;
@@ -280,57 +280,57 @@ pub mod int_flags {
         }
     }
 }
-/// Free entries in the input FIFO. Software expectation: every batch of GP register writes is preceded by a poll until the value reaches the batch size;  (established)
+/// Free entries in the input FIFO. Software use: every batch of GP register writes is preceded by a poll until the value reaches the batch size; the thre (established)
 pub mod in_fifo_space {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x18;
 }
-/// Words waiting in the output FIFO. Software expectation: polled until nonzero after a sync or a read-back, and drained to empty after a timeout. (established)
+/// Words waiting in the output FIFO. Software use: polled until nonzero after a sync or a read-back, and drained to empty after a timeout. (established)
 pub mod out_fifo_words {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x20;
 }
-/// Error status. Software expectation: read before a read-back DMA and written back to clear it, and again after the transfer. (established)
+/// Error status. Software use: read before a read-back DMA and written back to clear it, and again after the transfer. (established)
 pub mod error_flags {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x38;
 }
-/// Video clock control. Software expectation: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip (established)
+/// Video clock control. Software use: the driver reads it at attach and treats a nonzero value as the console already having initialised the chip, which  (established)
 pub mod vclk_ctl {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x40;
 }
-/// Aperture one control. Software expectation: written 0 at init. (established)
+/// Aperture one control. Software use: written 0 at init. (established)
 pub mod aperture_one {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x50;
 }
-/// Aperture two control. Software expectation: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for  (established)
+/// Aperture two control. Software use: written at init with bit 9 (ROM access) set and nothing else, which is what exposes the board's flash for the sett (established)
 pub mod aperture_two {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x58;
 }
-/// DMA control. Software expectation: written 0x8 at init. (established)
+/// DMA control. Software use: written 0x8 at init. (established)
 pub mod dma_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x60;
 }
-/// Chip configuration. Software expectation: only read, by a diagnostic dump routine. (established)
+/// Chip configuration. Software use: only read, by a diagnostic dump routine. (established)
 pub mod chip_config {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x70;
 }
-/// Output DMA address: the host (PCI) address a read-back is written to. Software expectation: set per chunk before the count. (established)
+/// Output DMA address: the host (PCI) address a read-back is written to. Software use: set per chunk before the count. (established)
 pub mod out_dma_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x80;
 }
-/// Output DMA count in words; writing it starts the transfer. Software expectation: at most 0xffff words per write. (established)
+/// Output DMA count in words; writing it starts the transfer. Software use: at most 0xffff words per write. (established)
 pub mod out_dma_count {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x88;
 }
-/// Bypass DMA host address. Software expectation: the source of a host-to-framebuffer transfer. (established)
+/// Bypass DMA host address. Software use: the source of a host-to-framebuffer transfer. (established)
 pub mod by_dma_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xa0;
@@ -345,47 +345,47 @@ pub mod by_dma_mem_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xc0;
 }
-/// Bypass DMA size: width in bits 11 to 0, height from bit 16. Software expectation. (established)
+/// Bypass DMA size: width in bits 11 to 0, height from bit 16. Software use. (established)
 pub mod by_dma_size {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xc8;
 }
-/// Bypass DMA byte mask. Software expectation: always written 0x000f000f (all lanes at both edges). (established)
+/// Bypass DMA byte mask. Software use: always written 0x000f000f (all lanes at both edges). (established)
 pub mod by_dma_byte_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xd0;
 }
-/// Bypass DMA control; the write starts the transfer. Software expectation: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partia (established)
+/// Bypass DMA control; the write starts the transfer. Software use: implicit mode, no patching, 32-, 16- or 8-bit source format, the pixel-partial-produc (established)
 pub mod by_dma_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0xd8;
 }
-/// Memory type. Software expectation: written 0 (SGRAM). (established)
+/// Memory type. Software use: written 0 (SGRAM). (established)
 pub mod mem_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x1040;
 }
-/// Memory boot address (the SGRAM mode word). Software expectation: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory (established)
+/// Memory boot address (the SGRAM mode word). Software use: 0x20 for the 104c:3d07 chip and 0x30 for the 3d3d:0009 chip, written after the memory type. (established)
 pub mod boot_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x1080;
 }
-/// Memory timing. Software expectation: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks. (established)
+/// Memory timing. Software use: 0xe6002021 for the 104c:3d07 chip and 0xe6012021 for the 3d3d:0009 chip, both with four banks. (established)
 pub mod mem_config {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x10c0;
 }
-/// Plane write mask for bypass (host and DMA) writes. Software expectation: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear cha (established)
+/// Plane write mask for bypass (host and DMA) writes. Software use: 0x00ffffff at init; the mask ioctl, rectangle writes and the screen clear change it a (established)
 pub mod bypass_write_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x1100;
 }
-/// Output FIFO read port. Software expectation: read to drain sync tags and read-back words. (established)
+/// Output FIFO read port. Software use: read to drain sync tags and read-back words. (established)
 pub mod out_fifo {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x2000;
 }
-/// Screen base, in 64-bit units. Software expectation: 0. (established)
+/// Screen base, in 64-bit units. Software use: 0. (established)
 pub mod screen_base {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x3000;
@@ -440,7 +440,7 @@ pub mod vs_end {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x3050;
 }
-/// Video control. Software expectation: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refre (established)
+/// Video control. Software use: bit 0 enables refresh; the mode loader also sets blank, 64-bit data and active-high sync fields, then turns refresh off a (established)
 pub mod video_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x3058;
@@ -455,37 +455,37 @@ pub mod video_control {
         }
     }
 }
-/// Video FIFO control. Software expectation: written 0x0b07. (established)
+/// Video FIFO control. Software use: written 0x0b07. (established)
 pub mod fifo_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x3078;
 }
-/// Right-eye screen base. Software expectation: written 0. (established)
+/// Right-eye screen base. Software use: written 0. (established)
 pub mod screen_base_right {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x3080;
 }
-/// Palette write address; also the index port of the Permedia 2 indexed registers. Software expectation: the palette load writes 0 here, then red, green  (established)
+/// Palette write address; also the index port of the Permedia 2 indexed registers. Software use: the palette load writes 0 here, then red, green and blue (established)
 pub mod rd_palette_write_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4000;
 }
-/// Palette data. Software expectation: three consecutive byte stores per entry. (established)
+/// Palette data. Software use: three consecutive byte stores per entry. (established)
 pub mod rd_palette_data {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4008;
 }
-/// Pixel read mask. Software expectation: written 0xff. (established)
+/// Pixel read mask. Software use: written 0xff. (established)
 pub mod rd_pixel_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4010;
 }
-/// Palette read address. Software expectation: written 0 before a palette load. (established)
+/// Palette read address. Software use: written 0 before a palette load. (established)
 pub mod rd_palette_read_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4018;
 }
-/// SVGA control (name ours). Software expectation: written 0x40 before the mode is set, to turn the legacy VGA core off. (inferred)
+/// SVGA control (name ours). Software use: written 0x40 before the mode is set, to turn the legacy VGA core off. (inferred)
 pub mod vga_control {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x63c4;
@@ -525,7 +525,7 @@ pub mod count {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x8030;
 }
-/// Render command; the write starts the operation. Software expectation: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture (established)
+/// Render command; the write starts the operation. Software use: primitive in bits 7 to 6 (trapezoid, point, rectangle), fast fill bit 3, texture enable  (established)
 pub mod render {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x8038;
@@ -735,7 +735,7 @@ pub mod fb_software_write_mask {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x8820;
 }
-/// Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software expectation. (established)
+/// Logical operation mode: enable, operation, and the constant-write-data bit that makes fills use the write-data register. Software use. (established)
 pub mod logical_op_mode {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x8828;
@@ -850,7 +850,7 @@ pub mod delta_mode {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x9300;
 }
-/// Cursor colour address. Software expectation: written 1 before the cursor colours. (established)
+/// Cursor colour address. Software use: written 1 before the cursor colours. (established)
 pub mod rd_cursor_color_address {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4020;
@@ -860,7 +860,7 @@ pub mod rd_cursor_color_data {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4028;
 }
-/// Data port of the indexed registers, selected through the palette write address. Software expectation: read to poll the PLL lock bits. (established)
+/// Data port of the indexed registers, selected through the palette write address. Software use: read to poll the PLL lock bits. (established)
 pub mod rd_indexed_data {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4050;
@@ -890,7 +890,7 @@ pub mod rd_cursor_y_high {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4078;
 }
-/// Index, low byte. Software expectation: written before each access to an indexed register. (established)
+/// Index, low byte. Software use: written before each access to an indexed register. (established)
 pub mod rd_index_low_2v {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4020;
@@ -900,12 +900,12 @@ pub mod rd_index_high_2v {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4028;
 }
-/// Indexed data port. Software expectation: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-incremen (established)
+/// Indexed data port. Software use: after a cursor palette or pattern index is set, consecutive stores fill the table, so the index auto-increments. (established)
 pub mod rd_indexed_data_2v {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4030;
 }
-/// Index control. Software expectation: written 1 at init to turn auto-increment on. (established)
+/// Index control. Software use: written 1 at init to turn auto-increment on. (established)
 pub mod rd_index_control_2v {
     pub const WIDTH: u32 = 32;
     pub const OFFSET: u64 = 0x4038;

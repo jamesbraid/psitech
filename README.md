@@ -8,8 +8,7 @@ release 1.3k for IRIX 6.5.
 
 No manual for the board's registers was ever published. What is here comes from reading that software, the
 PLX and IBM datasheets for the two parts the board is built around, and PsiTech's owner's guide and product sheets.
-Every fact notes where it came from and how firmly: established, observed, software expectation, inferred,
-approximation or unknown.
+Every fact notes where it came from and how firmly: established, inferred or unknown.
 
 ## What's covered
 

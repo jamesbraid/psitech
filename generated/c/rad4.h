@@ -1,7 +1,7 @@
 /* generated from devices/rad4/registers.toml by defs-gen - do not edit, change the source */
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* defs-gen 2 */
-/* input sha256 93b0ddd09dc551607b6d636875bca6ee0e31cbf5a4d2bbdb6c4612238c3328c1 */
+/* input sha256 5c01288c2f4002a51f89eb170adbcd593b1c1683e9feab87f5d24880adb81c28 */
 /* RAD4 graphics head registers */
 #ifndef RAD4_GEN_H
 #define RAD4_GEN_H
@@ -10,19 +10,19 @@
 
 
 /*
- * Expansion ROM remap register. Software expectation: the driver writes it once at attach, with the top byte 0xe1. Nothing reads it back.
+ * Expansion ROM remap register. Software use: the driver writes it once at attach, with the top byte 0xe1. Nothing reads it back.
  */
 /* rom_remap: rw32, space bar0, reset unknown; PLX PCI 9060 Data Sheet, version 1.2 */
 #define RAD4_ROM_REMAP_OFFSET                        0x14u /* established */
 
 /*
- * Local bus region descriptor. Software expectation: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus.
+ * Local bus region descriptor. Software use: the driver writes 0xf84303c3 at attach, which selects a 32-bit local bus.
  */
 /* bus_region_descriptor: rw32, space bar0, reset unknown; PLX PCI 9060 Data Sheet, version 1.2 */
 #define RAD4_BUS_REGION_DESCRIPTOR_OFFSET            0x18u /* established */
 
 /*
- * Mailbox 0. Software expectation: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run, and writes zero to it at the end of every attach. What a real card holds here after power-on is unknown.
+ * Mailbox 0. Software use: the driver reads it at attach and skips its own mode and RAMDAC setup when it is nonzero, because it takes that to mean a firmware initialiser has run, and writes zero to it at the end of every attach. What a real card holds here after power-on is unknown.
  */
 /* mailbox: rw32, space bar0, reset unknown; PLX PCI 9060 Data Sheet, version 1.2 */
 #define RAD4_MAILBOX_OFFSET                          0x40u /* established */
@@ -73,7 +73,7 @@
 #define RAD4_EEPROM_CTL_DMA_READ_COMMAND_INPLACE     (RAD4_EEPROM_CTL_DMA_READ_COMMAND_MASK << RAD4_EEPROM_CTL_DMA_READ_COMMAND_SHIFT)
 
 /*
- * Parallel flash, 64 KiB in 128-byte sectors. Software expectation: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at the address with its two low bits inverted, programs a sector with the usual three-byte unlock sequence (0xaa, 0x55, 0xa0; addresses in the kernel driver page), writes 128 bytes and polls the last one. The part is not identified; an AT29C512-compatible page-write flash fits the geometry (inferred).
+ * Parallel flash, 64 KiB in 128-byte sectors. Software use: the driver switches the bus region descriptor to 0xf84003c0, uses byte accesses at the address with its two low bits inverted, programs a sector with the usual three-byte unlock sequence (0xaa, 0x55, 0xa0; addresses in the kernel driver page), writes 128 bytes and polls the last one. The part is not identified; an AT29C512-compatible page-write flash fits the geometry (inferred).
  */
 /* flash: rw8, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver (flash sector requests) */
 #define RAD4_FLASH_OFFSET                            0x800000u /* inferred */
@@ -117,7 +117,7 @@
 #define RAD4_RGB561_DATA_MULTI_VALUE_INPLACE         (RAD4_RGB561_DATA_MULTI_VALUE_MASK << RAD4_RGB561_DATA_MULTI_VALUE_SHIFT)
 
 /*
- * Horizontal timing bank 0. Software expectation: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 1024 words is the room between banks, and the bit meanings are unknown.
+ * Horizontal timing bank 0. Software use: the mode loader writes one word per four-pixel group of the horizontal total. The bank depth is not known, 1024 words is the room between banks, and the bit meanings are unknown.
  */
 /* timing_h0: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_TIMING_H0_OFFSET                        0xa00000u /* inferred */
@@ -141,7 +141,7 @@
 #define RAD4_TIMING_H3_STRIDE                        4
 
 /*
- * Vertical timing bank. Software expectation: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit meanings are unknown.
+ * Vertical timing bank. Software use: one word per line of the vertical total, at most 1656 for the driver's modes. The depth is not known and the bit meanings are unknown.
  */
 /* timing_v: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_TIMING_V_OFFSET                         0xb00000u /* inferred */
@@ -149,7 +149,7 @@
 #define RAD4_TIMING_V_STRIDE                         4
 
 /*
- * Pixel write mask. Software expectation: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown.
+ * Pixel write mask. Software use: the driver and X server program 0xffffffff, 0x00ffffff for colour drawing and 0x0f000000 for the overlay planes before stores, then restore the full mask. That a store merges as old under the inverse mask or value under the mask is the generic plane-mask convention. Which mask bit reaches which board plane is unknown.
  */
 /* plane_mask: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver and standalone X server */
 #define RAD4_PLANE_MASK_OFFSET                       0xd00000u /* inferred */
@@ -239,7 +239,7 @@
 #define RAD4_KM_OPR_RESET_OFFSET                     0xef0000u /* inferred */
 
 /*
- * Board control and status. Software expectation: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. Bit 7 is set whenever the keyboard and mouse controller has any interrupt enabled and cleared when none is. The status in bit 5 is read only by the interrupt handler, through a stored pointer, and bit 1 is cleared there when it is set. The physical effects are unknown.
+ * Board control and status. Software use: the driver clears bit 5 while it programs a mode and sets it afterwards, sets bit 1 to ask for an interrupt at the next frame and clears it around DMA transfers, and its interrupt handler tests bit 5. That bit 5 reports a frame event only while bit 1 is set is inferred. Bit 7 is set whenever the keyboard and mouse controller has any interrupt enabled and cleared when none is. The status in bit 5 is read only by the interrupt handler, through a stored pointer, and bit 1 is cleared there when it is set. The physical effects are unknown.
  */
 /* board_control: rw32, space bar2, reset unknown; PsiTech RAD4 release 1.3k driver */
 #define RAD4_BOARD_CONTROL_OFFSET                    0xf00000u /* inferred */
@@ -308,7 +308,7 @@
 #define RAD4_RGB561_CURSOR_HOT_Y_Y_INPLACE           (RAD4_RGB561_CURSOR_HOT_Y_Y_MASK << RAD4_RGB561_CURSOR_HOT_Y_Y_SHIFT)
 
 /*
- * DMA channel 0 mode. Software expectation: the driver reaches the DMA registers through the expansion ROM resource, writes 0x7c3 here (32-bit local bus, chaining, done interrupt enabled) and clears the done-interrupt bit when a transfer times out.
+ * DMA channel 0 mode. Software use: the driver reaches the DMA registers through the expansion ROM resource, writes 0x7c3 here (32-bit local bus, chaining, done interrupt enabled) and clears the done-interrupt bit when a transfer times out.
  */
 /* dmamode0: rw32, space rom, reset unknown; PLX PCI 9060 Data Sheet, version 1.2 */
 #define RAD4_DMAMODE0_OFFSET                         0x100u /* established */

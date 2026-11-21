@@ -6,7 +6,7 @@ How the RAD1 is found and drawn on as the system console, in the IO6 PROM 6.156 
 
 The PROM's table of PCI devices it can build a graphics console on has one RAD1 row, matched on vendor `3d3d` and device `0009` (established: the row is in the image at file offset 0xae4a8 of the decompressed IO6 PROM 6.156, with the install routine's address after it). The `104c:3d07` identity has no row, so a card that presents only the TVP4020 identity gets no PROM console (inferred from the table; the install routine itself still forces the Permedia 2V identity).
 
-When the row matches and the `console` environment variable does not start with `d` (serial), the PROM prints "Installing RAD1 Graphics Console...", builds a graphics component for the card and calls the install routine (software expectation; both read in full). On success it sets the `gfx` variable to `alive` and sets the console output path to the board's path under module 1; on failure it sets `console` to `d` and falls back to serial. Every other graphics probe slot is cleared, so the textport binds this board only.
+When the row matches and the `console` environment variable does not start with `d` (serial), the PROM prints "Installing RAD1 Graphics Console...", builds a graphics component for the card and calls the install routine (established; both read in full). On success it sets the `gfx` variable to `alive` and sets the console output path to the board's path under module 1; on failure it sets `console` to `d` and falls back to serial. Every other graphics probe slot is cleared, so the textport binds this board only.
 
 The install routine (established, read in full):
 
@@ -15,7 +15,7 @@ The install routine (established, read in full):
 3. Store the Permedia 2V device identity, 9, in the board state, whatever identity the card presented; store the two base pointers.
 4. Initialise the board (below), keep the state pointer for the textport, and set the ARCS component identifier to "Psitech-RAD1".
 
-The board state has room for four boards; the textport uses the first (software expectation: the PROM textport is always board 0).
+The board state has room for four boards; the textport uses the first (established: the PROM textport is always board 0).
 
 ## PROM: board initialisation
 
@@ -29,7 +29,7 @@ The PROM's drawing goes through the textport functions below, which use render c
 
 ## The textport functions
 
-Both the PROM and the kernel give the textport layer a table of functions: blank, set colour, map colour, filled box, point, set current position, draw bitmap, block move (absent in both), initialise, move cursor (PROM only) and, in the kernel, unblank and get description. The PROM has all of them; the kernel object holds ten (blank, unblank, colour, map colour, box, point, set position, draw bitmap, initialise, get description) (the kernel object's bodies were read and are software expectations; the PROM's were not each read, so the PROM's behaviour is inferred from the kernel's and from matching register offsets, Unverified).
+Both the PROM and the kernel give the textport layer a table of functions: blank, set colour, map colour, filled box, point, set current position, draw bitmap, block move (absent in both), initialise, move cursor (PROM only) and, in the kernel, unblank and get description. The PROM has all of them; the kernel object holds ten (blank, unblank, colour, map colour, box, point, set position, draw bitmap, initialise, get description) (the kernel object's bodies were read and are established; the PROM's were not each read, so the PROM's behaviour is inferred from the kernel's and from matching register offsets, Unverified).
 
 - **Colour.** Map colour stores a 24-bit colour per index in a table of 256; set colour latches one table entry as the current drawing value.
 - **Filled box.** Both corners are normalised, Y is flipped against the screen height (the textport's origin is bottom-left, the chip's top-left), the logical operation is set to constant write data, the write data is the current colour, rectangle origin and size are written and a render of a rectangle with increasing X and Y (0x6000c0, no fast fill) is issued. The hardware lock is taken without blocking in the kernel; if it is busy the call is dropped.

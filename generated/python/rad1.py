@@ -1,7 +1,7 @@
 """generated from devices/rad1/registers.toml by defs-gen - do not edit, change the source
 SPDX-License-Identifier: BSD-3-Clause
 defs-gen 2
-input sha256 6d6effab60d3ecf0befbc61265bbab43ca515e793be20c3bb700c2f97c1a0b10
+input sha256 a9a892a647d6a57b2df92f69c6bbdb08055de7deec89f257a352440128d5323d
 RAD1 graphics head registers"""
 
 UNIT = 'rad1'
