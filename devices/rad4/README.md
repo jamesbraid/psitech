@@ -28,7 +28,7 @@ No Linux, OpenBSD or NetBSD driver exists for the RAD4, and no board photograph,
 | RAMDAC | IBM RGB561-compatible | inferred, high confidence | indexed access through four ports, index 0x20 to 0x22 used as the sync and PLL registers the specification names |
 | Framebuffer controller, timing sequencer, address decode, write mask | board-local logic; chip type (ASIC, FPGA, discrete) | unknown | no board image or parts list |
 | Dedicated drawing accelerator | not established; CPU rendering and DMA are what the software uses | unknown | |
-| PCI revision, class code, subsystem IDs, BAR sizing | | unknown | the driver reads the revision but no captured value exists |
+| PCI revision, class code, subsystem IDs, BAR sizing | class `0x038000`, revision 2, BAR2 16 MiB and expansion ROM 8 MiB as the shipped RAD4-KM serial EEPROM image declares them; subsystem IDs unknown | established (the image), inferred (a card carrying it) | [../../software/rad4/proms-and-kernel.md](../../software/rad4/proms-and-kernel.md#36500202-the-serial-eprom-image); no captured value from a real card exists |
 | Board reference clock | 33 MHz | inferred | reproduces all 13 mode clocks, see [modes.md](modes.md) |
 | Configuration EEPROM part | 93C46-compatible, 64 by 16 bits | inferred | the driver's command set matches the public part |
 
@@ -73,7 +73,7 @@ Offsets follow the 9060 runtime register layout.
 |---|---|---|---|
 | 0x14 | expansion ROM remap | writes a value with top byte 0xe1 at attach, never reads | established |
 | 0x18 | local bus region descriptor | writes `0xf84303c3` at attach, selecting a 32-bit local bus | established |
-| 0x40 | mailbox | reads it at attach; nonzero means a firmware initialiser ran and the driver skips its own mode and RAMDAC setup; the driver writes zero to it at the end of every attach. Words 1 and 2 (0x44, 0x48) carry the keyboard and mouse device codes the firmware found, read only when word 0 is nonzero on a RAD4-KM | established. The reset value and who writes it on a real card: unknown |
+| 0x40 | mailbox | reads it at attach; nonzero means a firmware initialiser ran and the driver skips its own mode and RAMDAC setup; the driver writes zero to it at the end of every attach. Words 1 and 2 (0x44, 0x48) carry the keyboard and mouse device codes the firmware found, read only when word 0 is nonzero on a RAD4-KM | established. The shipped serial EEPROM image loads zero into mailbox words 0 and 1, so a card with that image starts with zero (established for the image, inferred for a card); who writes it on a real card is the option ROM, see [proms-and-kernel.md](../../software/rad4/proms-and-kernel.md) |
 | 0x68 | interrupt control and status | ORs `0x50900` in at attach, with or without DMA; bits 8, 11, 15, 16, 18, 21 are the ones used | established (layout), established (use) |
 | 0x6c | serial EEPROM control | clock bit 24, chip select bit 25, data to the EEPROM bit 26, data from it bit 27; the driver also sets the low nibble, the PCI read command of the DMA engines, to 0xc by default (6 and 0xe are the other values it accepts) | established (bits and nibble) |
 
@@ -98,9 +98,9 @@ The board's DMA use, descriptor layout and byte order are in [xserver-decode.md]
 | 0x900000, 0x910000 | RAMDAC index low and high byte | inferred |
 | 0x920000 | RAMDAC data, single cycle, index auto-increments | inferred |
 | 0x930000 | RAMDAC data, multi cycle | inferred |
-| 0xa00000, 0xa01000, 0xa03000 | horizontal timing banks | established (use); depth and bit meanings unknown |
+| 0xa00000, 0xa01000, 0xa03000 | horizontal timing banks | established (use and the bit rules the loader applies, [modes.md](modes.md#timing-words)); what the bits do in hardware inferred; depth unknown |
 | 0xa02000 | pointer built but never written by the loader | unknown |
-| 0xb00000 | vertical timing bank | established (use); depth and bit meanings unknown |
+| 0xb00000 | vertical timing bank | established (use and bit rules, [modes.md](modes.md#timing-words)); hardware meaning inferred; depth unknown |
 | 0xc00000 | pointer built, never used in the driver | unknown |
 | 0xe00000 to 0xef0000 | RAD4-KM keyboard and mouse controller registers | see [km-controller.md](km-controller.md) |
 | 0xd00000 | pixel write mask | established (use); which bit reaches which plane is unknown |
@@ -116,7 +116,7 @@ Bit 5 (0x20) is cleared while the driver programs a mode and set afterwards, and
 
 A pixel is a 32-bit word. The X server's depth-24 TrueColor and DirectColor visuals are defined with red, green and blue masks `0x00ff0000`, `0x0000ff00` and `0x000000ff` and shifts 16, 8 and 0, read directly from the server's data (established). The RAMDAC configuration the driver writes selects 24-bit true colour from frame buffer A with no lookup, which reads the low 24 bits as direct colour (established from the RGB561 window attribute table field layout; the RGB561 input format alone does not say how CPU word bits reach the RAMDAC pins). The top byte holds the overlay and window ID: the server's four-plane overlay visual draws into it with plane mask `0x0f000000` (established); wiring the RAMDAC's window-ID inputs to that byte is inferred.
 
-The server programs the write mask before almost every drawing operation: `0x00ffffff` for ordinary colour and `0x0f000000` for the overlay. A store therefore merges as `new = (old & ~mask) | (value & mask)`: that is the generic plane-mask convention, inferred, and the board's own bit-to-plane mapping is unknown.
+The server programs the write mask before almost every drawing operation: `0x0fffffff` once at screen start (read from the instruction words, not the `0x00ffffff` an earlier note gave), then `0x00ffffff` for ordinary colour and `0x0f000000` for the overlay, and it paints the window-type nibble with a rectangle fill under `0xf0000000`. A store therefore merges as `new = (old & ~mask) | (value & mask)`: that is the generic plane-mask convention, inferred. The driver takes the mask live around a DMA upload (set before it, restored after the transfer completes) and opens it to `0xffffffff` only to store DMA descriptors, which are words of board memory (established for the order, inferred for what the board does). Which mask bit reaches which board plane is unknown: the software divides the word into colour (bits 23 to 0), overlay (27 to 24) and window type (31 to 28) and nothing else decides it. No shipped server code tells window IDs apart by bits 27 to 24 (every window attribute request carries mask `0xf`, so the overlay nibble is ignored in the window ID), and the Kona-compatible GL libraries of the package never reach the driver; see [../../software/rad4/xserver-paths.md](../../software/rad4/xserver-paths.md#33-window-id-bytes-established).
 
 One software quirk matters for anyone building a model: the X server draws Motif's greyed menu labels with a tiled fill that stores raw 4-bit tile values unshifted under the `0x0f000000` mask, while all its other overlay drawing shifts the index to bit 24. With a plain plane mask those labels leave the overlay transparent and the window behind shows through. Whether a real card does the same is unknown; a photograph of a 4Dwm menu on one would settle it.
 
@@ -149,7 +149,7 @@ Under device `0x105` the driver also initialises a keyboard and mouse controller
 
 ## Limits
 
-- Revision, class code, subsystem IDs and BAR sizes of a real card: unknown. Reset behaviour of the board-local registers, and cold, warm and PCI reset: unknown.
-- Timing word bit meanings, timing bank depths and the board's frame rate: unknown.
+- Subsystem IDs of a real card: unknown. Revision, class code and BAR sizes are what the shipped serial EEPROM image declares, not a card's own values. Reset behaviour of the board-local registers, and cold, warm and PCI reset: unknown.
+- Timing bank depths and the board's frame rate: unknown. The timing words' bit rules and a reading of them are in [modes.md](modes.md#timing-words).
 - The mailbox's producer and power-on value on a real card: unknown.
 - More than one card in a machine: not examined in the driver.

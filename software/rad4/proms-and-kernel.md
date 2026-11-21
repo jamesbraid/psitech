@@ -85,6 +85,22 @@ In order: config command (`0x04`) |= 6; BAR0 `0x10`; BAR2 `0x18` (all ones, read
 
 Data I/O-style S-records (header record text "DATA I/O", `S1` records of 16 bytes with LF-CR line ends and NUL padding), 128 bytes at `0x00..0x7f`, `S9` trailer (established). Content: `05 01 d1 12 80 03 02 00 00 00 00 01 ...`, which reads as device `0x0105`, vendor `0x12d1`, then class and revision words, in the PLX 9060 serial-EEPROM word order; the rest are PLX local-space values with bytes `0x30..0x7f` all zero. So this image is for the **RAD4-KM** configuration (the device word is `0105`), and its last 40 bytes (`0x58..0x7f`, the mode-record window the driver reads) are blank (established for the bytes; the PLX field decoding is inferred from the PLX 9060 data sheet and is not walked field by field here). No `0104` serial EPROM image ships.
 
+Decoded against the long EEPROM load table of the PLX PCI 9060 data sheet, version 1.2 (section 3.3.2, pages 11 and 12; registers in tables 27 to 29, pages 42 and 43), reading the file as little-endian halfwords in the table's order (established for the image, inferred for a card that carries it):
+
+| Table field | Value in the image | Meaning |
+|---|---|---|
+| device and vendor ID | `0x0105`, `0x12d1` | the RAD4-KM |
+| class code and revision | `0x0380`, `0x0002` | class `0x038000`, revision 2 |
+| interrupt pin and line routing | `0x0100` | |
+| mailboxes 0 and 1 | all zero | |
+| PCI to local space 0, range | `0xff00` and `0x0000` | a 16 MiB window |
+| PCI to local space 0, local base (re-map) | `0x0000` and `0x0001` | local address 0, space enabled |
+| PCI to local expansion ROM, range | `0xff80` and `0x0000` | an 8 MiB window |
+| PCI to local expansion ROM, local base (re-map) | `0x0080` and `0x0000` | local address `0x800000` |
+| bus region descriptors | `0xf940` and `0x02c0` | `0xf94002c0`: 8-bit space 0 and 8-bit expansion ROM space, ready inputs on, prefetch off for the ROM space, bursts on for space 0 |
+
+Everything from table offset 0x30 on is zero. This settles several rows that were unknown. The local base of the expansion ROM re-map, `0x800000`, is the local address of the 64 KiB flash (the flash sits at BAR2 plus 0x800000 and space 0 is re-mapped to local 0), so the expansion ROM base register decodes the flash, which is where the package's programming tool writes the ROM image (inferred from the two register values and the driver's flash window; the part number stays unknown). The driver then re-points the same re-map register at a different local address (`0xe1000000`) at attach, in the way the sheet's note on reaching the DMA registers through the expansion ROM space describes (Method II, page 32), so once the driver has attached the ROM window no longer shows the flash: the firmware reads the image before the driver loads, which agrees with the PROM-first order of the package. The two window sizes are the sizes the image asks the part to claim, a 16 MiB BAR2 and an 8 MiB expansion ROM, which fits a driver that maps 8 MiB of framebuffer and registers up to 0xf00000 and asks for an 8 MiB ROM window. The mailbox the image loads is zero. A card whose serial EEPROM carries a different image, or none, would differ.
+
 ### `rad4_prog`: the programming tool
 
 ELF32 big-endian MIPS, dynamically linked, `main` at `0x10000dc8` (read in full). Usage text: `rad4_prog [-d<device>] -f<S-record file> [-seprom] [-v]`; default device `/dev/rad4`.
@@ -147,7 +163,7 @@ The two objects export **the identical set of 155 symbols and import the identic
 - **Whether a stock-PROM Origin boots with this ROM at all, and how a stock PROM treats the board.** The guide's UNKNOWN boot message says the PROM ignores it; whether PsiTech's PROM was ever required for the console role is not stated in any shipped file.
 - **Differences from the stock 5.30 PROM.** The base PROM is not available, so every PsiTech edit that is not an ID or string addition is invisible. Settle by finding an IRIX 6.4-era `ip27prom` image (5.30) and diffing by function.
 - **`ioctl 0x806`** in `rad4_prog` and the driver's handler for it. Settle by reading the driver's ioctl jump table against the command numbers 128..132, 2054.
-- **Remaining ROM behaviour**: mode and RAMDAC programming, the text scroll and clear routines, the glyph table's real offset, the meaning of table entry 1 (`0x10000`). Settle by finishing the disassembly of image 1 from `0x1c4` and cross-checking against the kernel driver's `init_RGB561` and `load_*_video_timing_ram`.
+- **Remaining ROM behaviour**: the mode routine, the two timing loaders and the paint helper are now read and agree with the driver ([../firmware/rad4-option-rom.md](../firmware/rad4-option-rom.md)); the meaning of table entry 1 (`0x10000`) is still open, and so is the scan-code helper behind the keyboard command.
 - **`pckm_wput` marker bytes**: whether the RAD4 driver ever writes `0xfa`/`0xfc`. Settle by tracing `write_keyboard` and the keyboard queue code in the driver.
 - **IP35, IP32 and IP30 images**: Permedia/RAD1 handling in IP35, and compressed segments in the IP32 PROM, were scanned, not read. Settle by decompiling the IP35 function near its `0x3d3d` immediates and by unpacking the IP32 sections before rescanning.
 - **No `.IP32` master/system file; IRIX 6.3/6.4 objects.** No 6.3/6.4 object ships, so the README claim and the 6.5 build date cannot be reconciled from files; settle with an earlier PsiTech release package.
