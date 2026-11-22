@@ -356,7 +356,7 @@ Fourth word of a 16-byte chain descriptor (PCI address, local address, byte coun
 
 | Constant | Value | Grade | Source | Description |
 |---|---|---|---|---|
-| `DMA_COUNT_BITS` | 0x17 | established | PLX PCI 9060 Data Sheet, version 1.2 | Width of the descriptor byte count. |
+| `DMA_COUNT_BITS` | 0x17 | established |  | Width of the descriptor byte count. |
 | `DMA_DESC_BYTES` | 0x10 | established | PLX PCI 9060 Data Sheet, version 1.2, section 3.6.2 | Size of a chain descriptor. |
 | `EEPROM_RECORD_ADDR` | 0x58 | established | PsiTech RAD4 release 1.3k driver | Byte address of the 40-byte configuration record the driver reads at attach. |
 | `EEPROM_RECORD_LEN` | 0x28 | established | PsiTech RAD4 release 1.3k driver | Length of that record. |

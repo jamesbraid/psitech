@@ -1056,8 +1056,7 @@
    "name": "DMA_COUNT_BITS",
    "value": 23,
    "count": 1,
-   "grade": "established",
-   "from": "PLX PCI 9060 Data Sheet, version 1.2"
+   "grade": "established"
   },
   {
    "unit": "rad4",
